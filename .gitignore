@@ -1,8 +1,42 @@
 whiteboard/*
 
-.env*
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.so.*
+*.dylib
 
-# Ignore all log files and keep the logs directory
-logs/*
+# Test binary, built with `go test -c`
+*.test
 
-bin/*
+# Output of the go coverage tool
+*.out
+
+# Dependency directories
+vendor/
+
+# Go workspace file
+go.work
+
+# IDE specific files
+.idea/
+.vscode/
+.qoder/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Build output
+/bin/
+/dist/
+/tmp/
+
+# Environment variables
+.env
+.env.local
+
+# Application specific
+*.log

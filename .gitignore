@@ -1,0 +1,8 @@
+whiteboard/*
+
+.env*
+
+# Ignore all log files and keep the logs directory
+logs/*
+
+bin/*

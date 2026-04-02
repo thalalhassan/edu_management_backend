@@ -1,22 +1,48 @@
 package response
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
+	"github.com/thalalhassan/edu_management/internal/shared/pagination"
 )
 
-func Success(c *gin.Context, statusCode int, data interface{}, meta interface{}, message string) {
-	c.JSON(statusCode, gin.H{
-		"status":  "success",
-		"message": message,
-		"data":    data,
-		"meta":    meta,
-	})
+type Envelope[T any] struct {
+	Success bool             `json:"success"`
+	Message string           `json:"message,omitempty"`
+	Data    T                `json:"data,omitempty"`
+	Error   string           `json:"error,omitempty"`
+	Meta    *pagination.Meta `json:"meta,omitempty"`
 }
 
-func Error(c *gin.Context, statusCode int, err error, message string) {
-	c.JSON(statusCode, gin.H{
-		"status":  "error",
-		"message": message,
-		"error":   err.Error(),
-	})
+func Success[T any](c *gin.Context, data T, msg string) {
+	c.JSON(http.StatusOK, Envelope[T]{Success: true, Data: data, Message: msg})
+}
+
+func Created[T any](c *gin.Context, data T, msg string) {
+	c.JSON(http.StatusCreated, Envelope[T]{Success: true, Data: data, Message: msg})
+}
+
+func SuccessPaginated[T any](c *gin.Context, data T, meta pagination.Meta, msg string) {
+	c.JSON(http.StatusOK, Envelope[T]{Success: true, Data: data, Meta: &meta, Message: msg})
+}
+
+func BadRequest(c *gin.Context, msg string) {
+	c.AbortWithStatusJSON(http.StatusBadRequest, Envelope[any]{Error: msg})
+}
+
+func NotFound(c *gin.Context, msg string) {
+	c.AbortWithStatusJSON(http.StatusNotFound, Envelope[any]{Error: msg})
+}
+
+func InternalError(c *gin.Context, msg string) {
+	c.AbortWithStatusJSON(http.StatusInternalServerError, Envelope[any]{Error: msg})
+}
+
+func Conflict(c *gin.Context, msg string) {
+	c.AbortWithStatusJSON(http.StatusConflict, Envelope[any]{Error: msg})
+}
+
+func Unprocessable(c *gin.Context, msg string) {
+	c.AbortWithStatusJSON(http.StatusUnprocessableEntity, Envelope[any]{Error: msg})
 }

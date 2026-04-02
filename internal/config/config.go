@@ -1,85 +1,57 @@
 package config
 
 import (
-	"strings"
 	"time"
 
-	"github.com/spf13/viper"
+	"github.com/caarlos0/env/v11"
+	"github.com/joho/godotenv"
 )
 
 type Config struct {
-	App      AppConfig
-	Server   ServerConfig
-	Database DatabaseConfig
-	JWT      JWTConfig
+	App      AppConfig      `envPrefix:"EDU_APP_"`
+	Server   ServerConfig   `envPrefix:"EDU_SERVER_"`
+	Database DatabaseConfig `envPrefix:"EDU_DATABASE_"`
+	JWT      JWTConfig      `envPrefix:"EDU_JWT_"`
 }
 
 type AppConfig struct {
-	Name string
-	Env  string // dev, staging, prod
+	Name string `env:"NAME" envDefault:"MyGoApp"`
+	Env  string `env:"ENV" envDefault:"development"` // development, staging, production
 }
 
 type ServerConfig struct {
-	Port         int
-	ReadTimeout  time.Duration
-	WriteTimeout time.Duration
+	Port         int           `env:"PORT" envDefault:"8080"`
+	ReadTimeout  time.Duration `env:"READ_TIMEOUT" envDefault:"5s"`
+	WriteTimeout time.Duration `env:"WRITE_TIMEOUT" envDefault:"10s"`
 }
 
 type DatabaseConfig struct {
-	URL             string
-	MaxOpenConns    int
-	MaxIdleConns    int
-	ConnMaxLifetime time.Duration
-	ConnMaxIdleTime time.Duration
+	URL             string        `env:"URL" envDefault:"postgresql://postgres:postgres@localhost:5432/edu_db"`
+	MaxOpenConns    int           `env:"MAX_OPEN_CONNS" envDefault:"10"`
+	MaxIdleConns    int           `env:"MAX_IDLE_CONNS" envDefault:"5"`
+	ConnMaxLifetime time.Duration `env:"CONN_MAX_LIFETIME" envDefault:"1h"`
+	ConnMaxIdleTime time.Duration `env:"CONN_MAX_IDLE_TIME" envDefault:"30m"`
 }
 
 type JWTConfig struct {
-	Secret     string
-	Expiration time.Duration
-}
-
-func setDefaults(v *viper.Viper) {
-	v.SetDefault("app.name", "my-service")
-	v.SetDefault("app.env", "development")
-
-	v.SetDefault("server.port", 8080)
-	v.SetDefault("server.readtimeout", "5s")
-	v.SetDefault("server.writetimeout", "10s")
-
-	v.SetDefault("database.maxconnections", 10)
-
-	v.SetDefault("database.url", "postgresql://user:password@localhost/dbname")
-	v.SetDefault("database.maxopenconns", 10)
-	v.SetDefault("database.maxidleconns", 5)
-	v.SetDefault("database.connmaxlifetime", "5m")
-	v.SetDefault("database.connmaxidletime", "2m")
-
-	v.SetDefault("jwt.expiration", "24h")
+	Secret     string        `env:"SECRET" envDefault:"10"`
+	Expiration time.Duration `env:"EXPIRATION" envDefault:"72h"`
 }
 
 func LoadConfig(path string) (*Config, error) {
+	// Ignore error if .env is missing (common in CI/CD or production environments)
+	_ = godotenv.Load(path)
 
-	vipConfig := viper.New()
-	vipConfig.SetConfigFile(path)
+	cfg := Config{}
 
-	vipConfig.SetEnvPrefix("MAD") // every env var must start with MAD_
-	vipConfig.AutomaticEnv()
-
-	// Replace dots with underscore
-	vipConfig.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
-	setDefaults(vipConfig)
-
-	if err := vipConfig.ReadInConfig(); err != nil {
+	// env.Parse will populate defaults if the ENV var is missing or empty
+	if err := env.Parse(&cfg); err != nil {
 		return nil, err
 	}
 
-	// settings := vipConfig.AllSettings()
-	// fmt.Printf("All Config: %+v\n", settings)
+	// fmt.Println("All Config:===========")
+	// data, _ := json.MarshalIndent(cfg, "", "  ")
+	// fmt.Println(string(data))
 
-	var config Config
-	if err := vipConfig.Unmarshal(&config); err != nil {
-		return nil, err
-	}
-
-	return &config, nil
+	return &cfg, nil
 }

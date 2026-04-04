@@ -12,26 +12,35 @@ type UserAuthInfo struct {
 	Role  database.UserRole `json:"role"`
 }
 
-// SignInRequest represents the signin request payload
-type SignInRequest struct {
-	Email    string `json:"email" validate:"required,email" example:"user@example.com"`
-	Password string `json:"password" validate:"required,min=6" example:"password123"`
-}
-
-// @Description Response after successful authentication
-// @Name AuthResponse
-type AuthResponse struct {
-	User        *UserAuthInfo `json:"user"`
-	AccessToken string        `json:"accessToken"`
-	TokenType   string        `json:"tokenType"`
-	ExpiresIn   int64         `json:"expiresIn"`                 // in seconds
-	IsNewUser   bool          `json:"isNewUser" default:"false"` // indicates if the user was newly created during sign-in
-}
-
 // TokenClaims represents the JWT token claims
 type TokenClaims struct {
 	UserID string `json:"userId"`
 	Email  string `json:"email"`
 	Mobile string `json:"mobile"`
 	Role   string `json:"role"`
+}
+
+// ──────────────────────────────────────────────────────────────
+// LOGIN
+// ──────────────────────────────────────────────────────────────
+
+type LoginRequest struct {
+	Email    string `json:"email"    binding:"required,email"`
+	Password string `json:"password" binding:"required"`
+}
+
+type LoginResponse struct {
+	AccessToken  string       `json:"access_token"`
+	RefreshToken string       `json:"refresh_token"`
+	User         UserAuthInfo `json:"user"`
+}
+
+// RefreshRequest exchanges a refresh token for a new access token.
+type RefreshRequest struct {
+	RefreshToken string `json:"refresh_token" binding:"required"`
+}
+
+type RefreshResponse struct {
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"` // rotated
 }

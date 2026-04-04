@@ -24,7 +24,7 @@ func RegisterRouter(r *gin.RouterGroup, app *app.App) {
 }
 
 func (h *Handler) Routes(r *gin.RouterGroup) {
-	student := r.Group("/student")
+	student := r.Group("/students")
 	{
 		student.POST("/", h.create)
 		student.GET("/:id", h.getByID)

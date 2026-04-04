@@ -1,20 +1,24 @@
 package crypto
 
-import "golang.org/x/crypto/bcrypt"
+import (
+	"fmt"
 
-// Helper functions
+	"golang.org/x/crypto/bcrypt"
+)
 
-// hashPassword hashes a password using bcrypt
-func HashPassword(password string) (string, error) {
-	const cost = bcrypt.DefaultCost
-	hashed, err := bcrypt.GenerateFromPassword([]byte(password), cost)
+const defaultCost = bcrypt.DefaultCost
+
+// Hash generates a bcrypt hash from a plain-text password.
+func Hash(plain string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(plain), defaultCost)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("crypto.Hash: %w", err)
 	}
-	return string(hashed), nil
+	return string(bytes), nil
 }
 
-// comparePasswords compares a hashed password with a plain text password
-func ComparePasswords(hashedPassword, password string) error {
-	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+// CheckHash compares a plain-text password against a bcrypt hash.
+// Returns true if they match.
+func CheckHash(plain, hash string) bool {
+	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(plain)) == nil
 }

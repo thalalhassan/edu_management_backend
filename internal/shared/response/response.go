@@ -47,7 +47,7 @@ func Unprocessable(c *gin.Context, msg string) {
 	c.AbortWithStatusJSON(http.StatusUnprocessableEntity, Envelope[any]{Error: msg})
 }
 
-func UnAuthorized(c *gin.Context, msg string) {
+func Unauthorized(c *gin.Context, msg string) {
 	c.AbortWithStatusJSON(http.StatusUnauthorized, Envelope[any]{Error: msg})
 }
 

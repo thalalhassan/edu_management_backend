@@ -26,14 +26,14 @@ func AuthCheckMiddleware(jwtConfig *config.JWTConfig) gin.HandlerFunc {
 		// Get authorization header
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
-			response.UnAuthorized(c, "authorization header is required")
+			response.Unauthorized(c, "authorization header is required")
 			return
 		}
 
 		// Extract token from Bearer scheme
 		parts := strings.Split(authHeader, " ")
 		if len(parts) != 2 || parts[0] != "Bearer" {
-			response.UnAuthorized(c, "invalid authorization header format")
+			response.Unauthorized(c, "invalid authorization header format")
 			return
 		}
 
@@ -42,7 +42,7 @@ func AuthCheckMiddleware(jwtConfig *config.JWTConfig) gin.HandlerFunc {
 		// Validate token
 		claims, err := ValidateToken(c.Request.Context(), tokenString, jwtConfig.Secret)
 		if err != nil {
-			response.UnAuthorized(c, "invalid token: "+err.Error())
+			response.Unauthorized(c, "invalid token: "+err.Error())
 			return
 		}
 

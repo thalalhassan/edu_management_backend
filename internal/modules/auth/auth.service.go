@@ -2,79 +2,132 @@ package auth
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"time"
 
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/thalalhassan/edu_management/internal/config"
-	"github.com/thalalhassan/edu_management/internal/constants"
 	"github.com/thalalhassan/edu_management/internal/database"
+	"github.com/thalalhassan/edu_management/internal/modules/user"
 	"github.com/thalalhassan/edu_management/pkg/crypto"
+	"github.com/thalalhassan/edu_management/pkg/jwt"
 )
 
 type Service interface {
-	SignIn(ctx context.Context, req *SignInRequest) (*AuthResponse, error)
+	Login(ctx context.Context, req LoginRequest) (*LoginResponse, error)
+	RefreshToken(ctx context.Context, req RefreshRequest) (*RefreshResponse, error)
+	Logout(ctx context.Context, refreshToken string) error
+	LogoutAllSessions(ctx context.Context, userID string) error
 }
 
 type service struct {
-	repo      Repository
-	jwtConfig *config.JWTConfig
+	userRepository user.Repository
+	repo           Repository
+	jwtConfig      *config.JWTConfig
 }
 
 func NewService(repo Repository, cfg *config.JWTConfig) Service {
 	return &service{repo: repo, jwtConfig: cfg}
 }
 
-func (s *service) SignIn(ctx context.Context, req *SignInRequest) (*AuthResponse, error) {
+// ──────────────────────────────────────────────────────────────
+// AUTH
+// ──────────────────────────────────────────────────────────────
 
-	user, err := s.repo.GetUserByEmail(ctx, req.Email)
+func (s *service) Login(ctx context.Context, req LoginRequest) (*LoginResponse, error) {
+	u, err := s.repo.GetUserByEmail(ctx, req.Email)
 	if err != nil {
-		return nil, constants.Errors.ErrUserNotFound
+		return nil, fmt.Errorf("user.Service.Login.GetByEmail: invalid credentials")
+	}
+	if !u.IsActive {
+		return nil, errors.New("user.Service.Login: account is deactivated")
+	}
+	if !crypto.CheckHash(req.Password, u.PasswordHash) {
+		return nil, errors.New("user.Service.Login: invalid credentials")
 	}
 
-	// check password
-	if err := crypto.ComparePasswords(user.PasswordHash, req.Password); err != nil {
-		return nil, constants.Errors.ErrInvalidCredentials
-	}
-
-	user.PasswordHash = "" // clear password hash before returning user info
-
-	return s.buildAuthResponse(user, false)
-}
-
-func (s *service) buildAuthResponse(u *database.User, isNew bool) (*AuthResponse, error) {
-	jwtExpiry := time.Now().Add(s.jwtConfig.Expiration)
-
-	token, err := s.generateToken(u, jwtExpiry)
+	accessToken, err := jwt.GenerateAccessToken(u.ID, string(u.Role), s.jwtConfig.Secret, s.jwtConfig.Expiration)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("user.Service.Login.GenerateAccessToken: %w", err)
+	}
+	rawRefresh, expiresAt, err := jwt.GenerateRefreshToken()
+	if err != nil {
+		return nil, fmt.Errorf("user.Service.Login.GenerateRefreshToken: %w", err)
 	}
 
-	return &AuthResponse{
-		User: &UserAuthInfo{
-			ID:    u.ID,
-			Email: u.Email,
-			Role:  u.Role,
-		},
-		AccessToken: token,
-		TokenType:   "Bearer",
-		ExpiresIn:   int64(s.jwtConfig.Expiration.Hours()),
-		IsNewUser:   isNew,
+	tokenRecord := &database.UserRefreshToken{
+		UserID:    u.ID,
+		Token:     rawRefresh,
+		ExpiresAt: expiresAt,
+	}
+	if err := s.repo.SaveRefreshToken(ctx, tokenRecord); err != nil {
+		return nil, fmt.Errorf("user.Service.Login.SaveRefreshToken: %w", err)
+	}
+
+	// Record last login (fire-and-forget style — don't fail login on this error)
+	now := time.Now()
+	u.LastLoginAt = &now
+	_ = s.userRepository.UpdateUser(ctx, u.ID, u)
+
+	return &LoginResponse{
+		AccessToken:  accessToken,
+		RefreshToken: rawRefresh,
+		User:         UserAuthInfo{ID: u.ID, Email: u.Email, Role: u.Role},
 	}, nil
 }
 
-func (s *service) generateToken(u *database.User, expiration time.Time) (string, error) {
-	claims := jwt.MapClaims{
-		"userId": u.ID,
-		"role":   u.Role,
-		"exp":    expiration.Unix(),
-		"iat":    time.Now().Unix(),
-	}
-
-	t := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenStr, err := t.SignedString([]byte(s.jwtConfig.Secret))
+func (s *service) RefreshToken(ctx context.Context, req RefreshRequest) (*RefreshResponse, error) {
+	record, err := s.repo.GetRefreshToken(ctx, req.RefreshToken)
 	if err != nil {
-		return "", err
+		return nil, errors.New("user.Service.RefreshToken: token not found or revoked")
+	}
+	if time.Now().After(record.ExpiresAt) {
+		return nil, errors.New("user.Service.RefreshToken: token expired")
 	}
 
-	return tokenStr, nil
+	u, err := s.userRepository.GetUserByID(ctx, record.UserID)
+	if err != nil {
+		return nil, fmt.Errorf("user.Service.RefreshToken.GetByID: %w", err)
+	}
+
+	// Rotate: revoke old, issue new
+	if err := s.repo.RevokeRefreshToken(ctx, req.RefreshToken); err != nil {
+		return nil, fmt.Errorf("user.Service.RefreshToken.Revoke: %w", err)
+	}
+
+	accessToken, err := jwt.GenerateAccessToken(u.ID, string(u.Role), s.jwtConfig.Secret, s.jwtConfig.Expiration)
+	if err != nil {
+		return nil, fmt.Errorf("user.Service.RefreshToken.GenerateAccessToken: %w", err)
+	}
+	newRaw, expiresAt, err := jwt.GenerateRefreshToken()
+	if err != nil {
+		return nil, fmt.Errorf("user.Service.RefreshToken.GenerateRefreshToken: %w", err)
+	}
+	newRecord := &database.UserRefreshToken{
+		UserID:    u.ID,
+		Token:     newRaw,
+		ExpiresAt: expiresAt,
+	}
+	if err := s.repo.SaveRefreshToken(ctx, newRecord); err != nil {
+		return nil, fmt.Errorf("user.Service.RefreshToken.SaveRefreshToken: %w", err)
+	}
+
+	return &RefreshResponse{
+		AccessToken:  accessToken,
+		RefreshToken: newRaw,
+	}, nil
+}
+
+func (s *service) Logout(ctx context.Context, refreshToken string) error {
+	if err := s.repo.RevokeRefreshToken(ctx, refreshToken); err != nil {
+		return fmt.Errorf("user.Service.Logout: %w", err)
+	}
+	return nil
+}
+
+func (s *service) LogoutAllSessions(ctx context.Context, userID string) error {
+	if err := s.repo.RevokeAllRefreshTokensForUser(ctx, userID); err != nil {
+		return fmt.Errorf("user.Service.LogoutAllSessions: %w", err)
+	}
+	return nil
 }

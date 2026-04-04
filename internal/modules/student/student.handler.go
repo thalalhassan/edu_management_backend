@@ -1,10 +1,12 @@
 package student
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 	"github.com/thalalhassan/edu_management/internal/app"
 	"github.com/thalalhassan/edu_management/internal/shared/pagination"
-	"github.com/thalalhassan/edu_management/response"
+	"github.com/thalalhassan/edu_management/internal/shared/response"
 )
 
 type Handler struct {
@@ -67,6 +69,9 @@ func (h *Handler) list(c *gin.Context) {
 		response.InternalError(c, err.Error())
 		return
 	}
+
+	fmt.Printf("Students: %+v\n", resp)
+
 	response.SuccessPaginated(c, resp, pagination.NewMeta(total, p), "Students listed successfully")
 }
 

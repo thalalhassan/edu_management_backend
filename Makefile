@@ -31,8 +31,8 @@ help:
 	@echo "  make dev             - Run in development mode with hot reload"
 	@echo "  make test            - Run tests"
 	@echo "  make migrate-up      - Run pending migrations"
-	@echo "  make migrate-down    - Rollback last migration"
-	@echo "  make migrate-status  - Show migration status"
+# 	@echo "  make migrate-down    - Rollback last migration"
+# 	@echo "  make migrate-status  - Show migration status"
 	@echo "  make seed            - Seed database"
 	@echo "  make seed-clear      - Clear and seed database"
 	@echo "  make seed-reset      - Reset database and seed"
@@ -73,7 +73,12 @@ migrate-up:
 
 .PHONY: migrate-down
 migrate-down:
-	@go run ${MIGRATION_PATH} down
+	@read -p "Are you sure you want to run migration DOWN? [y/N] " confirm && \
+	if [ "$$confirm" = "y" ] || [ "$$confirm" = "Y" ]; then \
+		go run ${MIGRATION_PATH} down; \
+	else \
+		echo "Aborted."; \
+	fi
 
 .PHONY: migrate-status
 migrate-status:

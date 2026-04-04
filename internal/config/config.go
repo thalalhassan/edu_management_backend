@@ -49,9 +49,5 @@ func LoadConfig(path string) (*Config, error) {
 		return nil, err
 	}
 
-	// fmt.Println("All Config:===========")
-	// data, _ := json.MarshalIndent(cfg, "", "  ")
-	// fmt.Println(string(data))
-
 	return &cfg, nil
 }

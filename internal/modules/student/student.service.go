@@ -60,6 +60,7 @@ func (s *service) List(ctx context.Context, p pagination.Params) ([]*StudentResp
 	for i, student := range students {
 		responses[i] = ToStudentResponse(student)
 	}
+
 	return responses, total, nil
 }
 
@@ -82,7 +83,7 @@ func (s *service) Update(ctx context.Context, id string, req UpdateRequest) (*St
 		student.Status = database.StudentStatus(*req.Status)
 	}
 
-	if err := s.repo.Update(ctx, student); err != nil {
+	if err := s.repo.Update(ctx, id, student); err != nil {
 		return nil, fmt.Errorf("student.Service.Update.Save: %w", err)
 	}
 	return ToStudentResponse(student), nil

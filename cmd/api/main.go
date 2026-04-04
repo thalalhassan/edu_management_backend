@@ -13,7 +13,11 @@ import (
 func main() {
 	ctx := context.Background()
 
-	appInstance := app.NewApp(ctx)
+	appInstance, err := app.NewApp(ctx)
+	if err != nil {
+		log.Fatalf("Failed to create app instance: %v", err)
+	}
+
 	cfg := appInstance.Config
 	serverCfg := cfg.Server
 

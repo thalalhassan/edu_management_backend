@@ -10,7 +10,7 @@ import (
 type Envelope[T any] struct {
 	Success bool             `json:"success"`
 	Message string           `json:"message,omitempty"`
-	Data    T                `json:"data,omitempty"`
+	Data    T                `json:"data"`
 	Error   string           `json:"error,omitempty"`
 	Meta    *pagination.Meta `json:"meta,omitempty"`
 }
@@ -45,4 +45,16 @@ func Conflict(c *gin.Context, msg string) {
 
 func Unprocessable(c *gin.Context, msg string) {
 	c.AbortWithStatusJSON(http.StatusUnprocessableEntity, Envelope[any]{Error: msg})
+}
+
+func UnAuthorized(c *gin.Context, msg string) {
+	c.AbortWithStatusJSON(http.StatusUnauthorized, Envelope[any]{Error: msg})
+}
+
+func AbortWithError(c *gin.Context, statusCode int, errorCode string, msg string) {
+	c.AbortWithStatusJSON(statusCode, Envelope[any]{Error: msg})
+}
+
+func AccessDenied(c *gin.Context, msg string) {
+	c.AbortWithStatusJSON(http.StatusForbidden, Envelope[any]{Error: msg})
 }

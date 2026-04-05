@@ -21,13 +21,13 @@ type Service interface {
 }
 
 type service struct {
-	userRepository user.Repository
-	repo           Repository
-	jwtConfig      *config.JWTConfig
+	userRepo  user.Repository
+	repo      Repository
+	jwtConfig *config.JWTConfig
 }
 
-func NewService(repo Repository, cfg *config.JWTConfig) Service {
-	return &service{repo: repo, jwtConfig: cfg}
+func NewService(repo Repository, userRepo user.Repository, jwtConfig *config.JWTConfig) Service {
+	return &service{repo: repo, userRepo: userRepo, jwtConfig: jwtConfig}
 }
 
 // ──────────────────────────────────────────────────────────────
@@ -35,6 +35,7 @@ func NewService(repo Repository, cfg *config.JWTConfig) Service {
 // ──────────────────────────────────────────────────────────────
 
 func (s *service) Login(ctx context.Context, req LoginRequest) (*LoginResponse, error) {
+
 	u, err := s.repo.GetUserByEmail(ctx, req.Email)
 	if err != nil {
 		return nil, fmt.Errorf("user.Service.Login.GetByEmail: invalid credentials")
@@ -46,7 +47,7 @@ func (s *service) Login(ctx context.Context, req LoginRequest) (*LoginResponse, 
 		return nil, errors.New("user.Service.Login: invalid credentials")
 	}
 
-	accessToken, err := jwt.GenerateAccessToken(u.ID, string(u.Role), s.jwtConfig.Secret, s.jwtConfig.Expiration)
+	accessToken, err := jwt.GenerateAccessToken(string(u.ID), string(u.Role), string(u.Email), s.jwtConfig.Secret, s.jwtConfig.Expiration)
 	if err != nil {
 		return nil, fmt.Errorf("user.Service.Login.GenerateAccessToken: %w", err)
 	}
@@ -67,7 +68,7 @@ func (s *service) Login(ctx context.Context, req LoginRequest) (*LoginResponse, 
 	// Record last login (fire-and-forget style — don't fail login on this error)
 	now := time.Now()
 	u.LastLoginAt = &now
-	_ = s.userRepository.UpdateUser(ctx, u.ID, u)
+	_ = s.userRepo.UpdateUser(ctx, u.ID, u)
 
 	return &LoginResponse{
 		AccessToken:  accessToken,
@@ -85,7 +86,7 @@ func (s *service) RefreshToken(ctx context.Context, req RefreshRequest) (*Refres
 		return nil, errors.New("user.Service.RefreshToken: token expired")
 	}
 
-	u, err := s.userRepository.GetUserByID(ctx, record.UserID)
+	u, err := s.userRepo.GetUserByID(ctx, record.UserID)
 	if err != nil {
 		return nil, fmt.Errorf("user.Service.RefreshToken.GetByID: %w", err)
 	}
@@ -95,7 +96,7 @@ func (s *service) RefreshToken(ctx context.Context, req RefreshRequest) (*Refres
 		return nil, fmt.Errorf("user.Service.RefreshToken.Revoke: %w", err)
 	}
 
-	accessToken, err := jwt.GenerateAccessToken(u.ID, string(u.Role), s.jwtConfig.Secret, s.jwtConfig.Expiration)
+	accessToken, err := jwt.GenerateAccessToken(string(u.ID), string(u.Role), string(u.Email), s.jwtConfig.Secret, s.jwtConfig.Expiration)
 	if err != nil {
 		return nil, fmt.Errorf("user.Service.RefreshToken.GenerateAccessToken: %w", err)
 	}

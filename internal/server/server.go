@@ -24,7 +24,6 @@ func StartServer(appInstance *app.App) *gin.Engine {
 	ginRouter.Use(gin.Logger())
 	ginRouter.Use(middleware.RecoveryWithResponse())
 	ginRouter.Use(middleware.ZapLogger(appInstance.Logger))
-	ginRouter.Use(middleware.AuthCheckMiddleware(&appInstance.Config.JWT))
 
 	// API versioning
 	api := ginRouter.Group(constants.ApiVersion)

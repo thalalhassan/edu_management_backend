@@ -1,240 +1,747 @@
 {
   "info": {
-    "_postman_id": "your-collection-id",
-    "name": "Auth API Collection",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    "name": "Edu Management API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Education Management System API collection"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "api_version",
+      "value": "/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refresh_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
   },
   "item": [
     {
-      "name": "Login",
-      "request": {
-        "method": "POST",
-        "header": [],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"email\": \"your-email@example.com\",\n  \"password\": \"your-password\"\n}",
-          "options": {
-            "raw": "json"
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data) {",
+                  "  pm.collectionVariables.set('access_token', res.data.access_token);",
+                  "  pm.collectionVariables.set('refresh_token', res.data.refresh_token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}{{api_version}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"superadmin@school.com\",\n  \"password\": \"Password@123\"\n}"
+            }
           }
         },
-        "url": {
-          "raw": "{{baseUrl}}/login",
-          "host": [
-            "{{baseUrl}}"
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data) {",
+                  "  pm.collectionVariables.set('access_token', res.data.access_token);",
+                  "  pm.collectionVariables.set('refresh_token', res.data.refresh_token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
           ],
-          "path": [
-            "login"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Refresh Token",
-      "request": {
-        "method": "POST",
-        "header": [],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"refresh_token\": \"your-refresh-token\"\n}",
-          "options": {
-            "raw": "json"
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}{{api_version}}/auth/refresh",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh_token\": \"{{refresh_token}}\"\n}"
+            }
           }
         },
-        "url": {
-          "raw": "{{baseUrl}}/refresh",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "refresh"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Get User by ID",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/users/:id",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "users",
-            ":id"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Update User",
-      "request": {
-        "method": "PUT",
-        "header": [],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"is_active\": true,\n  \"role\": \"ADMIN\"\n}",
-          "options": {
-            "raw": "json"
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}{{api_version}}/auth/logout",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh_token\": \"{{refresh_token}}\"\n}"
+            }
           }
         },
-        "url": {
-          "raw": "{{baseUrl}}/users/:id",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "users",
-            ":id"
-          ]
+        {
+          "name": "Change Password",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}{{api_version}}/account/change-password",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"current_password\": \"Password@123\",\n  \"new_password\": \"NewPassword@456\"\n}"
+            }
+          }
         }
-      },
-      "response": []
+      ]
     },
     {
-      "name": "Delete User",
-      "request": {
-        "method": "DELETE",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/users/:id",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "users",
-            ":id"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Get User Profile",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/users/my-profile",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "users",
-            "my-profile"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Update User Profile",
-      "request": {
-        "method": "PUT",
-        "header": [],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"is_active\": true,\n  \"role\": \"ADMIN\"\n}",
-          "options": {
-            "raw": "json"
+      "name": "Register",
+      "item": [
+        {
+          "name": "Register Student",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}{{api_version}}/users/register/student",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"student.new@school.com\",\n  \"password\": \"Password@123\",\n  \"admission_no\": \"ADM2024010\",\n  \"first_name\": \"Rahul\",\n  \"last_name\": \"Verma\",\n  \"dob\": \"2010-05-15T00:00:00Z\",\n  \"gender\": \"MALE\",\n  \"phone\": \"9123456799\",\n  \"blood_group\": \"B+\",\n  \"admission_date\": \"2024-06-01T00:00:00Z\"\n}"
+            }
           }
         },
-        "url": {
-          "raw": "{{baseUrl}}/users/my-profile",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "users",
-            "my-profile"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Change User Password",
-      "request": {
-        "method": "POST",
-        "header": [],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"current_password\": \"old-password\",\n  \"new_password\": \"new-password\"\n}",
-          "options": {
-            "raw": "json"
+        {
+          "name": "Register Teacher",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}{{api_version}}/users/register/teacher",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"teacher.new@school.com\",\n  \"password\": \"Password@123\",\n  \"employee_id\": \"EMP010\",\n  \"first_name\": \"Anita\",\n  \"last_name\": \"Menon\",\n  \"gender\": \"FEMALE\",\n  \"dob\": \"1985-03-20T00:00:00Z\",\n  \"phone\": \"9876500001\",\n  \"qualification\": \"M.Sc Physics\",\n  \"specialization\": \"Physics\",\n  \"joining_date\": \"2024-06-01T00:00:00Z\"\n}"
+            }
           }
         },
-        "url": {
-          "raw": "{{baseUrl}}/users/:id/change-password",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "users",
-            ":id",
-            "change-password"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Get User by Email",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/users/email/:email",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "users",
-            "email",
-            ":email"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Update User Role",
-      "request": {
-        "method": "PUT",
-        "header": [],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"role\": \"ADMIN\"\n}",
-          "options": {
-            "raw": "json"
+        {
+          "name": "Register Parent",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}{{api_version}}/users/register/parent",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"parent.new@school.com\",\n  \"password\": \"Password@123\",\n  \"first_name\": \"Vikram\",\n  \"last_name\": \"Verma\",\n  \"relationship\": \"Father\",\n  \"phone\": \"9000000020\",\n  \"occupation\": \"Doctor\",\n  \"student_ids\": []\n}"
+            }
           }
         },
-        "url": {
-          "raw": "{{baseUrl}}/users/role/:id",
-          "host": [
-            "{{baseUrl}}"
-          ],
-          "path": [
-            "users",
-            "role",
-            ":id"
-          ]
+        {
+          "name": "Register Staff",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}{{api_version}}/users/register/staff",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"staff.new@school.com\",\n  \"password\": \"Password@123\",\n  \"employee_id\": \"STF010\",\n  \"first_name\": \"Ravi\",\n  \"last_name\": \"Nair\",\n  \"gender\": \"MALE\",\n  \"designation\": \"Librarian\",\n  \"phone\": \"9000000030\",\n  \"joining_date\": \"2024-06-01T00:00:00Z\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Register Admin",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}{{api_version}}/users/register/admin",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin.new@school.com\",\n  \"password\": \"Password@123\",\n  \"role\": \"ADMIN\"\n}"
+            }
+          }
         }
-      },
-      "response": []
-    }
-  ],
-  "variable": [
+      ]
+    },
     {
-      "key": "baseUrl",
-      "value": "http://localhost:8080/api/v1/auth",
-      "type": "string",
-      "description": "Base URL for the API"
+      "name": "Users",
+      "item": [
+        {
+          "name": "List Users",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/users/?page=1&limit=10",
+              "host": ["{{base_url}}{{api_version}}"],
+              "path": ["users", ""],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get User By ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": "{{base_url}}{{api_version}}/users/:id",
+            "variable": [{ "key": "id", "value": "USER_ID_HERE" }]
+          }
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}{{api_version}}/users/:id",
+            "variable": [{ "key": "id", "value": "USER_ID_HERE" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"is_active\": true,\n  \"role\": \"TEACHER\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "url": "{{base_url}}{{api_version}}/users/:id",
+            "variable": [{ "key": "id", "value": "USER_ID_HERE" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Students",
+      "item": [
+        {
+          "name": "List Students",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/student/?page=1&limit=10",
+              "host": ["{{base_url}}{{api_version}}"],
+              "path": ["student", ""],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Student By ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": "{{base_url}}{{api_version}}/student/:id",
+            "variable": [{ "key": "id", "value": "STUDENT_ID_HERE" }]
+          }
+        },
+        {
+          "name": "Update Student",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}{{api_version}}/student/:id",
+            "variable": [{ "key": "id", "value": "STUDENT_ID_HERE" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Arjun\",\n  \"last_name\": \"Sharma\",\n  \"phone\": \"9123456789\",\n  \"address\": \"123 Main Street, Chennai\",\n  \"blood_group\": \"O+\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Student",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "url": "{{base_url}}{{api_version}}/student/:id",
+            "variable": [{ "key": "id", "value": "STUDENT_ID_HERE" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Teachers",
+      "item": [
+        {
+          "name": "List Teachers",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/teacher/?page=1&limit=10",
+              "host": ["{{base_url}}{{api_version}}"],
+              "path": ["teacher", ""],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Teacher By ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": "{{base_url}}{{api_version}}/teacher/:id",
+            "variable": [{ "key": "id", "value": "TEACHER_ID_HERE" }]
+          }
+        },
+        {
+          "name": "Get Teacher By Employee ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": "{{base_url}}{{api_version}}/teacher/employee/:employee_id",
+            "variable": [{ "key": "employee_id", "value": "EMP001" }]
+          }
+        },
+        {
+          "name": "Update Teacher",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}{{api_version}}/teacher/:id",
+            "variable": [{ "key": "id", "value": "TEACHER_ID_HERE" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Rajesh\",\n  \"last_name\": \"Kumar\",\n  \"phone\": \"9876543210\",\n  \"qualification\": \"M.Sc Mathematics\",\n  \"specialization\": \"Applied Mathematics\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Set Teacher Active Status",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}{{api_version}}/teacher/:id/active",
+            "variable": [{ "key": "id", "value": "TEACHER_ID_HERE" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"is_active\": false\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Teacher",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "url": "{{base_url}}{{api_version}}/teacher/:id",
+            "variable": [{ "key": "id", "value": "TEACHER_ID_HERE" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Enrollment",
+      "item": [
+        {
+          "name": "Enroll Student",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}{{api_version}}/enrollment/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"student_id\": \"STUDENT_ID_HERE\",\n  \"class_section_id\": \"CLASS_SECTION_ID_HERE\",\n  \"roll_number\": 1,\n  \"enrollment_date\": \"2024-06-01T00:00:00Z\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Enrollment By ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": "{{base_url}}{{api_version}}/enrollment/:id",
+            "variable": [{ "key": "id", "value": "ENROLLMENT_ID_HERE" }]
+          }
+        },
+        {
+          "name": "Get Enrollments By Student",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/enrollment/student/:student_id?page=1&limit=10",
+              "host": ["{{base_url}}{{api_version}}"],
+              "path": ["enrollment", "student", ":student_id"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ],
+              "variable": [{ "key": "student_id", "value": "STUDENT_ID_HERE" }]
+            }
+          }
+        },
+        {
+          "name": "Get Class Roster",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": "{{base_url}}{{api_version}}/enrollment/class/:class_section_id/roster",
+            "variable": [
+              { "key": "class_section_id", "value": "CLASS_SECTION_ID_HERE" }
+            ]
+          }
+        },
+        {
+          "name": "Promote Student",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}{{api_version}}/enrollment/:id/status",
+            "variable": [{ "key": "id", "value": "ENROLLMENT_ID_HERE" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"PROMOTED\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Detain Student",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}{{api_version}}/enrollment/:id/status",
+            "variable": [{ "key": "id", "value": "ENROLLMENT_ID_HERE" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"DETAINED\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Withdraw Student",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}{{api_version}}/enrollment/:id/status",
+            "variable": [{ "key": "id", "value": "ENROLLMENT_ID_HERE" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"WITHDRAWN\",\n  \"left_date\": \"2024-11-01T00:00:00Z\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Enrollment",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "url": "{{base_url}}{{api_version}}/enrollment/:id",
+            "variable": [{ "key": "id", "value": "ENROLLMENT_ID_HERE" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/health"
+          }
+        }
+      ]
     }
   ]
 }

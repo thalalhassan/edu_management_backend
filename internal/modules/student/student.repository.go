@@ -9,7 +9,6 @@ import (
 )
 
 type Repository interface {
-	Create(ctx context.Context, student *Student) error
 	GetByID(ctx context.Context, id string) (*Student, error)
 	FindAll(ctx context.Context, p pagination.Params) ([]*Student, int64, error)
 	Update(ctx context.Context, id string, student *Student) error
@@ -22,10 +21,6 @@ type RepositoryImpl struct {
 
 func NewRepository(db *gorm.DB) Repository {
 	return &RepositoryImpl{db: db.Model(&database.Student{})}
-}
-
-func (r *RepositoryImpl) Create(ctx context.Context, student *Student) error {
-	return r.db.WithContext(ctx).Create(student).Error
 }
 
 func (r *RepositoryImpl) GetByID(ctx context.Context, id string) (*Student, error) {

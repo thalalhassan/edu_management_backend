@@ -3,21 +3,24 @@ package user
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/thalalhassan/edu_management/internal/app"
+	"github.com/thalalhassan/edu_management/internal/config"
+	"github.com/thalalhassan/edu_management/internal/middleware"
 	"github.com/thalalhassan/edu_management/internal/shared/pagination"
 	"github.com/thalalhassan/edu_management/internal/shared/response"
 )
 
 type Handler struct {
 	service Service
+	config  *config.Config
 }
 
-func NewHandler(s Service) *Handler {
-	return &Handler{service: s}
+func NewHandler(s Service, cfg *config.Config) *Handler {
+	return &Handler{service: s, config: cfg}
 }
 
 func RegisterRouter(r *gin.RouterGroup, a *app.App) {
 	svc := NewService(NewRepository(a.DB.Gorm))
-	h := NewHandler(svc)
+	h := NewHandler(svc, a.Config)
 	h.Routes(r)
 }
 
@@ -25,16 +28,20 @@ func (h *Handler) Routes(r *gin.RouterGroup) {
 
 	// ── User management routes ──────────────────────────────
 	users := r.Group("/users")
+	users.Use(middleware.AuthCheckMiddleware(&h.config.JWT))
 	{
-		users.GET("/", h.list)
-		users.GET("/:id", h.getByID)
-		users.PUT("/:id", h.update)
-		users.DELETE("/:id", h.delete)
+		users.GET("/", middleware.IsAdmin(), h.list)
+		users.GET("/:id", middleware.IsAdmin(), h.getByID)
+		users.PUT("/:id", middleware.IsAdmin(), h.update)
+		users.DELETE("/:id", middleware.IsAdmin(), h.delete)
+		users.GET("/my-profile", h.userProfile)
+		users.PUT("/my-profile", h.userUpdateProfile)
 		users.POST("/:id/change-password", h.changePassword)
 	}
 
 	// ── Registration routes (admin-only in production; guard with middleware) ──
 	reg := users.Group("/register")
+	reg.Use(middleware.IsAdmin())
 	{
 		reg.POST("/student", h.registerStudent)
 		reg.POST("/teacher", h.registerTeacher)
@@ -118,6 +125,20 @@ func (h *Handler) registerAdmin(c *gin.Context) {
 	response.Created(c, resp, "Admin registered successfully")
 }
 
+func (h *Handler) userProfile(c *gin.Context) {
+	userID := c.GetString("userID") // Assume userID is set in context by auth middleware
+	if userID == "" {
+		response.Unauthorized(c, "user ID not found in context")
+		return
+	}
+	resp, err := h.service.GetByID(c.Request.Context(), userID)
+	if err != nil {
+		response.InternalError(c, err.Error())
+		return
+	}
+	response.Success(c, resp, "User profile retrieved successfully")
+}
+
 // ──────────────────────────────────────────────────────────────
 // USER MANAGEMENT
 // ──────────────────────────────────────────────────────────────
@@ -178,4 +199,23 @@ func (h *Handler) changePassword(c *gin.Context) {
 		return
 	}
 	response.Success[any](c, nil, "Password changed successfully")
+}
+
+func (h *Handler) userUpdateProfile(c *gin.Context) {
+	id := c.GetString("userID") // Override ID with authenticated user's ID to prevent tampering
+	if id == "" {
+		response.Unauthorized(c, "user ID not found in context")
+		return
+	}
+	var req UpdateUserRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.BadRequest(c, err.Error())
+		return
+	}
+	resp, err := h.service.Update(c.Request.Context(), id, req)
+	if err != nil {
+		response.InternalError(c, err.Error())
+		return
+	}
+	response.Success(c, resp, "User updated successfully")
 }

@@ -12,14 +12,6 @@ type UserAuthInfo struct {
 	Role  database.UserRole `json:"role"`
 }
 
-// TokenClaims represents the JWT token claims
-type TokenClaims struct {
-	UserID string `json:"userId"`
-	Email  string `json:"email"`
-	Mobile string `json:"mobile"`
-	Role   string `json:"role"`
-}
-
 // ──────────────────────────────────────────────────────────────
 // LOGIN
 // ──────────────────────────────────────────────────────────────

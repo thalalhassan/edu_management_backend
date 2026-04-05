@@ -1,24 +1,14 @@
 package middleware
 
 import (
-	"context"
-	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/thalalhassan/edu_management/internal/config"
 	"github.com/thalalhassan/edu_management/internal/shared/response"
+	"github.com/thalalhassan/edu_management/pkg/jwt"
 )
-
-type AuthServiceClaims struct {
-	UserID   string
-	Username string
-	Mobile   string
-	Role     string
-	jwt.RegisteredClaims
-}
 
 // AuthCheckMiddleware verifies JWT token and extracts user info
 func AuthCheckMiddleware(jwtConfig *config.JWTConfig) gin.HandlerFunc {
@@ -32,6 +22,7 @@ func AuthCheckMiddleware(jwtConfig *config.JWTConfig) gin.HandlerFunc {
 
 		// Extract token from Bearer scheme
 		parts := strings.Split(authHeader, " ")
+
 		if len(parts) != 2 || parts[0] != "Bearer" {
 			response.Unauthorized(c, "invalid authorization header format")
 			return
@@ -40,16 +31,16 @@ func AuthCheckMiddleware(jwtConfig *config.JWTConfig) gin.HandlerFunc {
 		tokenString := parts[1]
 
 		// Validate token
-		claims, err := ValidateToken(c.Request.Context(), tokenString, jwtConfig.Secret)
+		claims, err := jwt.ParseAccessToken(tokenString, jwtConfig.Secret)
 		if err != nil {
 			response.Unauthorized(c, "invalid token: "+err.Error())
 			return
 		}
 
 		// Store claims in context for later use
+
 		c.Set("userID", claims.UserID)
-		c.Set("username", claims.Username)
-		c.Set("mobile", claims.Mobile)
+		c.Set("email", claims.Email)
 		c.Set("role", claims.Role)
 
 		c.Next()
@@ -87,16 +78,4 @@ func getStringFromContext(c *gin.Context, key string) (string, error) {
 		return "", fmt.Errorf("%s is not a string", key)
 	}
 	return s, nil
-}
-
-func ValidateToken(ctx context.Context, tokenString string, jwtSecret string) (AuthServiceClaims, error) {
-	claims := &AuthServiceClaims{}
-	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
-		return []byte(jwtSecret), nil
-	})
-	if err != nil || !token.Valid {
-		return AuthServiceClaims{}, errors.New("invalid token: " + err.Error())
-	}
-
-	return *claims, nil
 }

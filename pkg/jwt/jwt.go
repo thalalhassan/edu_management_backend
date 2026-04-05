@@ -20,16 +20,18 @@ const (
 type Claims struct {
 	UserID string `json:"user_id"`
 	Role   string `json:"role"`
+	Email  string `json:"email"`
 	jwt.RegisteredClaims
 }
 
 // GenerateAccessToken signs a new JWT access token.
 // ttl controls expiry — pass crypto.DefaultAccessTTL for the default.
-func GenerateAccessToken(userID, role, secret string, ttl time.Duration) (string, error) {
+func GenerateAccessToken(userID, role, email, secret string, ttl time.Duration) (string, error) {
 	now := time.Now()
 	claims := Claims{
 		UserID: userID,
 		Role:   role,
+		Email:  email,
 		RegisteredClaims: jwt.RegisteredClaims{
 			Subject:   userID,
 			IssuedAt:  jwt.NewNumericDate(now),

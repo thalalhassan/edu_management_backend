@@ -9,7 +9,6 @@ import (
 )
 
 type Service interface {
-	Create(ctx context.Context, req CreateRequest) (*StudentResponse, error)
 	GetByID(ctx context.Context, id string) (*StudentResponse, error)
 	List(ctx context.Context, p pagination.Params) ([]*StudentResponse, int64, error)
 	Update(ctx context.Context, id string, req UpdateRequest) (*StudentResponse, error)
@@ -22,24 +21,6 @@ type service struct {
 
 func NewService(repo Repository) Service {
 	return &service{repo: repo}
-}
-
-func (s *service) Create(ctx context.Context, req CreateRequest) (*StudentResponse, error) {
-	student := &Student{
-		AdmissionNo: req.AdmissionNo,
-		FirstName:   req.FirstName,
-		LastName:    req.LastName,
-		DOB:         req.DOB,
-		Status:      req.Status,
-	}
-	if student.Status == "" {
-		student.Status = database.StudentStatusActive
-	}
-
-	if err := s.repo.Create(ctx, student); err != nil {
-		return nil, fmt.Errorf("student.Service.Create: %w", err)
-	}
-	return ToStudentResponse(student), nil
 }
 
 func (s *service) GetByID(ctx context.Context, id string) (*StudentResponse, error) {

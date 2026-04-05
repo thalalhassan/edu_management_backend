@@ -33,6 +33,13 @@ type UpdateRequest struct {
 	AdmissionDate *time.Time `json:"admission_date,omitempty"`
 }
 
+type GetStudentsFilter struct {
+	AdmissionNo *string `form:"admission_no,omitempty"`
+	FirstName   *string `form:"first_name,omitempty"`
+	LastName    *string `form:"last_name,omitempty"`
+	Status      *string `form:"status,omitempty"`
+}
+
 type StudentResponse struct {
 	Student
 }

@@ -3,7 +3,7 @@ package auth
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/thalalhassan/edu_management/internal/app"
-	"github.com/thalalhassan/edu_management/internal/constants"
+	"github.com/thalalhassan/edu_management/internal/modules/user"
 	"github.com/thalalhassan/edu_management/internal/shared/response"
 )
 
@@ -16,7 +16,10 @@ func NewHandler(s Service) *Handler {
 }
 
 func RegisterRouter(r *gin.RouterGroup, app *app.App) {
-	s := NewService(NewRepository(app.DB.Gorm), &app.Config.JWT)
+
+	userRepo := user.NewRepository(app.DB.Gorm) // inject user repository into auth service for user lookups during login
+
+	s := NewService(NewRepository(app.DB.Gorm), userRepo, &app.Config.JWT)
 	h := NewHandler(s)
 	h.Routes(r)
 }
@@ -83,17 +86,4 @@ func (h *Handler) logoutAll(c *gin.Context) {
 		return
 	}
 	response.Success[any](c, nil, "All sessions logged out successfully")
-}
-
-func handleAuthError(c *gin.Context, err error) {
-	switch err {
-	case constants.Errors.ErrUserNotFound:
-		response.NotFound(c, "user not found")
-	case constants.Errors.ErrInvalidCredentials:
-		response.Unauthorized(c, "invalid credentials")
-	case constants.Errors.ErrUserExists:
-		response.Conflict(c, "user already exists")
-	default:
-		response.InternalError(c, "internal error")
-	}
 }

@@ -40,3 +40,4 @@ go.work
 
 # Application specific
 *.log
+.aider*

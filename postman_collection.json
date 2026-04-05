@@ -742,6 +742,538 @@
           }
         }
       ]
+    },
+
+    {
+      "name": "Department",
+      "item": [
+        {
+          "name": "Create Department",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}{{api_version}}/department/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Primary School\",\n  \"code\": \"PRI\",\n  \"description\": \"Grades 1 to 5\",\n  \"head_teacher_id\": null\n}"
+            }
+          }
+        },
+        {
+          "name": "List Departments",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": "{{base_url}}{{api_version}}/department/"
+          }
+        },
+        {
+          "name": "Get Department By ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": "{{base_url}}{{api_version}}/department/:id",
+            "variable": [{ "key": "id", "value": "DEPARTMENT_ID_HERE" }]
+          }
+        },
+        {
+          "name": "Update Department",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}{{api_version}}/department/:id",
+            "variable": [{ "key": "id", "value": "DEPARTMENT_ID_HERE" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Primary School\",\n  \"code\": \"PRI\",\n  \"description\": \"Grades 1 to 5\",\n  \"is_active\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Assign Head Teacher",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}{{api_version}}/department/:id/head",
+            "variable": [{ "key": "id", "value": "DEPARTMENT_ID_HERE" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"head_teacher_id\": \"TEACHER_ID_HERE\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Remove Head Teacher",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}{{api_version}}/department/:id/head",
+            "variable": [{ "key": "id", "value": "DEPARTMENT_ID_HERE" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"head_teacher_id\": null\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Department",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "url": "{{base_url}}{{api_version}}/department/:id",
+            "variable": [{ "key": "id", "value": "DEPARTMENT_ID_HERE" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Standard",
+      "item": [
+        {
+          "name": "Create Standard",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}{{api_version}}/standard/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Grade 1\",\n  \"department_id\": \"DEPARTMENT_ID_HERE\",\n  \"order_index\": 1,\n  \"description\": \"First grade\"\n}"
+            }
+          }
+        },
+        {
+          "name": "List All Standards",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": "{{base_url}}{{api_version}}/standard/"
+          }
+        },
+        {
+          "name": "Get Standard By ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": "{{base_url}}{{api_version}}/standard/:id",
+            "variable": [{ "key": "id", "value": "STANDARD_ID_HERE" }]
+          }
+        },
+        {
+          "name": "List Standards By Department",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": "{{base_url}}{{api_version}}/standard/department/:department_id",
+            "variable": [
+              { "key": "department_id", "value": "DEPARTMENT_ID_HERE" }
+            ]
+          }
+        },
+        {
+          "name": "Update Standard",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}{{api_version}}/standard/:id",
+            "variable": [{ "key": "id", "value": "STANDARD_ID_HERE" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Grade 1\",\n  \"order_index\": 1,\n  \"description\": \"First standard\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Standard",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "url": "{{base_url}}{{api_version}}/standard/:id",
+            "variable": [{ "key": "id", "value": "STANDARD_ID_HERE" }]
+          }
+        },
+        {
+          "name": "Get Subjects For Standard",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": "{{base_url}}{{api_version}}/standard/:id/subjects",
+            "variable": [{ "key": "id", "value": "STANDARD_ID_HERE" }]
+          }
+        },
+        {
+          "name": "Assign Subject To Standard",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}{{api_version}}/standard/:id/subjects",
+            "variable": [{ "key": "id", "value": "STANDARD_ID_HERE" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subject_id\": \"SUBJECT_ID_HERE\",\n  \"is_core\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Remove Subject From Standard",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "url": "{{base_url}}{{api_version}}/standard/:id/subjects/:subject_id",
+            "variable": [
+              { "key": "id", "value": "STANDARD_ID_HERE" },
+              { "key": "subject_id", "value": "SUBJECT_ID_HERE" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Class Section",
+      "item": [
+        {
+          "name": "Create Class Section",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-Academic-Year-ID", "value": "{{academic_year_id}}" }
+            ],
+            "url": "{{base_url}}{{api_version}}/class-section/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"academic_year_id\": \"ACADEMIC_YEAR_ID_HERE\",\n  \"standard_id\": \"STANDARD_ID_HERE\",\n  \"section_name\": \"A\",\n  \"class_teacher_id\": null,\n  \"room_number\": \"101\",\n  \"max_strength\": 40\n}"
+            }
+          }
+        },
+        {
+          "name": "List Class Sections By Academic Year",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              { "key": "X-Academic-Year-ID", "value": "{{academic_year_id}}" }
+            ],
+            "url": "{{base_url}}{{api_version}}/class-section/"
+          }
+        },
+        {
+          "name": "Get Class Section By ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": "{{base_url}}{{api_version}}/class-section/:id",
+            "variable": [{ "key": "id", "value": "CLASS_SECTION_ID_HERE" }]
+          }
+        },
+        {
+          "name": "List Class Sections By Standard",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              { "key": "X-Academic-Year-ID", "value": "{{academic_year_id}}" }
+            ],
+            "url": "{{base_url}}{{api_version}}/class-section/standard/:standard_id",
+            "variable": [{ "key": "standard_id", "value": "STANDARD_ID_HERE" }]
+          }
+        },
+        {
+          "name": "List Class Sections By Teacher",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              { "key": "X-Academic-Year-ID", "value": "{{academic_year_id}}" }
+            ],
+            "url": "{{base_url}}{{api_version}}/class-section/teacher/:teacher_id",
+            "variable": [{ "key": "teacher_id", "value": "TEACHER_ID_HERE" }]
+          }
+        },
+        {
+          "name": "Update Class Section",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}{{api_version}}/class-section/:id",
+            "variable": [{ "key": "id", "value": "CLASS_SECTION_ID_HERE" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"section_name\": \"B\",\n  \"room_number\": \"102\",\n  \"max_strength\": 45\n}"
+            }
+          }
+        },
+        {
+          "name": "Assign Class Teacher",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}{{api_version}}/class-section/:id/teacher",
+            "variable": [{ "key": "id", "value": "CLASS_SECTION_ID_HERE" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"class_teacher_id\": \"TEACHER_ID_HERE\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Remove Class Teacher",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}{{api_version}}/class-section/:id/teacher",
+            "variable": [{ "key": "id", "value": "CLASS_SECTION_ID_HERE" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"class_teacher_id\": null\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Class Section",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "url": "{{base_url}}{{api_version}}/class-section/:id",
+            "variable": [{ "key": "id", "value": "CLASS_SECTION_ID_HERE" }]
+          }
+        }
+      ]
     }
   ]
 }

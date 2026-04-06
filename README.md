@@ -208,7 +208,7 @@ cp .env.example .env
 # Edit .env — at minimum change JWT_SECRET
 
 # 3. Build and start all services
-docker compose up --build
+docker compose -f docker/docker-compose.yml up -d --build --force-recreate
 
 # 4. The API is now available at:
 #    http://localhost:8080/api/v1
@@ -217,20 +217,20 @@ docker compose up --build
 To run in the background:
 
 ```bash
-docker compose up --build -d
-docker compose logs -f api   # tail logs
+docker compose -f docker/docker-compose.yml up -d --build --force-recreate
+docker compose -f docker/docker-compose.yml  logs -f api   # tail logs
 ```
 
 To stop and remove containers (data volume is preserved):
 
 ```bash
-docker compose down
+docker compose -f docker/docker-compose.yml  down
 ```
 
 To also wipe the database volume:
 
 ```bash
-docker compose down -v
+docker compose -f docker/docker-compose.yml  down -v
 ```
 
 ---

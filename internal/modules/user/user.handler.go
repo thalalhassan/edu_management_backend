@@ -36,7 +36,7 @@ func (h *Handler) Routes(r *gin.RouterGroup) {
 		users.DELETE("/:id", middleware.IsAdmin(), h.delete)
 		users.GET("/my-profile", h.userProfile)
 		users.PUT("/my-profile", h.userUpdateProfile)
-		users.POST("/:id/change-password", h.changePassword)
+		users.POST("/change-password", h.changePassword)
 	}
 
 	// ── Registration routes (admin-only in production; guard with middleware) ──
@@ -189,13 +189,18 @@ func (h *Handler) delete(c *gin.Context) {
 }
 
 func (h *Handler) changePassword(c *gin.Context) {
-	id := c.Param("id")
+	userID, err := middleware.GetUserIDFromContext(c)
+	if err != nil {
+		response.Unauthorized(c, err.Error())
+		return
+	}
+
 	var req ChangePasswordRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(c, err.Error())
 		return
 	}
-	if err := h.service.ChangePassword(c.Request.Context(), id, req); err != nil {
+	if err := h.service.ChangePassword(c.Request.Context(), userID, req); err != nil {
 		response.BadRequest(c, err.Error())
 		return
 	}

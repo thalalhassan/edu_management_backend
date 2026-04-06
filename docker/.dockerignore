@@ -1,0 +1,34 @@
+# ─── Version control ─────────────────────────────────────────────────────────
+.git
+.gitignore
+
+# ─── Environment / secrets ───────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+
+# ─── IDE / editor artefacts ──────────────────────────────────────────────────
+.idea
+.vscode
+*.iml
+
+# ─── OS artefacts ────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ─── Go build output ─────────────────────────────────────────────────────────
+/bin
+/dist
+
+# ─── Test / lint output ──────────────────────────────────────────────────────
+*.out
+*.test
+coverage.html
+
+# ─── Docker files (no need to copy into context) ─────────────────────────────
+Dockerfile*
+docker-compose*.yml
+
+/* ─── Miscellaneous ───────────────────────────────────────────────────────────
+.whiteboard
+.aider*

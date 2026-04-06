@@ -107,7 +107,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /account/change-password:
+  /users/change-password:
     post:
       tags:
         - 🔑 Auth

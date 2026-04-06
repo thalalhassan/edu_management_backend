@@ -25,7 +25,7 @@ endif
 
 .PHONY: help
 help:
-	@echo "Available commands:"
+	@echo "\nAvailable commands:\n"
 	@echo "  make build           - Build the application"
 	@echo "  make run             - Run the application"
 	@echo "  make dev             - Run in development mode with hot reload"
@@ -34,11 +34,14 @@ help:
 # 	@echo "  make migrate-down    - Rollback last migration"
 # 	@echo "  make migrate-status  - Show migration status"
 	@echo "  make seed            - Seed database"
-	@echo "  make seed-clear      - Clear and seed database"
-	@echo "  make seed-reset      - Reset database and seed"
-	@echo "	 make swagger		  - Generate swagger docs"
-	@echo "	 make sqlc		      - Generate sqlc go file"
-	@echo "  make deps           - Install golang dependencies"
+# 	@echo "  make seed-clear      - Clear and seed database"
+# 	@echo "  make seed-reset      - Reset database and seed"
+	@echo "  make swagger         - Generate swagger docs"
+	@echo "  make sqlc            - Generate sqlc go file"
+	@echo "  make deps            - Install golang dependencies"
+	@echo "  make clean           - Clean build artifacts"
+	@echo "  make convert-postman - Convert Postman collection to OpenAPI spec"
+	@echo "\nUse 'make [target]' to execute a command.\n"
 
 ## Tidy and download dependencies
 .PHONY: deps

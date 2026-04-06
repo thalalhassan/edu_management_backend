@@ -141,7 +141,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{base_url}}{{api_version}}/account/change-password",
+            "url": "{{base_url}}{{api_version}}/users/change-password",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"current_password\": \"Password@123\",\n  \"new_password\": \"NewPassword@456\"\n}"

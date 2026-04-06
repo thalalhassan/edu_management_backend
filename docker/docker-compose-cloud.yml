@@ -1,0 +1,46 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: edu_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+      POSTGRES_DB: edu_management
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data_edu:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d edu_management"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - edu_net
+
+  api: # ← MUST be inside `services`
+    image: alpine:3.20
+    container_name: edu_api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    working_dir: /app
+    volumes:
+      - ./bin/app:/app/app
+    command: ["/bin/sh", "-c", "chmod +x /app/app && /app/app"]
+    env_file:
+      - .env
+    ports:
+      - "5000:5000"
+    networks:
+      - edu_net
+
+volumes:
+  postgres_data_edu:
+
+networks:
+  edu_net:
+    driver: bridge

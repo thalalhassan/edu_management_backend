@@ -1420,6 +1420,1016 @@
           }
         }
       ]
+    },
+    {
+      "name": "Subject",
+      "item": [
+        {
+          "name": "Create Subject",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}{{api_version}}/subject/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"MATH101\",\n  \"name\": \"Mathematics\",\n  \"description\": \"Core mathematics\",\n  \"is_elective\": false\n}"
+            }
+          }
+        },
+        {
+          "name": "List Subjects",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/subject/?page=1&limit=10&sort_by=name&sort_dir=asc",
+              "host": ["{{base_url}}{{api_version}}"],
+              "path": ["subject", ""],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                {
+                  "key": "sort_by",
+                  "value": "name",
+                  "description": "name | code | created_at"
+                },
+                {
+                  "key": "sort_dir",
+                  "value": "asc",
+                  "description": "asc | desc"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "description": "Search by name or code",
+                  "disabled": true
+                },
+                {
+                  "key": "is_elective",
+                  "value": "false",
+                  "description": "true | false",
+                  "disabled": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Subjects — Electives Only",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/subject/?is_elective=true&sort_by=name&sort_dir=asc",
+              "host": ["{{base_url}}{{api_version}}"],
+              "path": ["subject", ""],
+              "query": [
+                { "key": "is_elective", "value": "true" },
+                { "key": "sort_by", "value": "name" },
+                { "key": "sort_dir", "value": "asc" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Subjects — Search",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/subject/?search=math",
+              "host": ["{{base_url}}{{api_version}}"],
+              "path": ["subject", ""],
+              "query": [{ "key": "search", "value": "math" }]
+            }
+          }
+        },
+        {
+          "name": "Get Subject By ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": "{{base_url}}{{api_version}}/subject/:id",
+            "variable": [{ "key": "id", "value": "SUBJECT_ID_HERE" }]
+          }
+        },
+        {
+          "name": "Update Subject",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}{{api_version}}/subject/:id",
+            "variable": [{ "key": "id", "value": "SUBJECT_ID_HERE" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Advanced Mathematics\",\n  \"description\": \"Advanced core mathematics\",\n  \"is_elective\": false\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Subject",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "url": "{{base_url}}{{api_version}}/subject/:id",
+            "variable": [{ "key": "id", "value": "SUBJECT_ID_HERE" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Timetable",
+      "item": [
+        {
+          "name": "Create Timetable Entry",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}{{api_version}}/timetable/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"class_section_id\": \"CLASS_SECTION_ID_HERE\",\n  \"subject_id\": \"SUBJECT_ID_HERE\",\n  \"teacher_id\": \"TEACHER_ID_HERE\",\n  \"day_of_week\": 1,\n  \"start_time\": \"2024-01-01T08:00:00Z\",\n  \"end_time\": \"2024-01-01T09:00:00Z\",\n  \"room_number\": \"101\"\n}"
+            },
+            "description": "day_of_week: 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat"
+          }
+        },
+        {
+          "name": "List Timetable Entries",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/timetable/?page=1&limit=20&sort_by=day_of_week&sort_dir=asc",
+              "host": ["{{base_url}}{{api_version}}"],
+              "path": ["timetable", ""],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" },
+                {
+                  "key": "sort_by",
+                  "value": "day_of_week",
+                  "description": "day_of_week | start_time | created_at"
+                },
+                { "key": "sort_dir", "value": "asc" },
+                {
+                  "key": "class_section_id",
+                  "value": "",
+                  "description": "Filter by class section",
+                  "disabled": true
+                },
+                {
+                  "key": "teacher_id",
+                  "value": "",
+                  "description": "Filter by teacher",
+                  "disabled": true
+                },
+                {
+                  "key": "subject_id",
+                  "value": "",
+                  "description": "Filter by subject",
+                  "disabled": true
+                },
+                {
+                  "key": "day_of_week",
+                  "value": "",
+                  "description": "0–6",
+                  "disabled": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Timetable — By Class Section",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/timetable/?class_section_id=CLASS_SECTION_ID_HERE&sort_by=day_of_week&sort_dir=asc",
+              "host": ["{{base_url}}{{api_version}}"],
+              "path": ["timetable", ""],
+              "query": [
+                { "key": "class_section_id", "value": "CLASS_SECTION_ID_HERE" },
+                { "key": "sort_by", "value": "day_of_week" },
+                { "key": "sort_dir", "value": "asc" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Timetable — By Teacher",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/timetable/?teacher_id=TEACHER_ID_HERE&sort_by=day_of_week&sort_dir=asc",
+              "host": ["{{base_url}}{{api_version}}"],
+              "path": ["timetable", ""],
+              "query": [
+                { "key": "teacher_id", "value": "TEACHER_ID_HERE" },
+                { "key": "sort_by", "value": "day_of_week" },
+                { "key": "sort_dir", "value": "asc" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Timetable — By Day",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/timetable/?day_of_week=1&sort_by=start_time&sort_dir=asc",
+              "host": ["{{base_url}}{{api_version}}"],
+              "path": ["timetable", ""],
+              "query": [
+                {
+                  "key": "day_of_week",
+                  "value": "1",
+                  "description": "1 = Monday"
+                },
+                { "key": "sort_by", "value": "start_time" },
+                { "key": "sort_dir", "value": "asc" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Timetable Entry By ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": "{{base_url}}{{api_version}}/timetable/:id",
+            "variable": [{ "key": "id", "value": "TIMETABLE_ID_HERE" }]
+          }
+        },
+        {
+          "name": "Get Class Weekly Schedule",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": "{{base_url}}{{api_version}}/timetable/class/:class_section_id/schedule",
+            "variable": [
+              { "key": "class_section_id", "value": "CLASS_SECTION_ID_HERE" }
+            ],
+            "description": "Returns periods grouped by day (Mon–Sat). Primary view for students and class teachers."
+          }
+        },
+        {
+          "name": "Get Teacher Weekly Schedule",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": "{{base_url}}{{api_version}}/timetable/teacher/:teacher_id/schedule",
+            "variable": [{ "key": "teacher_id", "value": "TEACHER_ID_HERE" }],
+            "description": "Returns all periods for the teacher across all class sections, grouped by day."
+          }
+        },
+        {
+          "name": "Update Timetable Entry",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}{{api_version}}/timetable/:id",
+            "variable": [{ "key": "id", "value": "TIMETABLE_ID_HERE" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"teacher_id\": \"TEACHER_ID_HERE\",\n  \"day_of_week\": 2,\n  \"start_time\": \"2024-01-01T09:00:00Z\",\n  \"end_time\": \"2024-01-01T10:00:00Z\",\n  \"room_number\": \"102\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Timetable Entry",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "url": "{{base_url}}{{api_version}}/timetable/:id",
+            "variable": [{ "key": "id", "value": "TIMETABLE_ID_HERE" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "🎓 Exam",
+      "item": [
+        {
+          "name": "Create Exam",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const body = pm.response.json();",
+                  "  pm.collectionVariables.set('exam_id', body.data.id);",
+                  "  pm.test('exam_id saved', () => pm.expect(body.data.id).to.be.a('string'));",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/exam/",
+              "host": ["{{base_url}}{{api_version}}/exam/"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"academic_year_id\": \"{{academic_year_id}}\",\n  \"name\": \"Midterm Examination 2025\",\n  \"description\": \"First semester midterm exams\",\n  \"exam_type\": \"MIDTERM\",\n  \"start_date\": \"2025-09-15T00:00:00Z\",\n  \"end_date\": \"2025-09-25T00:00:00Z\"\n}"
+            }
+          }
+        },
+        {
+          "name": "List Exams",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/exam/?academic_year_id={{academic_year_id}}&page=1&page_size=10&sort_by=start_date&sort_dir=asc",
+              "host": ["{{base_url}}{{api_version}}/exam/"],
+              "query": [
+                { "key": "academic_year_id", "value": "{{academic_year_id}}" },
+                { "key": "exam_type", "value": "", "disabled": true },
+                { "key": "is_published", "value": "", "disabled": true },
+                { "key": "page", "value": "1" },
+                { "key": "page_size", "value": "10" },
+                { "key": "sort_by", "value": "start_date" },
+                { "key": "sort_dir", "value": "asc" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Exam by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/exam/{{exam_id}}",
+              "host": ["{{base_url}}{{api_version}}/exam/{{exam_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Exam",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/exam/{{exam_id}}",
+              "host": ["{{base_url}}{{api_version}}/exam/{{exam_id}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Midterm Examination 2025 (Updated)\",\n  \"end_date\": \"2025-09-27T00:00:00Z\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Publish Exam",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/exam/{{exam_id}}/publish",
+              "host": ["{{base_url}}{{api_version}}/exam/{{exam_id}}/publish"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"is_published\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Unpublish Exam",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/exam/{{exam_id}}/publish",
+              "host": ["{{base_url}}{{api_version}}/exam/{{exam_id}}/publish"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"is_published\": false\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Exam",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/exam/{{exam_id}}",
+              "host": ["{{base_url}}{{api_version}}/exam/{{exam_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📅 Exam Schedule",
+      "item": [
+        {
+          "name": "Create Schedule",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const body = pm.response.json();",
+                  "  pm.collectionVariables.set('schedule_id', body.data.id);",
+                  "  pm.test('schedule_id saved', () => pm.expect(body.data.id).to.be.a('string'));",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/exam/{{exam_id}}/schedule",
+              "host": ["{{base_url}}{{api_version}}/exam/{{exam_id}}/schedule"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"class_section_id\": \"{{class_section_id}}\",\n  \"subject_id\": \"{{subject_id}}\",\n  \"exam_date\": \"2025-09-17T00:00:00Z\",\n  \"start_time\": \"2025-09-17T09:00:00Z\",\n  \"end_time\": \"2025-09-17T11:00:00Z\",\n  \"max_marks\": \"100.00\",\n  \"passing_marks\": \"35.00\",\n  \"room_number\": \"Room 101\"\n}"
+            }
+          }
+        },
+        {
+          "name": "List Schedules by Exam",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/exam/{{exam_id}}/schedule",
+              "host": ["{{base_url}}{{api_version}}/exam/{{exam_id}}/schedule"]
+            }
+          }
+        },
+        {
+          "name": "Get Schedule by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/exam-schedule/{{schedule_id}}",
+              "host": [
+                "{{base_url}}{{api_version}}/exam-schedule/{{schedule_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Schedules by Class Section",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/exam-schedule/class-section/{{class_section_id}}",
+              "host": [
+                "{{base_url}}{{api_version}}/exam-schedule/class-section/{{class_section_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Schedule",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/exam-schedule/{{schedule_id}}",
+              "host": [
+                "{{base_url}}{{api_version}}/exam-schedule/{{schedule_id}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"room_number\": \"Room 205\",\n  \"start_time\": \"2025-09-17T10:00:00Z\",\n  \"end_time\": \"2025-09-17T12:00:00Z\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Schedule",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/exam-schedule/{{schedule_id}}",
+              "host": [
+                "{{base_url}}{{api_version}}/exam-schedule/{{schedule_id}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📊 Exam Result",
+      "item": [
+        {
+          "name": "Create Single Result",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const body = pm.response.json();",
+                  "  pm.collectionVariables.set('result_id', body.data.id);",
+                  "  pm.test('result_id saved', () => pm.expect(body.data.id).to.be.a('string'));",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/exam-schedule/{{schedule_id}}/result",
+              "host": [
+                "{{base_url}}{{api_version}}/exam-schedule/{{schedule_id}}/result"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"student_enrollment_id\": \"{{enrollment_id}}\",\n  \"marks_obtained\": \"78.50\",\n  \"grade\": \"B+\",\n  \"remarks\": \"Good performance\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Bulk Create Results",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/exam-schedule/{{schedule_id}}/result/bulk",
+              "host": [
+                "{{base_url}}{{api_version}}/exam-schedule/{{schedule_id}}/result/bulk"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"results\": [\n    {\n      \"student_enrollment_id\": \"<enrollment_uuid_1>\",\n      \"marks_obtained\": \"88.00\",\n      \"grade\": \"A\",\n      \"remarks\": null\n    },\n    {\n      \"student_enrollment_id\": \"<enrollment_uuid_2>\",\n      \"marks_obtained\": \"30.00\",\n      \"grade\": \"F\",\n      \"remarks\": \"Needs improvement\"\n    }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "List Results by Schedule",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/exam-schedule/{{schedule_id}}/result",
+              "host": [
+                "{{base_url}}{{api_version}}/exam-schedule/{{schedule_id}}/result"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Result by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/exam-result/{{result_id}}",
+              "host": ["{{base_url}}{{api_version}}/exam-result/{{result_id}}"]
+            }
+          }
+        },
+        {
+          "name": "List Results by Student Enrollment",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/exam-result/student/{{enrollment_id}}",
+              "host": [
+                "{{base_url}}{{api_version}}/exam-result/student/{{enrollment_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Result",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/exam-result/{{result_id}}",
+              "host": ["{{base_url}}{{api_version}}/exam-result/{{result_id}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"marks_obtained\": \"82.00\",\n  \"grade\": \"A\",\n  \"remarks\": \"Re-evaluated\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Result",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/exam-result/{{result_id}}",
+              "host": ["{{base_url}}{{api_version}}/exam-result/{{result_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🗓️ Student Attendance",
+      "item": [
+        {
+          "name": "Mark Single Attendance",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const body = pm.response.json();",
+                  "  pm.collectionVariables.set('attendance_id', body.data.id);",
+                  "  pm.test('attendance_id saved', () => pm.expect(body.data.id).to.be.a('string'));",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/attendance/",
+              "host": ["{{base_url}}{{api_version}}/attendance/"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"student_enrollment_id\": \"{{enrollment_id}}\",\n  \"date\": \"2025-09-01T00:00:00Z\",\n  \"status\": \"PRESENT\",\n  \"remark\": null,\n  \"recorded_by_teacher_id\": \"{{teacher_id}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Bulk Mark Attendance (Class)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/attendance/bulk",
+              "host": ["{{base_url}}{{api_version}}/attendance/bulk"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"class_section_id\": \"{{class_section_id}}\",\n  \"date\": \"2025-09-02T00:00:00Z\",\n  \"recorded_by_teacher_id\": \"{{teacher_id}}\",\n  \"records\": [\n    {\n      \"student_enrollment_id\": \"<enrollment_uuid_1>\",\n      \"status\": \"PRESENT\",\n      \"remark\": null\n    },\n    {\n      \"student_enrollment_id\": \"<enrollment_uuid_2>\",\n      \"status\": \"ABSENT\",\n      \"remark\": \"Sick leave\"\n    },\n    {\n      \"student_enrollment_id\": \"<enrollment_uuid_3>\",\n      \"status\": \"LATE\",\n      \"remark\": \"Arrived 20 mins late\"\n    }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "List Student Attendance",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/attendance/?class_section_id={{class_section_id}}&date_from=2025-09-01&date_to=2025-09-30&page=1&page_size=20&sort_by=date&sort_dir=desc",
+              "host": ["{{base_url}}{{api_version}}/attendance/"],
+              "query": [
+                { "key": "class_section_id", "value": "{{class_section_id}}" },
+                {
+                  "key": "student_enrollment_id",
+                  "value": "",
+                  "disabled": true
+                },
+                { "key": "date_from", "value": "2025-09-01" },
+                { "key": "date_to", "value": "2025-09-30" },
+                { "key": "status", "value": "", "disabled": true },
+                { "key": "page", "value": "1" },
+                { "key": "page_size", "value": "20" },
+                { "key": "sort_by", "value": "date" },
+                { "key": "sort_dir", "value": "desc" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Attendance by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/attendance/{{attendance_id}}",
+              "host": [
+                "{{base_url}}{{api_version}}/attendance/{{attendance_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Class Attendance Summary",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/attendance/class/{{class_section_id}}/summary?date=2025-09-01",
+              "host": [
+                "{{base_url}}{{api_version}}/attendance/class/{{class_section_id}}/summary"
+              ],
+              "query": [{ "key": "date", "value": "2025-09-01" }]
+            }
+          }
+        },
+        {
+          "name": "Update Attendance",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/attendance/{{attendance_id}}",
+              "host": [
+                "{{base_url}}{{api_version}}/attendance/{{attendance_id}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"HALF_DAY\",\n  \"remark\": \"Left early due to medical appointment\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Attendance",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/attendance/{{attendance_id}}",
+              "host": [
+                "{{base_url}}{{api_version}}/attendance/{{attendance_id}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "👩‍🏫 Teacher Attendance",
+      "item": [
+        {
+          "name": "Mark Teacher Attendance",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const body = pm.response.json();",
+                  "  pm.collectionVariables.set('teacher_att_id', body.data.id);",
+                  "  pm.test('teacher_att_id saved', () => pm.expect(body.data.id).to.be.a('string'));",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/teacher-attendance/",
+              "host": ["{{base_url}}{{api_version}}/teacher-attendance/"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"teacher_id\": \"{{teacher_id}}\",\n  \"date\": \"2025-09-01T00:00:00Z\",\n  \"status\": \"PRESENT\",\n  \"remark\": null\n}"
+            }
+          }
+        },
+        {
+          "name": "Bulk Mark Teacher Attendance",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/teacher-attendance/bulk",
+              "host": ["{{base_url}}{{api_version}}/teacher-attendance/bulk"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"date\": \"2025-09-02T00:00:00Z\",\n  \"records\": [\n    {\n      \"teacher_id\": \"<teacher_uuid_1>\",\n      \"status\": \"PRESENT\",\n      \"remark\": null\n    },\n    {\n      \"teacher_id\": \"<teacher_uuid_2>\",\n      \"status\": \"ABSENT\",\n      \"remark\": \"On approved leave\"\n    }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "List Teacher Attendance",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/teacher-attendance/?teacher_id={{teacher_id}}&date_from=2025-09-01&date_to=2025-09-30&page=1&page_size=20&sort_by=date&sort_dir=desc",
+              "host": ["{{base_url}}{{api_version}}/teacher-attendance/"],
+              "query": [
+                { "key": "teacher_id", "value": "{{teacher_id}}" },
+                { "key": "date_from", "value": "2025-09-01" },
+                { "key": "date_to", "value": "2025-09-30" },
+                { "key": "status", "value": "", "disabled": true },
+                { "key": "page", "value": "1" },
+                { "key": "page_size", "value": "20" },
+                { "key": "sort_by", "value": "date" },
+                { "key": "sort_dir", "value": "desc" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Teacher Attendance by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/teacher-attendance/{{teacher_att_id}}",
+              "host": [
+                "{{base_url}}{{api_version}}/teacher-attendance/{{teacher_att_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Teacher Attendance",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/teacher-attendance/{{teacher_att_id}}",
+              "host": [
+                "{{base_url}}{{api_version}}/teacher-attendance/{{teacher_att_id}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"HALF_DAY\",\n  \"remark\": \"Left for training in the afternoon\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Teacher Attendance",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/teacher-attendance/{{teacher_att_id}}",
+              "host": [
+                "{{base_url}}{{api_version}}/teacher-attendance/{{teacher_att_id}}"
+              ]
+            }
+          }
+        }
+      ]
     }
   ]
 }

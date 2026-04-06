@@ -414,8 +414,8 @@ func (StudentEnrollment) TableName() string { return "student_enrollment" }
 type TeacherAssignment struct {
 	Base
 	TeacherID      string `gorm:"column:teacher_id;type:uuid;not null;index"       json:"teacher_id"`
-	ClassSectionID string `gorm:"column:class_section_id;type:uuid;not null;index" json:"class_section_id"`
-	SubjectID      string `gorm:"column:subject_id;type:uuid;not null;index"       json:"subject_id"`
+	ClassSectionID string `gorm:"column:class_section_id;type:uuid;not null;uniqueIndex:idx_class_subject" json:"class_section_id"`
+	SubjectID      string `gorm:"column:subject_id;type:uuid;not null;uniqueIndex:idx_class_subject"       json:"subject_id"`
 
 	Teacher      Teacher      `gorm:"foreignKey:TeacherID"      json:"teacher,omitempty"`
 	ClassSection ClassSection `gorm:"foreignKey:ClassSectionID" json:"class_section,omitempty"`

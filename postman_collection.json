@@ -3883,6 +3883,846 @@
           }
         }
       ]
+    },
+    {
+      "name": "📈 Reports",
+      "item": [
+        {
+          "name": "Report Card — Single Exam",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/report/report-card?student_enrollment_id=ENROLLMENT_ID_HERE&exam_id=EXAM_ID_HERE",
+              "host": ["{{base_url}}{{api_version}}"],
+              "path": ["report", "report-card"],
+              "query": [
+                {
+                  "key": "student_enrollment_id",
+                  "value": "ENROLLMENT_ID_HERE"
+                },
+                { "key": "exam_id", "value": "EXAM_ID_HERE" }
+              ]
+            },
+            "description": "Returns student report card for a specific exam."
+          }
+        },
+        {
+          "name": "Report Card — All Exams in Academic Year",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/report/report-card?student_enrollment_id=ENROLLMENT_ID_HERE",
+              "host": ["{{base_url}}{{api_version}}"],
+              "path": ["report", "report-card"],
+              "query": [
+                {
+                  "key": "student_enrollment_id",
+                  "value": "ENROLLMENT_ID_HERE"
+                }
+              ]
+            },
+            "description": "Omit exam_id to get results across all exams in the academic year."
+          }
+        },
+        {
+          "name": "Student Attendance Summary",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/report/attendance/student?student_enrollment_id=ENROLLMENT_ID_HERE",
+              "host": ["{{base_url}}{{api_version}}"],
+              "path": ["report", "attendance", "student"],
+              "query": [
+                {
+                  "key": "student_enrollment_id",
+                  "value": "ENROLLMENT_ID_HERE"
+                },
+                { "key": "from_date", "value": "2024-06-01", "disabled": true },
+                { "key": "to_date", "value": "2024-11-30", "disabled": true }
+              ]
+            },
+            "description": "Returns present/absent/late/leave counts and attendance percentage. Add from_date and to_date to scope the range."
+          }
+        },
+        {
+          "name": "Student Attendance — Date Range",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/report/attendance/student?student_enrollment_id=ENROLLMENT_ID_HERE&from_date=2024-06-01&to_date=2024-09-30",
+              "host": ["{{base_url}}{{api_version}}"],
+              "path": ["report", "attendance", "student"],
+              "query": [
+                {
+                  "key": "student_enrollment_id",
+                  "value": "ENROLLMENT_ID_HERE"
+                },
+                { "key": "from_date", "value": "2024-06-01" },
+                { "key": "to_date", "value": "2024-09-30" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Class Attendance Summary — Monthly",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/report/attendance/class?class_section_id=CLASS_SECTION_ID_HERE&month=7&year=2024",
+              "host": ["{{base_url}}{{api_version}}"],
+              "path": ["report", "attendance", "class"],
+              "query": [
+                { "key": "class_section_id", "value": "CLASS_SECTION_ID_HERE" },
+                { "key": "month", "value": "7" },
+                { "key": "year", "value": "2024" }
+              ]
+            },
+            "description": "Returns attendance for all enrolled students in July 2024."
+          }
+        },
+        {
+          "name": "Class Attendance Summary — Single Day",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/report/attendance/class?class_section_id=CLASS_SECTION_ID_HERE&date=2024-07-15",
+              "host": ["{{base_url}}{{api_version}}"],
+              "path": ["report", "attendance", "class"],
+              "query": [
+                { "key": "class_section_id", "value": "CLASS_SECTION_ID_HERE" },
+                { "key": "date", "value": "2024-07-15" }
+              ]
+            },
+            "description": "Returns attendance for a single day."
+          }
+        },
+        {
+          "name": "Class Performance Report",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/report/performance/class?class_section_id=CLASS_SECTION_ID_HERE&exam_id=EXAM_ID_HERE",
+              "host": ["{{base_url}}{{api_version}}"],
+              "path": ["report", "performance", "class"],
+              "query": [
+                { "key": "class_section_id", "value": "CLASS_SECTION_ID_HERE" },
+                { "key": "exam_id", "value": "EXAM_ID_HERE" }
+              ]
+            },
+            "description": "Returns per-subject averages, highest/lowest marks, pass %, and top 5 student rankings."
+          }
+        },
+        {
+          "name": "Fee Collection Report — Full Academic Year",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/report/fee-collection?academic_year_id={{academic_year_id}}",
+              "host": ["{{base_url}}{{api_version}}"],
+              "path": ["report", "fee-collection"],
+              "query": [
+                { "key": "academic_year_id", "value": "{{academic_year_id}}" }
+              ]
+            },
+            "description": "Returns total due, collected, balance, and waived across all standards."
+          }
+        },
+        {
+          "name": "Fee Collection Report — By Standard",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/report/fee-collection?academic_year_id={{academic_year_id}}&standard_id=STANDARD_ID_HERE",
+              "host": ["{{base_url}}{{api_version}}"],
+              "path": ["report", "fee-collection"],
+              "query": [
+                { "key": "academic_year_id", "value": "{{academic_year_id}}" },
+                { "key": "standard_id", "value": "STANDARD_ID_HERE" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Fee Collection Report — By Class Section",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/report/fee-collection?academic_year_id={{academic_year_id}}&class_section_id=CLASS_SECTION_ID_HERE",
+              "host": ["{{base_url}}{{api_version}}"],
+              "path": ["report", "fee-collection"],
+              "query": [
+                { "key": "academic_year_id", "value": "{{academic_year_id}}" },
+                { "key": "class_section_id", "value": "CLASS_SECTION_ID_HERE" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Teacher Attendance — All Teachers Monthly",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/report/attendance/teacher?month=7&year=2024",
+              "host": ["{{base_url}}{{api_version}}"],
+              "path": ["report", "attendance", "teacher"],
+              "query": [
+                { "key": "month", "value": "7" },
+                { "key": "year", "value": "2024" }
+              ]
+            },
+            "description": "Returns attendance summary for all teachers in July 2024."
+          }
+        },
+        {
+          "name": "Teacher Attendance — Single Teacher",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/report/attendance/teacher?teacher_id=TEACHER_ID_HERE&month=7&year=2024",
+              "host": ["{{base_url}}{{api_version}}"],
+              "path": ["report", "attendance", "teacher"],
+              "query": [
+                { "key": "teacher_id", "value": "TEACHER_ID_HERE" },
+                { "key": "month", "value": "7" },
+                { "key": "year", "value": "2024" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Teacher Attendance — Date Range",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/report/attendance/teacher?from_date=2024-06-01&to_date=2024-11-30",
+              "host": ["{{base_url}}{{api_version}}"],
+              "path": ["report", "attendance", "teacher"],
+              "query": [
+                { "key": "from_date", "value": "2024-06-01" },
+                { "key": "to_date", "value": "2024-11-30" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📢 Notice",
+      "item": [
+        {
+          "name": "📢 Create Notice (Draft — School-wide)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const body = pm.response.json();",
+                  "  pm.collectionVariables.set('notice_id', body.data.id);",
+                  "  pm.test('notice_id saved', () => pm.expect(body.data.id).to.be.a('string'));",
+                  "  pm.test('starts as draft', () => pm.expect(body.data.is_published).to.be.false);",
+                  "  pm.test('published_at is null on draft', () => pm.expect(body.data.published_at).to.be.undefined);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/notice/",
+              "host": ["{{base_url}}{{api_version}}/notice/"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Annual Sports Day — 15th November 2025\",\n  \"content\": \"All students and staff are invited to participate in the Annual Sports Day on 15th November 2025. Events include track and field, team sports, and cultural performances. Parents are welcome to attend.\",\n  \"audience\": \"ALL\",\n  \"expires_at\": \"2025-11-16T00:00:00Z\"\n}"
+            }
+          }
+        },
+        {
+          "name": "📢 Create Notice (Draft — Students only)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const body = pm.response.json();",
+                  "  pm.collectionVariables.set('notice_id', body.data.id);",
+                  "  pm.test('notice_id saved', () => pm.expect(body.data.id).to.be.a('string'));",
+                  "  pm.test('audience is STUDENTS', () => pm.expect(body.data.audience).to.eql('STUDENTS'));",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/notice/",
+              "host": ["{{base_url}}{{api_version}}/notice/"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Library Book Return Reminder\",\n  \"content\": \"All students are requested to return borrowed library books by 31st October 2025. Late returns will incur a fine of ₹5 per day.\",\n  \"audience\": \"STUDENTS\",\n  \"expires_at\": \"2025-11-01T00:00:00Z\"\n}"
+            }
+          }
+        },
+        {
+          "name": "📢 Create Notice (Draft — Class Section Scoped)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const body = pm.response.json();",
+                  "  pm.collectionVariables.set('notice_id', body.data.id);",
+                  "  pm.test('notice_id saved', () => pm.expect(body.data.id).to.be.a('string'));",
+                  "  pm.test('class_section_id is set', () => pm.expect(body.data.class_section_id).to.be.a('string'));",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/notice/",
+              "host": ["{{base_url}}{{api_version}}/notice/"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Class 10-A Parent-Teacher Meeting\",\n  \"content\": \"A Parent-Teacher Meeting for Class 10 Section A is scheduled for 5th October at 10:00 AM in Room 204. Attendance is mandatory.\",\n  \"audience\": \"PARENTS\",\n  \"class_section_id\": \"{{class_section_id}}\",\n  \"expires_at\": \"2025-10-06T00:00:00Z\"\n}"
+            }
+          }
+        },
+        {
+          "name": "📢 Create Notice (Draft — Teachers only)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/notice/",
+              "host": ["{{base_url}}{{api_version}}/notice/"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Staff Meeting — Curriculum Review\",\n  \"content\": \"All teaching staff are required to attend the curriculum review meeting on 20th October 2025 at 3:00 PM in the Conference Hall. Please bring your subject syllabi.\",\n  \"audience\": \"TEACHERS\"\n}"
+            }
+          }
+        },
+        {
+          "name": "🔍 Get Notice by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has expected fields', () => {",
+                  "  const d = pm.response.json().data;",
+                  "  pm.expect(d).to.have.property('title');",
+                  "  pm.expect(d).to.have.property('content');",
+                  "  pm.expect(d).to.have.property('audience');",
+                  "  pm.expect(d).to.have.property('is_published');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/notice/{{notice_id}}",
+              "host": ["{{base_url}}{{api_version}}/notice/{{notice_id}}"]
+            }
+          }
+        },
+        {
+          "name": "📋 List All Notices (Paginated)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Paginated response', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.data).to.be.an('array');",
+                  "  pm.expect(body.meta).to.have.property('total');",
+                  "  pm.expect(body.meta).to.have.property('page');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/notice/?page=1&page_size=10&sort_by=created_at&sort_dir=desc",
+              "host": ["{{base_url}}{{api_version}}/notice/"],
+              "query": [
+                { "key": "audience", "value": "", "disabled": true },
+                { "key": "is_published", "value": "", "disabled": true },
+                { "key": "class_section_id", "value": "", "disabled": true },
+                { "key": "search", "value": "", "disabled": true },
+                { "key": "page", "value": "1" },
+                { "key": "page_size", "value": "10" },
+                { "key": "sort_by", "value": "created_at" },
+                { "key": "sort_dir", "value": "desc" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "📋 List — Drafts Only",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/notice/?is_published=false&page=1&page_size=10",
+              "host": ["{{base_url}}{{api_version}}/notice/"],
+              "query": [
+                { "key": "is_published", "value": "false" },
+                { "key": "page", "value": "1" },
+                { "key": "page_size", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "📋 List — Published Only",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/notice/?is_published=true&page=1&page_size=10&sort_by=published_at&sort_dir=desc",
+              "host": ["{{base_url}}{{api_version}}/notice/"],
+              "query": [
+                { "key": "is_published", "value": "true" },
+                { "key": "page", "value": "1" },
+                { "key": "page_size", "value": "10" },
+                { "key": "sort_by", "value": "published_at" },
+                { "key": "sort_dir", "value": "desc" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "📋 List — Filter by Audience",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/notice/?audience=STUDENTS&is_published=true&page=1&page_size=10",
+              "host": ["{{base_url}}{{api_version}}/notice/"],
+              "query": [
+                { "key": "audience", "value": "STUDENTS" },
+                { "key": "is_published", "value": "true" },
+                { "key": "page", "value": "1" },
+                { "key": "page_size", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "📋 List — Class Section View (scoped + school-wide)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/notice/?class_section_id={{class_section_id}}&is_published=true&page=1&page_size=20",
+              "host": ["{{base_url}}{{api_version}}/notice/"],
+              "query": [
+                { "key": "class_section_id", "value": "{{class_section_id}}" },
+                { "key": "is_published", "value": "true" },
+                { "key": "page", "value": "1" },
+                { "key": "page_size", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "📋 List — Search by Title",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/notice/?search=Sports&page=1&page_size=10",
+              "host": ["{{base_url}}{{api_version}}/notice/"],
+              "query": [
+                { "key": "search", "value": "Sports" },
+                { "key": "page", "value": "1" },
+                { "key": "page_size", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "✏️ Update Notice (Draft only)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Still a draft after update', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.data.is_published).to.be.false;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/notice/{{notice_id}}",
+              "host": ["{{base_url}}{{api_version}}/notice/{{notice_id}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Annual Sports Day — 15th November 2025 (Updated)\",\n  \"content\": \"All students and staff are invited to Annual Sports Day on 15th November 2025. Events include track and field, relay races, team sports, and a cultural evening. Parents are warmly welcome to attend and cheer.\",\n  \"expires_at\": \"2025-11-17T00:00:00Z\"\n}"
+            }
+          }
+        },
+        {
+          "name": "✅ Publish Notice",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('is_published is true', () => {",
+                  "  const d = pm.response.json().data;",
+                  "  pm.expect(d.is_published).to.be.true;",
+                  "  pm.expect(d.published_at).to.be.a('string');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/notice/{{notice_id}}/publish",
+              "host": [
+                "{{base_url}}{{api_version}}/notice/{{notice_id}}/publish"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"is_published\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "🔙 Unpublish Notice (revert to Draft)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('is_published is false after unpublish', () => {",
+                  "  const d = pm.response.json().data;",
+                  "  pm.expect(d.is_published).to.be.false;",
+                  "  pm.expect(d.published_at).to.be.undefined;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/notice/{{notice_id}}/publish",
+              "host": [
+                "{{base_url}}{{api_version}}/notice/{{notice_id}}/publish"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"is_published\": false\n}"
+            }
+          }
+        },
+        {
+          "name": "🗑️ Delete Notice (unpublished only)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/notice/{{notice_id}}",
+              "host": ["{{base_url}}{{api_version}}/notice/{{notice_id}}"]
+            }
+          }
+        },
+        {
+          "name": "⚠️ Error — Invalid audience",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Should return 400 for invalid audience', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/notice/",
+              "host": ["{{base_url}}{{api_version}}/notice/"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Test\",\n  \"content\": \"Test content\",\n  \"audience\": \"ADMINS\"\n}"
+            }
+          }
+        },
+        {
+          "name": "⚠️ Error — expires_at in the past",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Should return 400 for past expiry', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/notice/",
+              "host": ["{{base_url}}{{api_version}}/notice/"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Expired Notice Test\",\n  \"content\": \"This should be rejected.\",\n  \"audience\": \"ALL\",\n  \"expires_at\": \"2020-01-01T00:00:00Z\"\n}"
+            }
+          }
+        },
+        {
+          "name": "⚠️ Error — Edit a published notice",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Should return 400 — cannot edit published notice', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/notice/{{notice_id}}",
+              "host": ["{{base_url}}{{api_version}}/notice/{{notice_id}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Trying to edit a published notice — should fail\"\n}"
+            }
+          }
+        },
+        {
+          "name": "⚠️ Error — Delete a published notice",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Should return 400 — cannot delete published notice', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/notice/{{notice_id}}",
+              "host": ["{{base_url}}{{api_version}}/notice/{{notice_id}}"]
+            }
+          }
+        },
+        {
+          "name": "⚠️ Error — Publish an expired notice",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Should return 400 — expires_at already passed', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/notice/{{notice_id}}/publish",
+              "host": [
+                "{{base_url}}{{api_version}}/notice/{{notice_id}}/publish"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"is_published\": true\n}"
+            }
+          }
+        }
+      ]
     }
   ]
 }

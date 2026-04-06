@@ -3079,6 +3079,810 @@
           }
         }
       ]
+    },
+    {
+      "name": "💰 Fee",
+      "item": [
+        {
+          "name": "Structure",
+          "item": [
+            {
+              "name": "Create Fee Structure",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": "{{base_url}}{{api_version}}/fee/structure/",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"academic_year_id\": \"{{academic_year_id}}\",\n  \"standard_id\": \"STANDARD_ID_HERE\",\n  \"fee_component\": \"Tuition\",\n  \"amount\": \"5000.00\",\n  \"due_date\": \"2024-07-15T00:00:00Z\"\n}"
+                }
+              }
+            },
+            {
+              "name": "Bulk Create Fee Structures",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": "{{base_url}}{{api_version}}/fee/structure/bulk",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"academic_year_id\": \"{{academic_year_id}}\",\n  \"standard_id\": \"STANDARD_ID_HERE\",\n  \"components\": [\n    {\n      \"fee_component\": \"Tuition\",\n      \"amount\": \"5000.00\",\n      \"due_date\": \"2024-07-15T00:00:00Z\"\n    },\n    {\n      \"fee_component\": \"Transport\",\n      \"amount\": \"1500.00\",\n      \"due_date\": \"2024-07-15T00:00:00Z\"\n    },\n    {\n      \"fee_component\": \"Library\",\n      \"amount\": \"500.00\"\n    }\n  ]\n}"
+                },
+                "description": "Creates all fee components for a standard in one call. All or nothing — no partial inserts."
+              }
+            },
+            {
+              "name": "List Fee Structures",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "url": {
+                  "raw": "{{base_url}}{{api_version}}/fee/structure/?page=1&limit=20&sort_by=fee_component&sort_dir=asc",
+                  "host": ["{{base_url}}{{api_version}}"],
+                  "path": ["fee", "structure", ""],
+                  "query": [
+                    { "key": "page", "value": "1" },
+                    { "key": "limit", "value": "20" },
+                    {
+                      "key": "sort_by",
+                      "value": "fee_component",
+                      "description": "fee_component | amount | due_date | created_at"
+                    },
+                    { "key": "sort_dir", "value": "asc" },
+                    {
+                      "key": "academic_year_id",
+                      "value": "{{academic_year_id}}",
+                      "disabled": true
+                    },
+                    { "key": "standard_id", "value": "", "disabled": true },
+                    {
+                      "key": "fee_component",
+                      "value": "",
+                      "description": "partial match",
+                      "disabled": true
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get Fee Structures By Standard",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "X-Academic-Year-ID",
+                    "value": "{{academic_year_id}}"
+                  }
+                ],
+                "url": "{{base_url}}{{api_version}}/fee/structure/standard/:standard_id",
+                "variable": [
+                  { "key": "standard_id", "value": "STANDARD_ID_HERE" }
+                ],
+                "description": "Returns all fee components for a standard in the current academic year."
+              }
+            },
+            {
+              "name": "Get Fee Structure By ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "url": "{{base_url}}{{api_version}}/fee/structure/:id",
+                "variable": [{ "key": "id", "value": "FEE_STRUCTURE_ID_HERE" }]
+              }
+            },
+            {
+              "name": "Update Fee Structure",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": "{{base_url}}{{api_version}}/fee/structure/:id",
+                "variable": [{ "key": "id", "value": "FEE_STRUCTURE_ID_HERE" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"amount\": \"5500.00\",\n  \"due_date\": \"2024-07-31T00:00:00Z\"\n}"
+                }
+              }
+            },
+            {
+              "name": "Delete Fee Structure",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "url": "{{base_url}}{{api_version}}/fee/structure/:id",
+                "variable": [{ "key": "id", "value": "FEE_STRUCTURE_ID_HERE" }]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Records",
+          "item": [
+            {
+              "name": "Create Fee Record",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": "{{base_url}}{{api_version}}/fee/record/",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"student_enrollment_id\": \"ENROLLMENT_ID_HERE\",\n  \"fee_component\": \"Tuition\",\n  \"amount_due\": \"5000.00\",\n  \"due_date\": \"2024-07-15T00:00:00Z\",\n  \"remarks\": \"Term 1 fee\"\n}"
+                }
+              }
+            },
+            {
+              "name": "Bulk Generate Fee Records",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": "{{base_url}}{{api_version}}/fee/record/bulk-generate",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"class_section_id\": \"CLASS_SECTION_ID_HERE\"\n}"
+                },
+                "description": "Generates fee records for ALL enrolled students in the class section based on the fee structure. Run once per term."
+              }
+            },
+            {
+              "name": "List Fee Records",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "url": {
+                  "raw": "{{base_url}}{{api_version}}/fee/record/?page=1&limit=20&sort_by=due_date&sort_dir=asc",
+                  "host": ["{{base_url}}{{api_version}}"],
+                  "path": ["fee", "record", ""],
+                  "query": [
+                    { "key": "page", "value": "1" },
+                    { "key": "limit", "value": "20" },
+                    {
+                      "key": "sort_by",
+                      "value": "due_date",
+                      "description": "due_date | paid_date | amount_due | amount_paid | created_at"
+                    },
+                    { "key": "sort_dir", "value": "asc" },
+                    {
+                      "key": "student_enrollment_id",
+                      "value": "",
+                      "disabled": true
+                    },
+                    { "key": "fee_component", "value": "", "disabled": true },
+                    {
+                      "key": "status",
+                      "value": "",
+                      "description": "PENDING | PAID | PARTIAL | OVERDUE | WAIVED",
+                      "disabled": true
+                    },
+                    { "key": "due_date_from", "value": "", "disabled": true },
+                    { "key": "due_date_to", "value": "", "disabled": true }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "List Overdue Fee Records",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "url": {
+                  "raw": "{{base_url}}{{api_version}}/fee/record/?status=OVERDUE&sort_by=due_date&sort_dir=asc",
+                  "host": ["{{base_url}}{{api_version}}"],
+                  "path": ["fee", "record", ""],
+                  "query": [
+                    { "key": "status", "value": "OVERDUE" },
+                    { "key": "sort_by", "value": "due_date" },
+                    { "key": "sort_dir", "value": "asc" }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get Fee Record By ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "url": "{{base_url}}{{api_version}}/fee/record/:id",
+                "variable": [{ "key": "id", "value": "FEE_RECORD_ID_HERE" }]
+              }
+            },
+            {
+              "name": "Get Student Fee Summary",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "url": "{{base_url}}{{api_version}}/fee/record/student/:enrollment_id/summary",
+                "variable": [
+                  { "key": "enrollment_id", "value": "ENROLLMENT_ID_HERE" }
+                ],
+                "description": "Returns total_due, total_paid, balance, and all fee records for a student. Primary view for the student fee dashboard."
+              }
+            },
+            {
+              "name": "Record Payment",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": "{{base_url}}{{api_version}}/fee/record/:id/pay",
+                "variable": [{ "key": "id", "value": "FEE_RECORD_ID_HERE" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"amount_paid\": \"5000.00\",\n  \"paid_date\": \"2024-07-10T00:00:00Z\",\n  \"transaction_ref\": \"TXN123456\",\n  \"remarks\": \"Paid via bank transfer\"\n}"
+                }
+              }
+            },
+            {
+              "name": "Waive Fee",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": "{{base_url}}{{api_version}}/fee/record/:id/waive",
+                "variable": [{ "key": "id", "value": "FEE_RECORD_ID_HERE" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"remarks\": \"Waived due to financial hardship\"\n}"
+                }
+              }
+            },
+            {
+              "name": "Delete Fee Record",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "url": "{{base_url}}{{api_version}}/fee/record/:id",
+                "variable": [{ "key": "id", "value": "FEE_RECORD_ID_HERE" }],
+                "description": "Blocked if the record is already paid."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🌴 Leave ",
+      "item": [
+        {
+          "name": "📝 Apply for Leave",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const body = pm.response.json();",
+                  "  pm.collectionVariables.set('leave_id', body.data.id);",
+                  "  pm.test('leave_id saved', () => pm.expect(body.data.id).to.be.a('string'));",
+                  "  pm.test('status is PENDING', () => pm.expect(body.data.status).to.eql('PENDING'));",
+                  "  pm.test('duration_days > 0', () => pm.expect(body.data.duration_days).to.be.above(0));",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/leave/",
+              "host": ["{{base_url}}{{api_version}}/leave/"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"teacher_id\": \"{{teacher_id}}\",\n  \"from_date\": \"2025-10-10T00:00:00Z\",\n  \"to_date\": \"2025-10-12T00:00:00Z\",\n  \"reason\": \"Family function — attending sister's wedding\"\n}"
+            }
+          }
+        },
+        {
+          "name": "📋 List Leave Requests",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Returns paginated data', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.data).to.be.an('array');",
+                  "  pm.expect(body.meta).to.have.property('total');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/leave/?page=1&page_size=10&sort_by=created_at&sort_dir=desc",
+              "host": ["{{base_url}}{{api_version}}/leave/"],
+              "query": [
+                {
+                  "key": "teacher_id",
+                  "value": "{{teacher_id}}",
+                  "disabled": true
+                },
+                { "key": "status", "value": "PENDING", "disabled": true },
+                { "key": "date_from", "value": "2025-10-01", "disabled": true },
+                { "key": "date_to", "value": "2025-10-31", "disabled": true },
+                { "key": "page", "value": "1" },
+                { "key": "page_size", "value": "10" },
+                { "key": "sort_by", "value": "created_at" },
+                { "key": "sort_dir", "value": "desc" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "📋 List — Filter by Teacher",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/leave/?teacher_id={{teacher_id}}&page=1&page_size=20&sort_by=from_date&sort_dir=asc",
+              "host": ["{{base_url}}{{api_version}}/leave/"],
+              "query": [
+                { "key": "teacher_id", "value": "{{teacher_id}}" },
+                { "key": "page", "value": "1" },
+                { "key": "page_size", "value": "20" },
+                { "key": "sort_by", "value": "from_date" },
+                { "key": "sort_dir", "value": "asc" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "📋 List — Filter by Status",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/leave/?status=PENDING&page=1&page_size=20",
+              "host": ["{{base_url}}{{api_version}}/leave/"],
+              "query": [
+                { "key": "status", "value": "PENDING" },
+                { "key": "page", "value": "1" },
+                { "key": "page_size", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "📋 List — Filter by Date Range",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/leave/?date_from=2025-10-01&date_to=2025-10-31&page=1&page_size=20",
+              "host": ["{{base_url}}{{api_version}}/leave/"],
+              "query": [
+                { "key": "date_from", "value": "2025-10-01" },
+                { "key": "date_to", "value": "2025-10-31" },
+                { "key": "page", "value": "1" },
+                { "key": "page_size", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "🔍 Get Leave by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has duration_days', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.data.duration_days).to.be.a('number');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/leave/{{leave_id}}",
+              "host": ["{{base_url}}{{api_version}}/leave/{{leave_id}}"]
+            }
+          }
+        },
+        {
+          "name": "✏️ Update Leave Request (PENDING only)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Still PENDING after update', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.data.status).to.eql('PENDING');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/leave/{{leave_id}}",
+              "host": ["{{base_url}}{{api_version}}/leave/{{leave_id}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"from_date\": \"2025-10-13T00:00:00Z\",\n  \"to_date\": \"2025-10-15T00:00:00Z\",\n  \"reason\": \"Updated: attending brother's graduation ceremony\"\n}"
+            }
+          }
+        },
+        {
+          "name": "✅ Review — Approve",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Status is APPROVED', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.data.status).to.eql('APPROVED');",
+                  "  pm.expect(body.data.reviewed_by).to.be.a('string');",
+                  "  pm.expect(body.data.reviewed_at).to.be.a('string');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/leave/{{leave_id}}/review",
+              "host": ["{{base_url}}{{api_version}}/leave/{{leave_id}}/review"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"APPROVED\",\n  \"review_note\": \"Approved. Please ensure substitute arrangements are made.\"\n}"
+            }
+          }
+        },
+        {
+          "name": "❌ Review — Reject",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Status is REJECTED', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.data.status).to.eql('REJECTED');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/leave/{{leave_id}}/review",
+              "host": ["{{base_url}}{{api_version}}/leave/{{leave_id}}/review"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"REJECTED\",\n  \"review_note\": \"Rejected — exam week, no leave permitted.\"\n}"
+            }
+          }
+        },
+        {
+          "name": "🚫 Cancel Own Leave (PENDING → Rejected)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Status is REJECTED after cancel', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.data.status).to.eql('REJECTED');",
+                  "  pm.expect(body.data.review_note).to.include('Cancelled');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/leave/{{leave_id}}/cancel",
+              "host": ["{{base_url}}{{api_version}}/leave/{{leave_id}}/cancel"]
+            }
+          }
+        },
+        {
+          "name": "🗑️ Delete Leave Request",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/leave/{{leave_id}}",
+              "host": ["{{base_url}}{{api_version}}/leave/{{leave_id}}"]
+            }
+          }
+        },
+        {
+          "name": "⚠️ Error — Apply with end before start",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Should return 400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/leave/",
+              "host": ["{{base_url}}{{api_version}}/leave/"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"teacher_id\": \"{{teacher_id}}\",\n  \"from_date\": \"2025-10-15T00:00:00Z\",\n  \"to_date\": \"2025-10-10T00:00:00Z\",\n  \"reason\": \"Invalid date range test\"\n}"
+            }
+          }
+        },
+        {
+          "name": "⚠️ Error — Overlapping leave",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Should return 400 for overlap', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/leave/",
+              "host": ["{{base_url}}{{api_version}}/leave/"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"teacher_id\": \"{{teacher_id}}\",\n  \"from_date\": \"2025-10-11T00:00:00Z\",\n  \"to_date\": \"2025-10-14T00:00:00Z\",\n  \"reason\": \"This overlaps with an existing request and should fail\"\n}"
+            }
+          }
+        },
+        {
+          "name": "⚠️ Error — Review with PENDING status",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Should return 400 — PENDING not a valid review outcome', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/leave/{{leave_id}}/review",
+              "host": ["{{base_url}}{{api_version}}/leave/{{leave_id}}/review"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"PENDING\",\n  \"review_note\": \"This should fail validation\"\n}"
+            }
+          }
+        },
+        {
+          "name": "⚠️ Error — Update non-PENDING leave",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Should return 400 — cannot edit approved/rejected leave', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/leave/{{leave_id}}",
+              "host": ["{{base_url}}{{api_version}}/leave/{{leave_id}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Trying to edit after approval — should fail\"\n}"
+            }
+          }
+        }
+      ]
     }
   ]
 }

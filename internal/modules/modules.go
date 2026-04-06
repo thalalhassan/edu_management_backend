@@ -8,6 +8,8 @@ import (
 	"github.com/thalalhassan/edu_management/internal/modules/class_section"
 	"github.com/thalalhassan/edu_management/internal/modules/department"
 	"github.com/thalalhassan/edu_management/internal/modules/enrollment"
+	"github.com/thalalhassan/edu_management/internal/modules/fee"
+	"github.com/thalalhassan/edu_management/internal/modules/leave"
 	"github.com/thalalhassan/edu_management/internal/modules/parent"
 	"github.com/thalalhassan/edu_management/internal/modules/staff"
 	"github.com/thalalhassan/edu_management/internal/modules/standard"
@@ -50,5 +52,11 @@ func RegisterModules(api *gin.RouterGroup, app *app.App) {
 
 	// Register academic year module routes
 	academic_year.RegisterRouter(api, app)
+
+	// Register fee module routes
+	fee.RegisterRouter(api, app)
+
+	// Register leave module routes
+	leave.RegisterRouter(api, app)
 
 }

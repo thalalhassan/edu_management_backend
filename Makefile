@@ -111,3 +111,7 @@ swagger:
 .PHONY: sql
 sql:
 	@sqlc generate
+
+.PHONY: convert-postman
+convert-postman:
+	@npx postman-to-openapi@latest ./docs/postman_collection.json -f ./docs/openapi.yaml

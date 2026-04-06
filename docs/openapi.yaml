@@ -1,0 +1,3260 @@
+openapi: 3.0.0
+info:
+  title: 🚀 Edu Management API
+  description: Education Management System API collection
+  version: 1.0.0
+servers:
+  - url: http://{{base_url}}{{api_version}}
+  - url: http://{{base_url}}
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+security:
+  - bearerAuth: []
+tags:
+  - name: 🔑 Auth
+  - name: 📝 Register
+  - name: 👥 Users
+  - name: 👨‍🎓 Students
+  - name: 👩‍🏫 Teachers
+  - name: 📑 Enrollment
+  - name: 🏥 Health
+  - name: 🏢 Department
+  - name: 📏 Standard
+  - name: 🏫 Class Section
+  - name: 📅 Academic Year
+  - name: 📚 Subject
+  - name: ⏳ Timetable
+  - name: 🎓 Exam
+  - name: 📅 Exam Schedule
+  - name: 📊 Exam Result
+  - name: 🗓️ Student Attendance
+  - name: 👩‍🏫 Teacher Attendance
+  - name: 💰 Fee
+  - name: 💰 Fee > Structure
+  - name: 💰 Fee > Records
+  - name: '🌴 Leave '
+  - name: 📈 Reports
+  - name: 📢 Notice
+paths:
+  /auth/login:
+    post:
+      tags:
+        - 🔑 Auth
+      summary: Login
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"email\": \"superadmin@school.com\",\n  \"password\":
+                \"Password@123\"\n}"
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /auth/refresh:
+    post:
+      tags:
+        - 🔑 Auth
+      summary: Refresh Token
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: '"{\n  \"refresh_token\": \"{{refresh_token}}\"\n}"'
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /auth/logout:
+    post:
+      tags:
+        - 🔑 Auth
+      summary: Logout
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: '"{\n  \"refresh_token\": \"{{refresh_token}}\"\n}"'
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /account/change-password:
+    post:
+      tags:
+        - 🔑 Auth
+      summary: Change Password
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"current_password\": \"Password@123\",\n 
+                \"new_password\": \"NewPassword@456\"\n}"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /users/register/student:
+    post:
+      tags:
+        - 📝 Register
+      summary: Register Student
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"email\": \"student.new@school.com\",\n  \"password\":
+                \"Password@123\",\n  \"admission_no\": \"ADM2024010\",\n 
+                \"first_name\": \"Rahul\",\n  \"last_name\": \"Verma\",\n 
+                \"dob\": \"2010-05-15T00:00:00Z\",\n  \"gender\": \"MALE\",\n 
+                \"phone\": \"9123456799\",\n  \"blood_group\": \"B+\",\n 
+                \"admission_date\": \"2024-06-01T00:00:00Z\"\n}"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /users/register/teacher:
+    post:
+      tags:
+        - 📝 Register
+      summary: Register Teacher
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"email\": \"teacher.new@school.com\",\n  \"password\":
+                \"Password@123\",\n  \"employee_id\": \"EMP010\",\n 
+                \"first_name\": \"Anita\",\n  \"last_name\": \"Menon\",\n 
+                \"gender\": \"FEMALE\",\n  \"dob\": \"1985-03-20T00:00:00Z\",\n 
+                \"phone\": \"9876500001\",\n  \"qualification\": \"M.Sc
+                Physics\",\n  \"specialization\": \"Physics\",\n 
+                \"joining_date\": \"2024-06-01T00:00:00Z\"\n}"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /users/register/parent:
+    post:
+      tags:
+        - 📝 Register
+      summary: Register Parent
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"email\": \"parent.new@school.com\",\n  \"password\":
+                \"Password@123\",\n  \"first_name\": \"Vikram\",\n 
+                \"last_name\": \"Verma\",\n  \"relationship\": \"Father\",\n 
+                \"phone\": \"9000000020\",\n  \"occupation\": \"Doctor\",\n 
+                \"student_ids\": []\n}"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /users/register/staff:
+    post:
+      tags:
+        - 📝 Register
+      summary: Register Staff
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"email\": \"staff.new@school.com\",\n  \"password\":
+                \"Password@123\",\n  \"employee_id\": \"STF010\",\n 
+                \"first_name\": \"Ravi\",\n  \"last_name\": \"Nair\",\n 
+                \"gender\": \"MALE\",\n  \"designation\": \"Librarian\",\n 
+                \"phone\": \"9000000030\",\n  \"joining_date\":
+                \"2024-06-01T00:00:00Z\"\n}"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /users/register/admin:
+    post:
+      tags:
+        - 📝 Register
+      summary: Register Admin
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"email\": \"admin.new@school.com\",\n  \"password\":
+                \"Password@123\",\n  \"role\": \"ADMIN\"\n}"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /users/:
+    get:
+      tags:
+        - 👥 Users
+      summary: List Users
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+          example: '1'
+        - name: limit
+          in: query
+          schema:
+            type: integer
+          example: '10'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /users/{id}:
+    get:
+      tags:
+        - 👥 Users
+      summary: Get User By ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    put:
+      tags:
+        - 👥 Users
+      summary: Update User
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: '"{\n  \"is_active\": true,\n  \"role\": \"TEACHER\"\n}"'
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    delete:
+      tags:
+        - 👥 Users
+      summary: Delete User
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /student/:
+    get:
+      tags:
+        - 👨‍🎓 Students
+      summary: List Students
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+          example: '1'
+        - name: limit
+          in: query
+          schema:
+            type: integer
+          example: '10'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /student/{id}:
+    get:
+      tags:
+        - 👨‍🎓 Students
+      summary: Get Student By ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    put:
+      tags:
+        - 👨‍🎓 Students
+      summary: Update Student
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"first_name\": \"Arjun\",\n  \"last_name\":
+                \"Sharma\",\n  \"phone\": \"9123456789\",\n  \"address\": \"123
+                Main Street, Chennai\",\n  \"blood_group\": \"O+\"\n}"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    delete:
+      tags:
+        - 👨‍🎓 Students
+      summary: Delete Student
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /teacher/:
+    get:
+      tags:
+        - 👩‍🏫 Teachers
+      summary: List Teachers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+          example: '1'
+        - name: limit
+          in: query
+          schema:
+            type: integer
+          example: '10'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /teacher/{id}:
+    get:
+      tags:
+        - 👩‍🏫 Teachers
+      summary: Get Teacher By ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    put:
+      tags:
+        - 👩‍🏫 Teachers
+      summary: Update Teacher
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"first_name\": \"Rajesh\",\n  \"last_name\":
+                \"Kumar\",\n  \"phone\": \"9876543210\",\n  \"qualification\":
+                \"M.Sc Mathematics\",\n  \"specialization\": \"Applied
+                Mathematics\"\n}"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    delete:
+      tags:
+        - 👩‍🏫 Teachers
+      summary: Delete Teacher
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /teacher/employee/{employee_id}:
+    get:
+      tags:
+        - 👩‍🏫 Teachers
+      summary: Get Teacher By Employee ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: employee_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /teacher/{id}/active:
+    patch:
+      tags:
+        - 👩‍🏫 Teachers
+      summary: Set Teacher Active Status
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: '"{\n  \"is_active\": false\n}"'
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /enrollment/:
+    post:
+      tags:
+        - 📑 Enrollment
+      summary: Enroll Student
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"student_id\": \"STUDENT_ID_HERE\",\n 
+                \"class_section_id\": \"CLASS_SECTION_ID_HERE\",\n 
+                \"roll_number\": 1,\n  \"enrollment_date\":
+                \"2024-06-01T00:00:00Z\"\n}"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /enrollment/{id}:
+    get:
+      tags:
+        - 📑 Enrollment
+      summary: Get Enrollment By ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    delete:
+      tags:
+        - 📑 Enrollment
+      summary: Delete Enrollment
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /enrollment/student/{student_id}:
+    get:
+      tags:
+        - 📑 Enrollment
+      summary: Get Enrollments By Student
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+          example: '1'
+        - name: limit
+          in: query
+          schema:
+            type: integer
+          example: '10'
+        - name: student_id
+          in: path
+          schema:
+            type: string
+          required: true
+          example: STUDENT_ID_HERE
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /enrollment/class/{class_section_id}/roster:
+    get:
+      tags:
+        - 📑 Enrollment
+      summary: Get Class Roster
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: class_section_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /enrollment/{id}/status:
+    patch:
+      tags:
+        - 📑 Enrollment
+      summary: Withdraw Student
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"status\": \"WITHDRAWN\",\n  \"left_date\":
+                \"2024-11-01T00:00:00Z\"\n}"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /health:
+    get:
+      tags:
+        - 🏥 Health
+      summary: Health Check
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /department/:
+    post:
+      tags:
+        - 🏢 Department
+      summary: Create Department
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"name\": \"Primary School\",\n  \"code\": \"PRI\",\n 
+                \"description\": \"Grades 1 to 5\",\n  \"head_teacher_id\":
+                null\n}"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    get:
+      tags:
+        - 🏢 Department
+      summary: List Departments
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /department/{id}:
+    get:
+      tags:
+        - 🏢 Department
+      summary: Get Department By ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    put:
+      tags:
+        - 🏢 Department
+      summary: Update Department
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"name\": \"Primary School\",\n  \"code\": \"PRI\",\n 
+                \"description\": \"Grades 1 to 5\",\n  \"is_active\": true\n}"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    delete:
+      tags:
+        - 🏢 Department
+      summary: Delete Department
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /department/{id}/head:
+    patch:
+      tags:
+        - 🏢 Department
+      summary: Remove Head Teacher
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: '"{\n  \"head_teacher_id\": null\n}"'
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /standard/:
+    post:
+      tags:
+        - 📏 Standard
+      summary: Create Standard
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"name\": \"Grade 1\",\n  \"department_id\":
+                \"DEPARTMENT_ID_HERE\",\n  \"order_index\": 1,\n 
+                \"description\": \"First grade\"\n}"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    get:
+      tags:
+        - 📏 Standard
+      summary: List All Standards
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /standard/{id}:
+    get:
+      tags:
+        - 📏 Standard
+      summary: Get Standard By ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    put:
+      tags:
+        - 📏 Standard
+      summary: Update Standard
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"name\": \"Grade 1\",\n  \"order_index\": 1,\n 
+                \"description\": \"First standard\"\n}"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    delete:
+      tags:
+        - 📏 Standard
+      summary: Delete Standard
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /standard/department/{department_id}:
+    get:
+      tags:
+        - 📏 Standard
+      summary: List Standards By Department
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: department_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /standard/{id}/subjects:
+    get:
+      tags:
+        - 📏 Standard
+      summary: Get Subjects For Standard
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    post:
+      tags:
+        - 📏 Standard
+      summary: Assign Subject To Standard
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"subject_id\": \"SUBJECT_ID_HERE\",\n  \"is_core\":
+                true\n}"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /standard/{id}/subjects/{subject_id}:
+    delete:
+      tags:
+        - 📏 Standard
+      summary: Remove Subject From Standard
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+        - name: subject_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /class-section/:
+    post:
+      tags:
+        - 🏫 Class Section
+      summary: Create Class Section
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"academic_year_id\": \"ACADEMIC_YEAR_ID_HERE\",\n 
+                \"standard_id\": \"STANDARD_ID_HERE\",\n  \"section_name\":
+                \"A\",\n  \"class_teacher_id\": null,\n  \"room_number\":
+                \"101\",\n  \"max_strength\": 40\n}"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: X-Academic-Year-ID
+          in: header
+          schema:
+            type: string
+          example: '{{academic_year_id}}'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    get:
+      tags:
+        - 🏫 Class Section
+      summary: List Class Sections By Academic Year
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: X-Academic-Year-ID
+          in: header
+          schema:
+            type: string
+          example: '{{academic_year_id}}'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /class-section/{id}:
+    get:
+      tags:
+        - 🏫 Class Section
+      summary: Get Class Section By ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    put:
+      tags:
+        - 🏫 Class Section
+      summary: Update Class Section
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"section_name\": \"B\",\n  \"room_number\": \"102\",\n 
+                \"max_strength\": 45\n}"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    delete:
+      tags:
+        - 🏫 Class Section
+      summary: Delete Class Section
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /class-section/standard/{standard_id}:
+    get:
+      tags:
+        - 🏫 Class Section
+      summary: List Class Sections By Standard
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: X-Academic-Year-ID
+          in: header
+          schema:
+            type: string
+          example: '{{academic_year_id}}'
+        - name: standard_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /class-section/teacher/{teacher_id}:
+    get:
+      tags:
+        - 🏫 Class Section
+      summary: List Class Sections By Teacher
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: X-Academic-Year-ID
+          in: header
+          schema:
+            type: string
+          example: '{{academic_year_id}}'
+        - name: teacher_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /class-section/{id}/teacher:
+    patch:
+      tags:
+        - 🏫 Class Section
+      summary: Remove Class Teacher
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: '"{\n  \"class_teacher_id\": null\n}"'
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /academic-year/:
+    get:
+      tags:
+        - 📅 Academic Year
+      summary: List Academic Years
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    post:
+      tags:
+        - 📅 Academic Year
+      summary: Create Academic Year
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"name\": \"2024-25\",\n  \"start_date\":
+                \"2024-06-01T00:00:00Z\",\n  \"end_date\":
+                \"2025-03-31T00:00:00Z\"\n}"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /academic-year/active:
+    get:
+      tags:
+        - 📅 Academic Year
+      summary: Get Active Academic Year
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /academic-year/{id}:
+    get:
+      tags:
+        - 📅 Academic Year
+      summary: Get Academic Year By ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    put:
+      tags:
+        - 📅 Academic Year
+      summary: Update Academic Year
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"name\": \"2024-25\",\n  \"start_date\":
+                \"2024-06-01T00:00:00Z\",\n  \"end_date\":
+                \"2025-04-30T00:00:00Z\"\n}"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    delete:
+      tags:
+        - 📅 Academic Year
+      summary: Delete Academic Year
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /academic-year/{id}/activate:
+    patch:
+      tags:
+        - 📅 Academic Year
+      summary: Set Academic Year Active
+      requestBody:
+        content: {}
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /subject/:
+    post:
+      tags:
+        - 📚 Subject
+      summary: Create Subject
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"code\": \"MATH101\",\n  \"name\": \"Mathematics\",\n 
+                \"description\": \"Core mathematics\",\n  \"is_elective\":
+                false\n}"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    get:
+      tags:
+        - 📚 Subject
+      summary: List Subjects — Search
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+          example: math
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /subject/{id}:
+    get:
+      tags:
+        - 📚 Subject
+      summary: Get Subject By ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    put:
+      tags:
+        - 📚 Subject
+      summary: Update Subject
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"name\": \"Advanced Mathematics\",\n  \"description\":
+                \"Advanced core mathematics\",\n  \"is_elective\": false\n}"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    delete:
+      tags:
+        - 📚 Subject
+      summary: Delete Subject
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /timetable/:
+    post:
+      tags:
+        - ⏳ Timetable
+      summary: Create Timetable Entry
+      description: 'day_of_week: 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat'
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"class_section_id\": \"CLASS_SECTION_ID_HERE\",\n 
+                \"subject_id\": \"SUBJECT_ID_HERE\",\n  \"teacher_id\":
+                \"TEACHER_ID_HERE\",\n  \"day_of_week\": 1,\n  \"start_time\":
+                \"2024-01-01T08:00:00Z\",\n  \"end_time\":
+                \"2024-01-01T09:00:00Z\",\n  \"room_number\": \"101\"\n}"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    get:
+      tags:
+        - ⏳ Timetable
+      summary: List Timetable — By Day
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: day_of_week
+          in: query
+          schema:
+            type: integer
+          description: 1 = Monday
+          example: '1'
+        - name: sort_by
+          in: query
+          schema:
+            type: string
+          example: start_time
+        - name: sort_dir
+          in: query
+          schema:
+            type: string
+          example: asc
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /timetable/{id}:
+    get:
+      tags:
+        - ⏳ Timetable
+      summary: Get Timetable Entry By ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    put:
+      tags:
+        - ⏳ Timetable
+      summary: Update Timetable Entry
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"teacher_id\": \"TEACHER_ID_HERE\",\n  \"day_of_week\":
+                2,\n  \"start_time\": \"2024-01-01T09:00:00Z\",\n  \"end_time\":
+                \"2024-01-01T10:00:00Z\",\n  \"room_number\": \"102\"\n}"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    delete:
+      tags:
+        - ⏳ Timetable
+      summary: Delete Timetable Entry
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /timetable/class/{class_section_id}/schedule:
+    get:
+      tags:
+        - ⏳ Timetable
+      summary: Get Class Weekly Schedule
+      description: >-
+        Returns periods grouped by day (Mon–Sat). Primary view for students and
+        class teachers.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: class_section_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /timetable/teacher/{teacher_id}/schedule:
+    get:
+      tags:
+        - ⏳ Timetable
+      summary: Get Teacher Weekly Schedule
+      description: >-
+        Returns all periods for the teacher across all class sections, grouped
+        by day.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: teacher_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /exam/:
+    post:
+      tags:
+        - 🎓 Exam
+      summary: Create Exam
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"academic_year_id\": \"{{academic_year_id}}\",\n 
+                \"name\": \"Midterm Examination 2025\",\n  \"description\":
+                \"First semester midterm exams\",\n  \"exam_type\":
+                \"MIDTERM\",\n  \"start_date\": \"2025-09-15T00:00:00Z\",\n 
+                \"end_date\": \"2025-09-25T00:00:00Z\"\n}"
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    get:
+      tags:
+        - 🎓 Exam
+      summary: List Exams
+      parameters:
+        - name: academic_year_id
+          in: query
+          schema:
+            type: string
+          example: '{{academic_year_id}}'
+        - name: page
+          in: query
+          schema:
+            type: integer
+          example: '1'
+        - name: page_size
+          in: query
+          schema:
+            type: integer
+          example: '10'
+        - name: sort_by
+          in: query
+          schema:
+            type: string
+          example: start_date
+        - name: sort_dir
+          in: query
+          schema:
+            type: string
+          example: asc
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /exam/{exam_id}:
+    get:
+      tags:
+        - 🎓 Exam
+      summary: Get Exam by ID
+      parameters:
+        - name: exam_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    put:
+      tags:
+        - 🎓 Exam
+      summary: Update Exam
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"name\": \"Midterm Examination 2025 (Updated)\",\n 
+                \"end_date\": \"2025-09-27T00:00:00Z\"\n}"
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: exam_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    delete:
+      tags:
+        - 🎓 Exam
+      summary: Delete Exam
+      parameters:
+        - name: exam_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /exam/{exam_id}/publish:
+    patch:
+      tags:
+        - 🎓 Exam
+      summary: Unpublish Exam
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: '"{\n  \"is_published\": false\n}"'
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: exam_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /exam/{exam_id}/schedule:
+    post:
+      tags:
+        - 📅 Exam Schedule
+      summary: Create Schedule
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"class_section_id\": \"{{class_section_id}}\",\n 
+                \"subject_id\": \"{{subject_id}}\",\n  \"exam_date\":
+                \"2025-09-17T00:00:00Z\",\n  \"start_time\":
+                \"2025-09-17T09:00:00Z\",\n  \"end_time\":
+                \"2025-09-17T11:00:00Z\",\n  \"max_marks\": \"100.00\",\n 
+                \"passing_marks\": \"35.00\",\n  \"room_number\": \"Room
+                101\"\n}"
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: exam_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    get:
+      tags:
+        - 📅 Exam Schedule
+      summary: List Schedules by Exam
+      parameters:
+        - name: exam_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /exam-schedule/{schedule_id}:
+    get:
+      tags:
+        - 📅 Exam Schedule
+      summary: Get Schedule by ID
+      parameters:
+        - name: schedule_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    put:
+      tags:
+        - 📅 Exam Schedule
+      summary: Update Schedule
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"room_number\": \"Room 205\",\n  \"start_time\":
+                \"2025-09-17T10:00:00Z\",\n  \"end_time\":
+                \"2025-09-17T12:00:00Z\"\n}"
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: schedule_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    delete:
+      tags:
+        - 📅 Exam Schedule
+      summary: Delete Schedule
+      parameters:
+        - name: schedule_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /exam-schedule/class-section/{class_section_id}:
+    get:
+      tags:
+        - 📅 Exam Schedule
+      summary: List Schedules by Class Section
+      parameters:
+        - name: class_section_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /exam-schedule/{schedule_id}/result:
+    post:
+      tags:
+        - 📊 Exam Result
+      summary: Create Single Result
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"student_enrollment_id\": \"{{enrollment_id}}\",\n 
+                \"marks_obtained\": \"78.50\",\n  \"grade\": \"B+\",\n 
+                \"remarks\": \"Good performance\"\n}"
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: schedule_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    get:
+      tags:
+        - 📊 Exam Result
+      summary: List Results by Schedule
+      parameters:
+        - name: schedule_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /exam-schedule/{schedule_id}/result/bulk:
+    post:
+      tags:
+        - 📊 Exam Result
+      summary: Bulk Create Results
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"results\": [\n    {\n      \"student_enrollment_id\":
+                \"<enrollment_uuid_1>\",\n      \"marks_obtained\":
+                \"88.00\",\n      \"grade\": \"A\",\n      \"remarks\":
+                null\n    },\n    {\n      \"student_enrollment_id\":
+                \"<enrollment_uuid_2>\",\n      \"marks_obtained\":
+                \"30.00\",\n      \"grade\": \"F\",\n      \"remarks\": \"Needs
+                improvement\"\n    }\n  ]\n}"
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: schedule_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /exam-result/{result_id}:
+    get:
+      tags:
+        - 📊 Exam Result
+      summary: Get Result by ID
+      parameters:
+        - name: result_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    put:
+      tags:
+        - 📊 Exam Result
+      summary: Update Result
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"marks_obtained\": \"82.00\",\n  \"grade\": \"A\",\n 
+                \"remarks\": \"Re-evaluated\"\n}"
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: result_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    delete:
+      tags:
+        - 📊 Exam Result
+      summary: Delete Result
+      parameters:
+        - name: result_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /exam-result/student/{enrollment_id}:
+    get:
+      tags:
+        - 📊 Exam Result
+      summary: List Results by Student Enrollment
+      parameters:
+        - name: enrollment_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /attendance/:
+    post:
+      tags:
+        - 🗓️ Student Attendance
+      summary: Mark Single Attendance
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"student_enrollment_id\": \"{{enrollment_id}}\",\n 
+                \"date\": \"2025-09-01T00:00:00Z\",\n  \"status\":
+                \"PRESENT\",\n  \"remark\": null,\n  \"recorded_by_teacher_id\":
+                \"{{teacher_id}}\"\n}"
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    get:
+      tags:
+        - 🗓️ Student Attendance
+      summary: List Student Attendance
+      parameters:
+        - name: class_section_id
+          in: query
+          schema:
+            type: string
+          example: '{{class_section_id}}'
+        - name: date_from
+          in: query
+          schema:
+            type: string
+          example: '2025-09-01'
+        - name: date_to
+          in: query
+          schema:
+            type: string
+          example: '2025-09-30'
+        - name: page
+          in: query
+          schema:
+            type: integer
+          example: '1'
+        - name: page_size
+          in: query
+          schema:
+            type: integer
+          example: '20'
+        - name: sort_by
+          in: query
+          schema:
+            type: string
+          example: date
+        - name: sort_dir
+          in: query
+          schema:
+            type: string
+          example: desc
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /attendance/bulk:
+    post:
+      tags:
+        - 🗓️ Student Attendance
+      summary: Bulk Mark Attendance (Class)
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"class_section_id\": \"{{class_section_id}}\",\n 
+                \"date\": \"2025-09-02T00:00:00Z\",\n 
+                \"recorded_by_teacher_id\": \"{{teacher_id}}\",\n  \"records\":
+                [\n    {\n      \"student_enrollment_id\":
+                \"<enrollment_uuid_1>\",\n      \"status\": \"PRESENT\",\n     
+                \"remark\": null\n    },\n    {\n     
+                \"student_enrollment_id\": \"<enrollment_uuid_2>\",\n     
+                \"status\": \"ABSENT\",\n      \"remark\": \"Sick leave\"\n   
+                },\n    {\n      \"student_enrollment_id\":
+                \"<enrollment_uuid_3>\",\n      \"status\": \"LATE\",\n     
+                \"remark\": \"Arrived 20 mins late\"\n    }\n  ]\n}"
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /attendance/{attendance_id}:
+    get:
+      tags:
+        - 🗓️ Student Attendance
+      summary: Get Attendance by ID
+      parameters:
+        - name: attendance_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    put:
+      tags:
+        - 🗓️ Student Attendance
+      summary: Update Attendance
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"status\": \"HALF_DAY\",\n  \"remark\": \"Left early due
+                to medical appointment\"\n}"
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: attendance_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    delete:
+      tags:
+        - 🗓️ Student Attendance
+      summary: Delete Attendance
+      parameters:
+        - name: attendance_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /attendance/class/{class_section_id}/summary:
+    get:
+      tags:
+        - 🗓️ Student Attendance
+      summary: Get Class Attendance Summary
+      parameters:
+        - name: date
+          in: query
+          schema:
+            type: string
+          example: '2025-09-01'
+        - name: class_section_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /teacher-attendance/:
+    post:
+      tags:
+        - 👩‍🏫 Teacher Attendance
+      summary: Mark Teacher Attendance
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"teacher_id\": \"{{teacher_id}}\",\n  \"date\":
+                \"2025-09-01T00:00:00Z\",\n  \"status\": \"PRESENT\",\n 
+                \"remark\": null\n}"
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    get:
+      tags:
+        - 👩‍🏫 Teacher Attendance
+      summary: List Teacher Attendance
+      parameters:
+        - name: teacher_id
+          in: query
+          schema:
+            type: string
+          example: '{{teacher_id}}'
+        - name: date_from
+          in: query
+          schema:
+            type: string
+          example: '2025-09-01'
+        - name: date_to
+          in: query
+          schema:
+            type: string
+          example: '2025-09-30'
+        - name: page
+          in: query
+          schema:
+            type: integer
+          example: '1'
+        - name: page_size
+          in: query
+          schema:
+            type: integer
+          example: '20'
+        - name: sort_by
+          in: query
+          schema:
+            type: string
+          example: date
+        - name: sort_dir
+          in: query
+          schema:
+            type: string
+          example: desc
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /teacher-attendance/bulk:
+    post:
+      tags:
+        - 👩‍🏫 Teacher Attendance
+      summary: Bulk Mark Teacher Attendance
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"date\": \"2025-09-02T00:00:00Z\",\n  \"records\": [\n   
+                {\n      \"teacher_id\": \"<teacher_uuid_1>\",\n     
+                \"status\": \"PRESENT\",\n      \"remark\": null\n    },\n   
+                {\n      \"teacher_id\": \"<teacher_uuid_2>\",\n     
+                \"status\": \"ABSENT\",\n      \"remark\": \"On approved
+                leave\"\n    }\n  ]\n}"
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /teacher-attendance/{teacher_att_id}:
+    get:
+      tags:
+        - 👩‍🏫 Teacher Attendance
+      summary: Get Teacher Attendance by ID
+      parameters:
+        - name: teacher_att_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    put:
+      tags:
+        - 👩‍🏫 Teacher Attendance
+      summary: Update Teacher Attendance
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"status\": \"HALF_DAY\",\n  \"remark\": \"Left for
+                training in the afternoon\"\n}"
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: teacher_att_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    delete:
+      tags:
+        - 👩‍🏫 Teacher Attendance
+      summary: Delete Teacher Attendance
+      parameters:
+        - name: teacher_att_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /fee/structure/:
+    post:
+      tags:
+        - 💰 Fee > Structure
+      summary: Create Fee Structure
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"academic_year_id\": \"{{academic_year_id}}\",\n 
+                \"standard_id\": \"STANDARD_ID_HERE\",\n  \"fee_component\":
+                \"Tuition\",\n  \"amount\": \"5000.00\",\n  \"due_date\":
+                \"2024-07-15T00:00:00Z\"\n}"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    get:
+      tags:
+        - 💰 Fee > Structure
+      summary: List Fee Structures
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+          example: '1'
+        - name: limit
+          in: query
+          schema:
+            type: integer
+          example: '20'
+        - name: sort_by
+          in: query
+          schema:
+            type: string
+          description: fee_component | amount | due_date | created_at
+          example: fee_component
+        - name: sort_dir
+          in: query
+          schema:
+            type: string
+          example: asc
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /fee/structure/bulk:
+    post:
+      tags:
+        - 💰 Fee > Structure
+      summary: Bulk Create Fee Structures
+      description: >-
+        Creates all fee components for a standard in one call. All or nothing —
+        no partial inserts.
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"academic_year_id\": \"{{academic_year_id}}\",\n 
+                \"standard_id\": \"STANDARD_ID_HERE\",\n  \"components\": [\n   
+                {\n      \"fee_component\": \"Tuition\",\n      \"amount\":
+                \"5000.00\",\n      \"due_date\": \"2024-07-15T00:00:00Z\"\n   
+                },\n    {\n      \"fee_component\": \"Transport\",\n     
+                \"amount\": \"1500.00\",\n      \"due_date\":
+                \"2024-07-15T00:00:00Z\"\n    },\n    {\n     
+                \"fee_component\": \"Library\",\n      \"amount\":
+                \"500.00\"\n    }\n  ]\n}"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /fee/structure/standard/{standard_id}:
+    get:
+      tags:
+        - 💰 Fee > Structure
+      summary: Get Fee Structures By Standard
+      description: Returns all fee components for a standard in the current academic year.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: X-Academic-Year-ID
+          in: header
+          schema:
+            type: string
+          example: '{{academic_year_id}}'
+        - name: standard_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /fee/structure/{id}:
+    get:
+      tags:
+        - 💰 Fee > Structure
+      summary: Get Fee Structure By ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    put:
+      tags:
+        - 💰 Fee > Structure
+      summary: Update Fee Structure
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"amount\": \"5500.00\",\n  \"due_date\":
+                \"2024-07-31T00:00:00Z\"\n}"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    delete:
+      tags:
+        - 💰 Fee > Structure
+      summary: Delete Fee Structure
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /fee/record/:
+    post:
+      tags:
+        - 💰 Fee > Records
+      summary: Create Fee Record
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"student_enrollment_id\": \"ENROLLMENT_ID_HERE\",\n 
+                \"fee_component\": \"Tuition\",\n  \"amount_due\":
+                \"5000.00\",\n  \"due_date\": \"2024-07-15T00:00:00Z\",\n 
+                \"remarks\": \"Term 1 fee\"\n}"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    get:
+      tags:
+        - 💰 Fee > Records
+      summary: List Overdue Fee Records
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+          example: OVERDUE
+        - name: sort_by
+          in: query
+          schema:
+            type: string
+          example: due_date
+        - name: sort_dir
+          in: query
+          schema:
+            type: string
+          example: asc
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /fee/record/bulk-generate:
+    post:
+      tags:
+        - 💰 Fee > Records
+      summary: Bulk Generate Fee Records
+      description: >-
+        Generates fee records for ALL enrolled students in the class section
+        based on the fee structure. Run once per term.
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: '"{\n  \"class_section_id\": \"CLASS_SECTION_ID_HERE\"\n}"'
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /fee/record/{id}:
+    get:
+      tags:
+        - 💰 Fee > Records
+      summary: Get Fee Record By ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    delete:
+      tags:
+        - 💰 Fee > Records
+      summary: Delete Fee Record
+      description: Blocked if the record is already paid.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /fee/record/student/{enrollment_id}/summary:
+    get:
+      tags:
+        - 💰 Fee > Records
+      summary: Get Student Fee Summary
+      description: >-
+        Returns total_due, total_paid, balance, and all fee records for a
+        student. Primary view for the student fee dashboard.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: enrollment_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /fee/record/{id}/pay:
+    patch:
+      tags:
+        - 💰 Fee > Records
+      summary: Record Payment
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"amount_paid\": \"5000.00\",\n  \"paid_date\":
+                \"2024-07-10T00:00:00Z\",\n  \"transaction_ref\":
+                \"TXN123456\",\n  \"remarks\": \"Paid via bank transfer\"\n}"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /fee/record/{id}/waive:
+    patch:
+      tags:
+        - 💰 Fee > Records
+      summary: Waive Fee
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: '"{\n  \"remarks\": \"Waived due to financial hardship\"\n}"'
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /leave/:
+    post:
+      tags:
+        - '🌴 Leave '
+      summary: ⚠️ Error — Overlapping leave
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"teacher_id\": \"{{teacher_id}}\",\n  \"from_date\":
+                \"2025-10-11T00:00:00Z\",\n  \"to_date\":
+                \"2025-10-14T00:00:00Z\",\n  \"reason\": \"This overlaps with an
+                existing request and should fail\"\n}"
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '400':
+          description: Successful response
+          content:
+            application/json: {}
+    get:
+      tags:
+        - '🌴 Leave '
+      summary: 📋 List — Filter by Date Range
+      parameters:
+        - name: date_from
+          in: query
+          schema:
+            type: string
+          example: '2025-10-01'
+        - name: date_to
+          in: query
+          schema:
+            type: string
+          example: '2025-10-31'
+        - name: page
+          in: query
+          schema:
+            type: integer
+          example: '1'
+        - name: page_size
+          in: query
+          schema:
+            type: integer
+          example: '20'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /leave/{leave_id}:
+    get:
+      tags:
+        - '🌴 Leave '
+      summary: 🔍 Get Leave by ID
+      parameters:
+        - name: leave_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    put:
+      tags:
+        - '🌴 Leave '
+      summary: ⚠️ Error — Update non-PENDING leave
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"reason\": \"Trying to edit after approval — should
+                fail\"\n}"
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: leave_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '400':
+          description: Successful response
+          content:
+            application/json: {}
+    delete:
+      tags:
+        - '🌴 Leave '
+      summary: 🗑️ Delete Leave Request
+      parameters:
+        - name: leave_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /leave/{leave_id}/review:
+    patch:
+      tags:
+        - '🌴 Leave '
+      summary: ⚠️ Error — Review with PENDING status
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"status\": \"PENDING\",\n  \"review_note\": \"This should
+                fail validation\"\n}"
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: leave_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '400':
+          description: Successful response
+          content:
+            application/json: {}
+  /leave/{leave_id}/cancel:
+    patch:
+      tags:
+        - '🌴 Leave '
+      summary: 🚫 Cancel Own Leave (PENDING → Rejected)
+      requestBody:
+        content: {}
+      parameters:
+        - name: leave_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /report/report-card:
+    get:
+      tags:
+        - 📈 Reports
+      summary: Report Card — All Exams in Academic Year
+      description: Omit exam_id to get results across all exams in the academic year.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: student_enrollment_id
+          in: query
+          schema:
+            type: string
+          example: ENROLLMENT_ID_HERE
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /report/attendance/student:
+    get:
+      tags:
+        - 📈 Reports
+      summary: Student Attendance — Date Range
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: student_enrollment_id
+          in: query
+          schema:
+            type: string
+          example: ENROLLMENT_ID_HERE
+        - name: from_date
+          in: query
+          schema:
+            type: string
+          example: '2024-06-01'
+        - name: to_date
+          in: query
+          schema:
+            type: string
+          example: '2024-09-30'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /report/attendance/class:
+    get:
+      tags:
+        - 📈 Reports
+      summary: Class Attendance Summary — Single Day
+      description: Returns attendance for a single day.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: class_section_id
+          in: query
+          schema:
+            type: string
+          example: CLASS_SECTION_ID_HERE
+        - name: date
+          in: query
+          schema:
+            type: string
+          example: '2024-07-15'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /report/performance/class:
+    get:
+      tags:
+        - 📈 Reports
+      summary: Class Performance Report
+      description: >-
+        Returns per-subject averages, highest/lowest marks, pass %, and top 5
+        student rankings.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: class_section_id
+          in: query
+          schema:
+            type: string
+          example: CLASS_SECTION_ID_HERE
+        - name: exam_id
+          in: query
+          schema:
+            type: string
+          example: EXAM_ID_HERE
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /report/fee-collection:
+    get:
+      tags:
+        - 📈 Reports
+      summary: Fee Collection Report — By Class Section
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: academic_year_id
+          in: query
+          schema:
+            type: string
+          example: '{{academic_year_id}}'
+        - name: class_section_id
+          in: query
+          schema:
+            type: string
+          example: CLASS_SECTION_ID_HERE
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /report/attendance/teacher:
+    get:
+      tags:
+        - 📈 Reports
+      summary: Teacher Attendance — Date Range
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: from_date
+          in: query
+          schema:
+            type: string
+          example: '2024-06-01'
+        - name: to_date
+          in: query
+          schema:
+            type: string
+          example: '2024-11-30'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /notice/:
+    post:
+      tags:
+        - 📢 Notice
+      summary: ⚠️ Error — expires_at in the past
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"title\": \"Expired Notice Test\",\n  \"content\": \"This
+                should be rejected.\",\n  \"audience\": \"ALL\",\n 
+                \"expires_at\": \"2020-01-01T00:00:00Z\"\n}"
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '400':
+          description: Successful response
+          content:
+            application/json: {}
+    get:
+      tags:
+        - 📢 Notice
+      summary: 📋 List — Search by Title
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+          example: Sports
+        - name: page
+          in: query
+          schema:
+            type: integer
+          example: '1'
+        - name: page_size
+          in: query
+          schema:
+            type: integer
+          example: '10'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /notice/{notice_id}:
+    get:
+      tags:
+        - 📢 Notice
+      summary: 🔍 Get Notice by ID
+      parameters:
+        - name: notice_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    put:
+      tags:
+        - 📢 Notice
+      summary: ⚠️ Error — Edit a published notice
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"title\": \"Trying to edit a published notice — should
+                fail\"\n}"
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: notice_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '400':
+          description: Successful response
+          content:
+            application/json: {}
+    delete:
+      tags:
+        - 📢 Notice
+      summary: ⚠️ Error — Delete a published notice
+      parameters:
+        - name: notice_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '400':
+          description: Successful response
+          content:
+            application/json: {}
+  /notice/{notice_id}/publish:
+    patch:
+      tags:
+        - 📢 Notice
+      summary: ⚠️ Error — Publish an expired notice
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: '"{\n  \"is_published\": true\n}"'
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: notice_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '400':
+          description: Successful response
+          content:
+            application/json: {}

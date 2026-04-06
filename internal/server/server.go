@@ -27,11 +27,20 @@ func StartServer(appInstance *app.App) *gin.Engine {
 
 	ginRouter.Use(gin.Logger())
 	ginRouter.Use(middleware.RecoveryWithResponse())
-	ginRouter.Use(middleware.ZapLogger(appInstance.Logger))
-	ginRouter.Use(middleware.AcademicYearMiddleware())
 
 	// CORS middleware - allow all origins for simplicity (TODO: update in production)
-	ginRouter.Use(cors.Default())
+	ginRouter.Use(cors.New(cors.Config{
+		AllowOrigins:     appInstance.Config.Cors.AllowOrigins,
+		AllowMethods:     appInstance.Config.Cors.AllowMethods,
+		AllowHeaders:     appInstance.Config.Cors.AllowHeaders,
+		ExposeHeaders:    appInstance.Config.Cors.ExposeHeaders,
+		AllowCredentials: appInstance.Config.Cors.AllowCredentials,
+		MaxAge:           appInstance.Config.Cors.MaxAge,
+	}))
+
+	ginRouter.Use(middleware.ZapLogger(appInstance.Logger))
+
+	ginRouter.Use(middleware.AcademicYearMiddleware())
 
 	// API versioning
 	api := ginRouter.Group(constants.ApiVersion)

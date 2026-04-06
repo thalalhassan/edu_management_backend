@@ -51,7 +51,7 @@ func (s *service) Login(ctx context.Context, req LoginRequest) (*LoginResponse, 
 	if err != nil {
 		return nil, fmt.Errorf("user.Service.Login.GenerateAccessToken: %w", err)
 	}
-	rawRefresh, expiresAt, err := jwt.GenerateRefreshToken()
+	rawRefresh, expiresAt, err := jwt.GenerateRefreshToken(s.jwtConfig.RefreshExpiration)
 	if err != nil {
 		return nil, fmt.Errorf("user.Service.Login.GenerateRefreshToken: %w", err)
 	}
@@ -100,7 +100,7 @@ func (s *service) RefreshToken(ctx context.Context, req RefreshRequest) (*Refres
 	if err != nil {
 		return nil, fmt.Errorf("user.Service.RefreshToken.GenerateAccessToken: %w", err)
 	}
-	newRaw, expiresAt, err := jwt.GenerateRefreshToken()
+	newRaw, expiresAt, err := jwt.GenerateRefreshToken(s.jwtConfig.RefreshExpiration)
 	if err != nil {
 		return nil, fmt.Errorf("user.Service.RefreshToken.GenerateRefreshToken: %w", err)
 	}

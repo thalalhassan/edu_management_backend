@@ -12,8 +12,6 @@ import (
 
 const (
 	refreshTokenBytes = 32 // 256-bit random token
-	RefreshTokenTTL   = 7 * 24 * time.Hour
-	DefaultAccessTTL  = 15 * time.Minute
 )
 
 // Claims is the JWT payload embedded in every access token.
@@ -25,7 +23,7 @@ type Claims struct {
 }
 
 // GenerateAccessToken signs a new JWT access token.
-// ttl controls expiry — pass crypto.DefaultAccessTTL for the default.
+// ttl controls expiry — pass jwt.DefaultAccessTTL for the default.
 func GenerateAccessToken(userID, role, email, secret string, ttl time.Duration) (string, error) {
 	now := time.Now()
 	claims := Claims{
@@ -70,10 +68,10 @@ func ParseAccessToken(tokenStr, secret string) (*Claims, error) {
 // GenerateRefreshToken produces a cryptographically random opaque token
 // and its expiry time. The raw string is what gets stored in the DB and
 // sent to the client — it is NOT a JWT.
-func GenerateRefreshToken() (raw string, expiresAt time.Time, err error) {
+func GenerateRefreshToken(ttl time.Duration) (raw string, expiresAt time.Time, err error) {
 	b := make([]byte, refreshTokenBytes)
 	if _, err = rand.Read(b); err != nil {
 		return "", time.Time{}, fmt.Errorf("crypto.GenerateRefreshToken: %w", err)
 	}
-	return hex.EncodeToString(b), time.Now().Add(RefreshTokenTTL), nil
+	return hex.EncodeToString(b), time.Now().Add(ttl), nil
 }

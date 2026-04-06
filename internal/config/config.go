@@ -12,6 +12,16 @@ type Config struct {
 	Server   ServerConfig   `envPrefix:"EDU_SERVER_"`
 	Database DatabaseConfig `envPrefix:"EDU_DATABASE_"`
 	JWT      JWTConfig      `envPrefix:"EDU_JWT_"`
+	Cors     CorsConfig     `envPrefix:"EDU_CORS_"`
+}
+
+type CorsConfig struct {
+	AllowOrigins     []string      `env:"ALLOW_ORIGINS" envDefault:"*"`
+	AllowMethods     []string      `env:"ALLOW_METHODS" envDefault:"GET,POST,PUT,PATCH,DELETE,OPTIONS"`
+	AllowHeaders     []string      `env:"ALLOW_HEADERS" envDefault:"Origin,Content-Type,Authorization"`
+	ExposeHeaders    []string      `env:"EXPOSE_HEADERS" envDefault:"Content-Length"`
+	AllowCredentials bool          `env:"ALLOW_CREDENTIALS" envDefault:"true"`
+	MaxAge           time.Duration `env:"MAX_AGE" envDefault:"12h"`
 }
 
 type AppConfig struct {
@@ -34,8 +44,9 @@ type DatabaseConfig struct {
 }
 
 type JWTConfig struct {
-	Secret     string        `env:"SECRET" envDefault:"10"`
-	Expiration time.Duration `env:"EXPIRATION" envDefault:"72h"`
+	Secret            string        `env:"SECRET" envDefault:"10"`
+	Expiration        time.Duration `env:"EXPIRATION" envDefault:"72h"`
+	RefreshExpiration time.Duration `env:"REFRESH_EXPIRATION" envDefault:"168h"` // 7 days
 }
 
 func LoadConfig(path string) (*Config, error) {

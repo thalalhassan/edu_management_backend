@@ -1,6 +1,6 @@
 {
   "info": {
-    "name": "Edu Management API",
+    "name": "🚀 Edu Management API",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "description": "Education Management System API collection"
   },
@@ -38,7 +38,7 @@
   },
   "item": [
     {
-      "name": "Auth",
+      "name": "🔑 Auth",
       "item": [
         {
           "name": "Login",
@@ -59,7 +59,12 @@
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{base_url}}{{api_version}}/auth/login",
             "body": {
               "mode": "raw",
@@ -86,7 +91,12 @@
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{base_url}}{{api_version}}/auth/refresh",
             "body": {
               "mode": "raw",
@@ -98,7 +108,12 @@
           "name": "Logout",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{base_url}}{{api_version}}/auth/logout",
             "body": {
               "mode": "raw",
@@ -120,7 +135,12 @@
               ]
             },
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{base_url}}{{api_version}}/account/change-password",
             "body": {
               "mode": "raw",
@@ -131,7 +151,7 @@
       ]
     },
     {
-      "name": "Register",
+      "name": "📝 Register",
       "item": [
         {
           "name": "Register Student",
@@ -147,7 +167,12 @@
               ]
             },
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{base_url}}{{api_version}}/users/register/student",
             "body": {
               "mode": "raw",
@@ -169,7 +194,12 @@
               ]
             },
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{base_url}}{{api_version}}/users/register/teacher",
             "body": {
               "mode": "raw",
@@ -191,7 +221,12 @@
               ]
             },
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{base_url}}{{api_version}}/users/register/parent",
             "body": {
               "mode": "raw",
@@ -213,7 +248,12 @@
               ]
             },
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{base_url}}{{api_version}}/users/register/staff",
             "body": {
               "mode": "raw",
@@ -235,7 +275,12 @@
               ]
             },
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{base_url}}{{api_version}}/users/register/admin",
             "body": {
               "mode": "raw",
@@ -246,7 +291,7 @@
       ]
     },
     {
-      "name": "Users",
+      "name": "👥 Users",
       "item": [
         {
           "name": "List Users",
@@ -267,8 +312,14 @@
               "host": ["{{base_url}}{{api_version}}"],
               "path": ["users", ""],
               "query": [
-                { "key": "page", "value": "1" },
-                { "key": "limit", "value": "10" }
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
               ]
             }
           }
@@ -288,7 +339,12 @@
             },
             "method": "GET",
             "url": "{{base_url}}{{api_version}}/users/:id",
-            "variable": [{ "key": "id", "value": "USER_ID_HERE" }]
+            "variable": [
+              {
+                "key": "id",
+                "value": "USER_ID_HERE"
+              }
+            ]
           }
         },
         {
@@ -305,9 +361,19 @@
               ]
             },
             "method": "PUT",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{base_url}}{{api_version}}/users/:id",
-            "variable": [{ "key": "id", "value": "USER_ID_HERE" }],
+            "variable": [
+              {
+                "key": "id",
+                "value": "USER_ID_HERE"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"is_active\": true,\n  \"role\": \"TEACHER\"\n}"
@@ -329,13 +395,18 @@
             },
             "method": "DELETE",
             "url": "{{base_url}}{{api_version}}/users/:id",
-            "variable": [{ "key": "id", "value": "USER_ID_HERE" }]
+            "variable": [
+              {
+                "key": "id",
+                "value": "USER_ID_HERE"
+              }
+            ]
           }
         }
       ]
     },
     {
-      "name": "Students",
+      "name": "👨‍🎓 Students",
       "item": [
         {
           "name": "List Students",
@@ -356,8 +427,14 @@
               "host": ["{{base_url}}{{api_version}}"],
               "path": ["student", ""],
               "query": [
-                { "key": "page", "value": "1" },
-                { "key": "limit", "value": "10" }
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
               ]
             }
           }
@@ -377,7 +454,12 @@
             },
             "method": "GET",
             "url": "{{base_url}}{{api_version}}/student/:id",
-            "variable": [{ "key": "id", "value": "STUDENT_ID_HERE" }]
+            "variable": [
+              {
+                "key": "id",
+                "value": "STUDENT_ID_HERE"
+              }
+            ]
           }
         },
         {
@@ -394,9 +476,19 @@
               ]
             },
             "method": "PUT",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{base_url}}{{api_version}}/student/:id",
-            "variable": [{ "key": "id", "value": "STUDENT_ID_HERE" }],
+            "variable": [
+              {
+                "key": "id",
+                "value": "STUDENT_ID_HERE"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"first_name\": \"Arjun\",\n  \"last_name\": \"Sharma\",\n  \"phone\": \"9123456789\",\n  \"address\": \"123 Main Street, Chennai\",\n  \"blood_group\": \"O+\"\n}"
@@ -418,13 +510,18 @@
             },
             "method": "DELETE",
             "url": "{{base_url}}{{api_version}}/student/:id",
-            "variable": [{ "key": "id", "value": "STUDENT_ID_HERE" }]
+            "variable": [
+              {
+                "key": "id",
+                "value": "STUDENT_ID_HERE"
+              }
+            ]
           }
         }
       ]
     },
     {
-      "name": "Teachers",
+      "name": "👩‍🏫 Teachers",
       "item": [
         {
           "name": "List Teachers",
@@ -445,8 +542,14 @@
               "host": ["{{base_url}}{{api_version}}"],
               "path": ["teacher", ""],
               "query": [
-                { "key": "page", "value": "1" },
-                { "key": "limit", "value": "10" }
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
               ]
             }
           }
@@ -466,7 +569,12 @@
             },
             "method": "GET",
             "url": "{{base_url}}{{api_version}}/teacher/:id",
-            "variable": [{ "key": "id", "value": "TEACHER_ID_HERE" }]
+            "variable": [
+              {
+                "key": "id",
+                "value": "TEACHER_ID_HERE"
+              }
+            ]
           }
         },
         {
@@ -484,7 +592,12 @@
             },
             "method": "GET",
             "url": "{{base_url}}{{api_version}}/teacher/employee/:employee_id",
-            "variable": [{ "key": "employee_id", "value": "EMP001" }]
+            "variable": [
+              {
+                "key": "employee_id",
+                "value": "EMP001"
+              }
+            ]
           }
         },
         {
@@ -501,9 +614,19 @@
               ]
             },
             "method": "PUT",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{base_url}}{{api_version}}/teacher/:id",
-            "variable": [{ "key": "id", "value": "TEACHER_ID_HERE" }],
+            "variable": [
+              {
+                "key": "id",
+                "value": "TEACHER_ID_HERE"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"first_name\": \"Rajesh\",\n  \"last_name\": \"Kumar\",\n  \"phone\": \"9876543210\",\n  \"qualification\": \"M.Sc Mathematics\",\n  \"specialization\": \"Applied Mathematics\"\n}"
@@ -524,9 +647,19 @@
               ]
             },
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{base_url}}{{api_version}}/teacher/:id/active",
-            "variable": [{ "key": "id", "value": "TEACHER_ID_HERE" }],
+            "variable": [
+              {
+                "key": "id",
+                "value": "TEACHER_ID_HERE"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"is_active\": false\n}"
@@ -548,13 +681,18 @@
             },
             "method": "DELETE",
             "url": "{{base_url}}{{api_version}}/teacher/:id",
-            "variable": [{ "key": "id", "value": "TEACHER_ID_HERE" }]
+            "variable": [
+              {
+                "key": "id",
+                "value": "TEACHER_ID_HERE"
+              }
+            ]
           }
         }
       ]
     },
     {
-      "name": "Enrollment",
+      "name": "📑 Enrollment",
       "item": [
         {
           "name": "Enroll Student",
@@ -570,7 +708,12 @@
               ]
             },
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{base_url}}{{api_version}}/enrollment/",
             "body": {
               "mode": "raw",
@@ -593,7 +736,12 @@
             },
             "method": "GET",
             "url": "{{base_url}}{{api_version}}/enrollment/:id",
-            "variable": [{ "key": "id", "value": "ENROLLMENT_ID_HERE" }]
+            "variable": [
+              {
+                "key": "id",
+                "value": "ENROLLMENT_ID_HERE"
+              }
+            ]
           }
         },
         {
@@ -615,10 +763,21 @@
               "host": ["{{base_url}}{{api_version}}"],
               "path": ["enrollment", "student", ":student_id"],
               "query": [
-                { "key": "page", "value": "1" },
-                { "key": "limit", "value": "10" }
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
               ],
-              "variable": [{ "key": "student_id", "value": "STUDENT_ID_HERE" }]
+              "variable": [
+                {
+                  "key": "student_id",
+                  "value": "STUDENT_ID_HERE"
+                }
+              ]
             }
           }
         },
@@ -638,7 +797,10 @@
             "method": "GET",
             "url": "{{base_url}}{{api_version}}/enrollment/class/:class_section_id/roster",
             "variable": [
-              { "key": "class_section_id", "value": "CLASS_SECTION_ID_HERE" }
+              {
+                "key": "class_section_id",
+                "value": "CLASS_SECTION_ID_HERE"
+              }
             ]
           }
         },
@@ -656,9 +818,19 @@
               ]
             },
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{base_url}}{{api_version}}/enrollment/:id/status",
-            "variable": [{ "key": "id", "value": "ENROLLMENT_ID_HERE" }],
+            "variable": [
+              {
+                "key": "id",
+                "value": "ENROLLMENT_ID_HERE"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"status\": \"PROMOTED\"\n}"
@@ -679,9 +851,19 @@
               ]
             },
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{base_url}}{{api_version}}/enrollment/:id/status",
-            "variable": [{ "key": "id", "value": "ENROLLMENT_ID_HERE" }],
+            "variable": [
+              {
+                "key": "id",
+                "value": "ENROLLMENT_ID_HERE"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"status\": \"DETAINED\"\n}"
@@ -702,9 +884,19 @@
               ]
             },
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{base_url}}{{api_version}}/enrollment/:id/status",
-            "variable": [{ "key": "id", "value": "ENROLLMENT_ID_HERE" }],
+            "variable": [
+              {
+                "key": "id",
+                "value": "ENROLLMENT_ID_HERE"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"status\": \"WITHDRAWN\",\n  \"left_date\": \"2024-11-01T00:00:00Z\"\n}"
@@ -726,13 +918,18 @@
             },
             "method": "DELETE",
             "url": "{{base_url}}{{api_version}}/enrollment/:id",
-            "variable": [{ "key": "id", "value": "ENROLLMENT_ID_HERE" }]
+            "variable": [
+              {
+                "key": "id",
+                "value": "ENROLLMENT_ID_HERE"
+              }
+            ]
           }
         }
       ]
     },
     {
-      "name": "Health",
+      "name": "🏥 Health",
       "item": [
         {
           "name": "Health Check",
@@ -744,7 +941,7 @@
       ]
     },
     {
-      "name": "Department",
+      "name": "🏢 Department",
       "item": [
         {
           "name": "Create Department",
@@ -760,7 +957,12 @@
               ]
             },
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{base_url}}{{api_version}}/department/",
             "body": {
               "mode": "raw",
@@ -800,7 +1002,12 @@
             },
             "method": "GET",
             "url": "{{base_url}}{{api_version}}/department/:id",
-            "variable": [{ "key": "id", "value": "DEPARTMENT_ID_HERE" }]
+            "variable": [
+              {
+                "key": "id",
+                "value": "DEPARTMENT_ID_HERE"
+              }
+            ]
           }
         },
         {
@@ -817,9 +1024,19 @@
               ]
             },
             "method": "PUT",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{base_url}}{{api_version}}/department/:id",
-            "variable": [{ "key": "id", "value": "DEPARTMENT_ID_HERE" }],
+            "variable": [
+              {
+                "key": "id",
+                "value": "DEPARTMENT_ID_HERE"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"Primary School\",\n  \"code\": \"PRI\",\n  \"description\": \"Grades 1 to 5\",\n  \"is_active\": true\n}"
@@ -840,9 +1057,19 @@
               ]
             },
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{base_url}}{{api_version}}/department/:id/head",
-            "variable": [{ "key": "id", "value": "DEPARTMENT_ID_HERE" }],
+            "variable": [
+              {
+                "key": "id",
+                "value": "DEPARTMENT_ID_HERE"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"head_teacher_id\": \"TEACHER_ID_HERE\"\n}"
@@ -863,9 +1090,19 @@
               ]
             },
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{base_url}}{{api_version}}/department/:id/head",
-            "variable": [{ "key": "id", "value": "DEPARTMENT_ID_HERE" }],
+            "variable": [
+              {
+                "key": "id",
+                "value": "DEPARTMENT_ID_HERE"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"head_teacher_id\": null\n}"
@@ -887,13 +1124,18 @@
             },
             "method": "DELETE",
             "url": "{{base_url}}{{api_version}}/department/:id",
-            "variable": [{ "key": "id", "value": "DEPARTMENT_ID_HERE" }]
+            "variable": [
+              {
+                "key": "id",
+                "value": "DEPARTMENT_ID_HERE"
+              }
+            ]
           }
         }
       ]
     },
     {
-      "name": "Standard",
+      "name": "📏 Standard",
       "item": [
         {
           "name": "Create Standard",
@@ -909,7 +1151,12 @@
               ]
             },
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{base_url}}{{api_version}}/standard/",
             "body": {
               "mode": "raw",
@@ -949,7 +1196,12 @@
             },
             "method": "GET",
             "url": "{{base_url}}{{api_version}}/standard/:id",
-            "variable": [{ "key": "id", "value": "STANDARD_ID_HERE" }]
+            "variable": [
+              {
+                "key": "id",
+                "value": "STANDARD_ID_HERE"
+              }
+            ]
           }
         },
         {
@@ -968,7 +1220,10 @@
             "method": "GET",
             "url": "{{base_url}}{{api_version}}/standard/department/:department_id",
             "variable": [
-              { "key": "department_id", "value": "DEPARTMENT_ID_HERE" }
+              {
+                "key": "department_id",
+                "value": "DEPARTMENT_ID_HERE"
+              }
             ]
           }
         },
@@ -986,9 +1241,19 @@
               ]
             },
             "method": "PUT",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{base_url}}{{api_version}}/standard/:id",
-            "variable": [{ "key": "id", "value": "STANDARD_ID_HERE" }],
+            "variable": [
+              {
+                "key": "id",
+                "value": "STANDARD_ID_HERE"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"Grade 1\",\n  \"order_index\": 1,\n  \"description\": \"First standard\"\n}"
@@ -1010,7 +1275,12 @@
             },
             "method": "DELETE",
             "url": "{{base_url}}{{api_version}}/standard/:id",
-            "variable": [{ "key": "id", "value": "STANDARD_ID_HERE" }]
+            "variable": [
+              {
+                "key": "id",
+                "value": "STANDARD_ID_HERE"
+              }
+            ]
           }
         },
         {
@@ -1028,7 +1298,12 @@
             },
             "method": "GET",
             "url": "{{base_url}}{{api_version}}/standard/:id/subjects",
-            "variable": [{ "key": "id", "value": "STANDARD_ID_HERE" }]
+            "variable": [
+              {
+                "key": "id",
+                "value": "STANDARD_ID_HERE"
+              }
+            ]
           }
         },
         {
@@ -1045,9 +1320,19 @@
               ]
             },
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{base_url}}{{api_version}}/standard/:id/subjects",
-            "variable": [{ "key": "id", "value": "STANDARD_ID_HERE" }],
+            "variable": [
+              {
+                "key": "id",
+                "value": "STANDARD_ID_HERE"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"subject_id\": \"SUBJECT_ID_HERE\",\n  \"is_core\": true\n}"
@@ -1070,15 +1355,21 @@
             "method": "DELETE",
             "url": "{{base_url}}{{api_version}}/standard/:id/subjects/:subject_id",
             "variable": [
-              { "key": "id", "value": "STANDARD_ID_HERE" },
-              { "key": "subject_id", "value": "SUBJECT_ID_HERE" }
+              {
+                "key": "id",
+                "value": "STANDARD_ID_HERE"
+              },
+              {
+                "key": "subject_id",
+                "value": "SUBJECT_ID_HERE"
+              }
             ]
           }
         }
       ]
     },
     {
-      "name": "Class Section",
+      "name": "🏫 Class Section",
       "item": [
         {
           "name": "Create Class Section",
@@ -1095,8 +1386,14 @@
             },
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "X-Academic-Year-ID", "value": "{{academic_year_id}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Academic-Year-ID",
+                "value": "{{academic_year_id}}"
+              }
             ],
             "url": "{{base_url}}{{api_version}}/class-section/",
             "body": {
@@ -1120,7 +1417,10 @@
             },
             "method": "GET",
             "header": [
-              { "key": "X-Academic-Year-ID", "value": "{{academic_year_id}}" }
+              {
+                "key": "X-Academic-Year-ID",
+                "value": "{{academic_year_id}}"
+              }
             ],
             "url": "{{base_url}}{{api_version}}/class-section/"
           }
@@ -1140,7 +1440,12 @@
             },
             "method": "GET",
             "url": "{{base_url}}{{api_version}}/class-section/:id",
-            "variable": [{ "key": "id", "value": "CLASS_SECTION_ID_HERE" }]
+            "variable": [
+              {
+                "key": "id",
+                "value": "CLASS_SECTION_ID_HERE"
+              }
+            ]
           }
         },
         {
@@ -1158,10 +1463,18 @@
             },
             "method": "GET",
             "header": [
-              { "key": "X-Academic-Year-ID", "value": "{{academic_year_id}}" }
+              {
+                "key": "X-Academic-Year-ID",
+                "value": "{{academic_year_id}}"
+              }
             ],
             "url": "{{base_url}}{{api_version}}/class-section/standard/:standard_id",
-            "variable": [{ "key": "standard_id", "value": "STANDARD_ID_HERE" }]
+            "variable": [
+              {
+                "key": "standard_id",
+                "value": "STANDARD_ID_HERE"
+              }
+            ]
           }
         },
         {
@@ -1179,10 +1492,18 @@
             },
             "method": "GET",
             "header": [
-              { "key": "X-Academic-Year-ID", "value": "{{academic_year_id}}" }
+              {
+                "key": "X-Academic-Year-ID",
+                "value": "{{academic_year_id}}"
+              }
             ],
             "url": "{{base_url}}{{api_version}}/class-section/teacher/:teacher_id",
-            "variable": [{ "key": "teacher_id", "value": "TEACHER_ID_HERE" }]
+            "variable": [
+              {
+                "key": "teacher_id",
+                "value": "TEACHER_ID_HERE"
+              }
+            ]
           }
         },
         {
@@ -1199,9 +1520,19 @@
               ]
             },
             "method": "PUT",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{base_url}}{{api_version}}/class-section/:id",
-            "variable": [{ "key": "id", "value": "CLASS_SECTION_ID_HERE" }],
+            "variable": [
+              {
+                "key": "id",
+                "value": "CLASS_SECTION_ID_HERE"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"section_name\": \"B\",\n  \"room_number\": \"102\",\n  \"max_strength\": 45\n}"
@@ -1222,9 +1553,19 @@
               ]
             },
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{base_url}}{{api_version}}/class-section/:id/teacher",
-            "variable": [{ "key": "id", "value": "CLASS_SECTION_ID_HERE" }],
+            "variable": [
+              {
+                "key": "id",
+                "value": "CLASS_SECTION_ID_HERE"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"class_teacher_id\": \"TEACHER_ID_HERE\"\n}"
@@ -1245,9 +1586,19 @@
               ]
             },
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{base_url}}{{api_version}}/class-section/:id/teacher",
-            "variable": [{ "key": "id", "value": "CLASS_SECTION_ID_HERE" }],
+            "variable": [
+              {
+                "key": "id",
+                "value": "CLASS_SECTION_ID_HERE"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"class_teacher_id\": null\n}"
@@ -1269,13 +1620,18 @@
             },
             "method": "DELETE",
             "url": "{{base_url}}{{api_version}}/class-section/:id",
-            "variable": [{ "key": "id", "value": "CLASS_SECTION_ID_HERE" }]
+            "variable": [
+              {
+                "key": "id",
+                "value": "CLASS_SECTION_ID_HERE"
+              }
+            ]
           }
         }
       ]
     },
     {
-      "name": "Academic Year",
+      "name": "📅 Academic Year",
       "item": [
         {
           "name": "List Academic Years",
@@ -1319,7 +1675,12 @@
               ]
             },
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{base_url}}{{api_version}}/academic-year/",
             "body": {
               "mode": "raw",
@@ -1342,7 +1703,12 @@
             },
             "method": "GET",
             "url": "{{base_url}}{{api_version}}/academic-year/:id",
-            "variable": [{ "key": "id", "value": "{{academic_year_id}}" }]
+            "variable": [
+              {
+                "key": "id",
+                "value": "{{academic_year_id}}"
+              }
+            ]
           }
         },
         {
@@ -1359,9 +1725,19 @@
               ]
             },
             "method": "PUT",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{base_url}}{{api_version}}/academic-year/:id",
-            "variable": [{ "key": "id", "value": "{{academic_year_id}}" }],
+            "variable": [
+              {
+                "key": "id",
+                "value": "{{academic_year_id}}"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"2024-25\",\n  \"start_date\": \"2024-06-01T00:00:00Z\",\n  \"end_date\": \"2025-04-30T00:00:00Z\"\n}"
@@ -1397,7 +1773,12 @@
             },
             "method": "PATCH",
             "url": "{{base_url}}{{api_version}}/academic-year/:id/activate",
-            "variable": [{ "key": "id", "value": "ACADEMIC_YEAR_ID_HERE" }]
+            "variable": [
+              {
+                "key": "id",
+                "value": "ACADEMIC_YEAR_ID_HERE"
+              }
+            ]
           }
         },
         {
@@ -1415,13 +1796,18 @@
             },
             "method": "DELETE",
             "url": "{{base_url}}{{api_version}}/academic-year/:id",
-            "variable": [{ "key": "id", "value": "ACADEMIC_YEAR_ID_HERE" }]
+            "variable": [
+              {
+                "key": "id",
+                "value": "ACADEMIC_YEAR_ID_HERE"
+              }
+            ]
           }
         }
       ]
     },
     {
-      "name": "Subject",
+      "name": "📚 Subject",
       "item": [
         {
           "name": "Create Subject",
@@ -1437,7 +1823,12 @@
               ]
             },
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{base_url}}{{api_version}}/subject/",
             "body": {
               "mode": "raw",
@@ -1464,8 +1855,14 @@
               "host": ["{{base_url}}{{api_version}}"],
               "path": ["subject", ""],
               "query": [
-                { "key": "page", "value": "1" },
-                { "key": "limit", "value": "10" },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
                 {
                   "key": "sort_by",
                   "value": "name",
@@ -1511,9 +1908,18 @@
               "host": ["{{base_url}}{{api_version}}"],
               "path": ["subject", ""],
               "query": [
-                { "key": "is_elective", "value": "true" },
-                { "key": "sort_by", "value": "name" },
-                { "key": "sort_dir", "value": "asc" }
+                {
+                  "key": "is_elective",
+                  "value": "true"
+                },
+                {
+                  "key": "sort_by",
+                  "value": "name"
+                },
+                {
+                  "key": "sort_dir",
+                  "value": "asc"
+                }
               ]
             }
           }
@@ -1536,7 +1942,12 @@
               "raw": "{{base_url}}{{api_version}}/subject/?search=math",
               "host": ["{{base_url}}{{api_version}}"],
               "path": ["subject", ""],
-              "query": [{ "key": "search", "value": "math" }]
+              "query": [
+                {
+                  "key": "search",
+                  "value": "math"
+                }
+              ]
             }
           }
         },
@@ -1555,7 +1966,12 @@
             },
             "method": "GET",
             "url": "{{base_url}}{{api_version}}/subject/:id",
-            "variable": [{ "key": "id", "value": "SUBJECT_ID_HERE" }]
+            "variable": [
+              {
+                "key": "id",
+                "value": "SUBJECT_ID_HERE"
+              }
+            ]
           }
         },
         {
@@ -1572,9 +1988,19 @@
               ]
             },
             "method": "PUT",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{base_url}}{{api_version}}/subject/:id",
-            "variable": [{ "key": "id", "value": "SUBJECT_ID_HERE" }],
+            "variable": [
+              {
+                "key": "id",
+                "value": "SUBJECT_ID_HERE"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"Advanced Mathematics\",\n  \"description\": \"Advanced core mathematics\",\n  \"is_elective\": false\n}"
@@ -1596,13 +2022,18 @@
             },
             "method": "DELETE",
             "url": "{{base_url}}{{api_version}}/subject/:id",
-            "variable": [{ "key": "id", "value": "SUBJECT_ID_HERE" }]
+            "variable": [
+              {
+                "key": "id",
+                "value": "SUBJECT_ID_HERE"
+              }
+            ]
           }
         }
       ]
     },
     {
-      "name": "Timetable",
+      "name": "⏳ Timetable",
       "item": [
         {
           "name": "Create Timetable Entry",
@@ -1618,7 +2049,12 @@
               ]
             },
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{base_url}}{{api_version}}/timetable/",
             "body": {
               "mode": "raw",
@@ -1646,14 +2082,23 @@
               "host": ["{{base_url}}{{api_version}}"],
               "path": ["timetable", ""],
               "query": [
-                { "key": "page", "value": "1" },
-                { "key": "limit", "value": "20" },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
                 {
                   "key": "sort_by",
                   "value": "day_of_week",
                   "description": "day_of_week | start_time | created_at"
                 },
-                { "key": "sort_dir", "value": "asc" },
+                {
+                  "key": "sort_dir",
+                  "value": "asc"
+                },
                 {
                   "key": "class_section_id",
                   "value": "",
@@ -1701,9 +2146,18 @@
               "host": ["{{base_url}}{{api_version}}"],
               "path": ["timetable", ""],
               "query": [
-                { "key": "class_section_id", "value": "CLASS_SECTION_ID_HERE" },
-                { "key": "sort_by", "value": "day_of_week" },
-                { "key": "sort_dir", "value": "asc" }
+                {
+                  "key": "class_section_id",
+                  "value": "CLASS_SECTION_ID_HERE"
+                },
+                {
+                  "key": "sort_by",
+                  "value": "day_of_week"
+                },
+                {
+                  "key": "sort_dir",
+                  "value": "asc"
+                }
               ]
             }
           }
@@ -1727,9 +2181,18 @@
               "host": ["{{base_url}}{{api_version}}"],
               "path": ["timetable", ""],
               "query": [
-                { "key": "teacher_id", "value": "TEACHER_ID_HERE" },
-                { "key": "sort_by", "value": "day_of_week" },
-                { "key": "sort_dir", "value": "asc" }
+                {
+                  "key": "teacher_id",
+                  "value": "TEACHER_ID_HERE"
+                },
+                {
+                  "key": "sort_by",
+                  "value": "day_of_week"
+                },
+                {
+                  "key": "sort_dir",
+                  "value": "asc"
+                }
               ]
             }
           }
@@ -1758,8 +2221,14 @@
                   "value": "1",
                   "description": "1 = Monday"
                 },
-                { "key": "sort_by", "value": "start_time" },
-                { "key": "sort_dir", "value": "asc" }
+                {
+                  "key": "sort_by",
+                  "value": "start_time"
+                },
+                {
+                  "key": "sort_dir",
+                  "value": "asc"
+                }
               ]
             }
           }
@@ -1779,7 +2248,12 @@
             },
             "method": "GET",
             "url": "{{base_url}}{{api_version}}/timetable/:id",
-            "variable": [{ "key": "id", "value": "TIMETABLE_ID_HERE" }]
+            "variable": [
+              {
+                "key": "id",
+                "value": "TIMETABLE_ID_HERE"
+              }
+            ]
           }
         },
         {
@@ -1798,7 +2272,10 @@
             "method": "GET",
             "url": "{{base_url}}{{api_version}}/timetable/class/:class_section_id/schedule",
             "variable": [
-              { "key": "class_section_id", "value": "CLASS_SECTION_ID_HERE" }
+              {
+                "key": "class_section_id",
+                "value": "CLASS_SECTION_ID_HERE"
+              }
             ],
             "description": "Returns periods grouped by day (Mon–Sat). Primary view for students and class teachers."
           }
@@ -1818,7 +2295,12 @@
             },
             "method": "GET",
             "url": "{{base_url}}{{api_version}}/timetable/teacher/:teacher_id/schedule",
-            "variable": [{ "key": "teacher_id", "value": "TEACHER_ID_HERE" }],
+            "variable": [
+              {
+                "key": "teacher_id",
+                "value": "TEACHER_ID_HERE"
+              }
+            ],
             "description": "Returns all periods for the teacher across all class sections, grouped by day."
           }
         },
@@ -1836,9 +2318,19 @@
               ]
             },
             "method": "PUT",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": "{{base_url}}{{api_version}}/timetable/:id",
-            "variable": [{ "key": "id", "value": "TIMETABLE_ID_HERE" }],
+            "variable": [
+              {
+                "key": "id",
+                "value": "TIMETABLE_ID_HERE"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"teacher_id\": \"TEACHER_ID_HERE\",\n  \"day_of_week\": 2,\n  \"start_time\": \"2024-01-01T09:00:00Z\",\n  \"end_time\": \"2024-01-01T10:00:00Z\",\n  \"room_number\": \"102\"\n}"
@@ -1860,7 +2352,12 @@
             },
             "method": "DELETE",
             "url": "{{base_url}}{{api_version}}/timetable/:id",
-            "variable": [{ "key": "id", "value": "TIMETABLE_ID_HERE" }]
+            "variable": [
+              {
+                "key": "id",
+                "value": "TIMETABLE_ID_HERE"
+              }
+            ]
           }
         }
       ]
@@ -1886,7 +2383,12 @@
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": {
               "raw": "{{base_url}}{{api_version}}/exam/",
               "host": ["{{base_url}}{{api_version}}/exam/"]
@@ -1905,13 +2407,36 @@
               "raw": "{{base_url}}{{api_version}}/exam/?academic_year_id={{academic_year_id}}&page=1&page_size=10&sort_by=start_date&sort_dir=asc",
               "host": ["{{base_url}}{{api_version}}/exam/"],
               "query": [
-                { "key": "academic_year_id", "value": "{{academic_year_id}}" },
-                { "key": "exam_type", "value": "", "disabled": true },
-                { "key": "is_published", "value": "", "disabled": true },
-                { "key": "page", "value": "1" },
-                { "key": "page_size", "value": "10" },
-                { "key": "sort_by", "value": "start_date" },
-                { "key": "sort_dir", "value": "asc" }
+                {
+                  "key": "academic_year_id",
+                  "value": "{{academic_year_id}}"
+                },
+                {
+                  "key": "exam_type",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "is_published",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "page_size",
+                  "value": "10"
+                },
+                {
+                  "key": "sort_by",
+                  "value": "start_date"
+                },
+                {
+                  "key": "sort_dir",
+                  "value": "asc"
+                }
               ]
             }
           }
@@ -1930,7 +2455,12 @@
           "name": "Update Exam",
           "request": {
             "method": "PUT",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": {
               "raw": "{{base_url}}{{api_version}}/exam/{{exam_id}}",
               "host": ["{{base_url}}{{api_version}}/exam/{{exam_id}}"]
@@ -1945,7 +2475,12 @@
           "name": "Publish Exam",
           "request": {
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": {
               "raw": "{{base_url}}{{api_version}}/exam/{{exam_id}}/publish",
               "host": ["{{base_url}}{{api_version}}/exam/{{exam_id}}/publish"]
@@ -1960,7 +2495,12 @@
           "name": "Unpublish Exam",
           "request": {
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": {
               "raw": "{{base_url}}{{api_version}}/exam/{{exam_id}}/publish",
               "host": ["{{base_url}}{{api_version}}/exam/{{exam_id}}/publish"]
@@ -2004,7 +2544,12 @@
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": {
               "raw": "{{base_url}}{{api_version}}/exam/{{exam_id}}/schedule",
               "host": ["{{base_url}}{{api_version}}/exam/{{exam_id}}/schedule"]
@@ -2053,7 +2598,12 @@
           "name": "Update Schedule",
           "request": {
             "method": "PUT",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": {
               "raw": "{{base_url}}{{api_version}}/exam-schedule/{{schedule_id}}",
               "host": [
@@ -2101,7 +2651,12 @@
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": {
               "raw": "{{base_url}}{{api_version}}/exam-schedule/{{schedule_id}}/result",
               "host": [
@@ -2118,7 +2673,12 @@
           "name": "Bulk Create Results",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": {
               "raw": "{{base_url}}{{api_version}}/exam-schedule/{{schedule_id}}/result/bulk",
               "host": [
@@ -2169,7 +2729,12 @@
           "name": "Update Result",
           "request": {
             "method": "PUT",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": {
               "raw": "{{base_url}}{{api_version}}/exam-result/{{result_id}}",
               "host": ["{{base_url}}{{api_version}}/exam-result/{{result_id}}"]
@@ -2213,7 +2778,12 @@
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": {
               "raw": "{{base_url}}{{api_version}}/attendance/",
               "host": ["{{base_url}}{{api_version}}/attendance/"]
@@ -2228,7 +2798,12 @@
           "name": "Bulk Mark Attendance (Class)",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": {
               "raw": "{{base_url}}{{api_version}}/attendance/bulk",
               "host": ["{{base_url}}{{api_version}}/attendance/bulk"]
@@ -2247,19 +2822,44 @@
               "raw": "{{base_url}}{{api_version}}/attendance/?class_section_id={{class_section_id}}&date_from=2025-09-01&date_to=2025-09-30&page=1&page_size=20&sort_by=date&sort_dir=desc",
               "host": ["{{base_url}}{{api_version}}/attendance/"],
               "query": [
-                { "key": "class_section_id", "value": "{{class_section_id}}" },
+                {
+                  "key": "class_section_id",
+                  "value": "{{class_section_id}}"
+                },
                 {
                   "key": "student_enrollment_id",
                   "value": "",
                   "disabled": true
                 },
-                { "key": "date_from", "value": "2025-09-01" },
-                { "key": "date_to", "value": "2025-09-30" },
-                { "key": "status", "value": "", "disabled": true },
-                { "key": "page", "value": "1" },
-                { "key": "page_size", "value": "20" },
-                { "key": "sort_by", "value": "date" },
-                { "key": "sort_dir", "value": "desc" }
+                {
+                  "key": "date_from",
+                  "value": "2025-09-01"
+                },
+                {
+                  "key": "date_to",
+                  "value": "2025-09-30"
+                },
+                {
+                  "key": "status",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "page_size",
+                  "value": "20"
+                },
+                {
+                  "key": "sort_by",
+                  "value": "date"
+                },
+                {
+                  "key": "sort_dir",
+                  "value": "desc"
+                }
               ]
             }
           }
@@ -2285,7 +2885,12 @@
               "host": [
                 "{{base_url}}{{api_version}}/attendance/class/{{class_section_id}}/summary"
               ],
-              "query": [{ "key": "date", "value": "2025-09-01" }]
+              "query": [
+                {
+                  "key": "date",
+                  "value": "2025-09-01"
+                }
+              ]
             }
           }
         },
@@ -2293,7 +2898,12 @@
           "name": "Update Attendance",
           "request": {
             "method": "PUT",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": {
               "raw": "{{base_url}}{{api_version}}/attendance/{{attendance_id}}",
               "host": [
@@ -2341,7 +2951,12 @@
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": {
               "raw": "{{base_url}}{{api_version}}/teacher-attendance/",
               "host": ["{{base_url}}{{api_version}}/teacher-attendance/"]
@@ -2356,7 +2971,12 @@
           "name": "Bulk Mark Teacher Attendance",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": {
               "raw": "{{base_url}}{{api_version}}/teacher-attendance/bulk",
               "host": ["{{base_url}}{{api_version}}/teacher-attendance/bulk"]
@@ -2375,14 +2995,39 @@
               "raw": "{{base_url}}{{api_version}}/teacher-attendance/?teacher_id={{teacher_id}}&date_from=2025-09-01&date_to=2025-09-30&page=1&page_size=20&sort_by=date&sort_dir=desc",
               "host": ["{{base_url}}{{api_version}}/teacher-attendance/"],
               "query": [
-                { "key": "teacher_id", "value": "{{teacher_id}}" },
-                { "key": "date_from", "value": "2025-09-01" },
-                { "key": "date_to", "value": "2025-09-30" },
-                { "key": "status", "value": "", "disabled": true },
-                { "key": "page", "value": "1" },
-                { "key": "page_size", "value": "20" },
-                { "key": "sort_by", "value": "date" },
-                { "key": "sort_dir", "value": "desc" }
+                {
+                  "key": "teacher_id",
+                  "value": "{{teacher_id}}"
+                },
+                {
+                  "key": "date_from",
+                  "value": "2025-09-01"
+                },
+                {
+                  "key": "date_to",
+                  "value": "2025-09-30"
+                },
+                {
+                  "key": "status",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "page_size",
+                  "value": "20"
+                },
+                {
+                  "key": "sort_by",
+                  "value": "date"
+                },
+                {
+                  "key": "sort_dir",
+                  "value": "desc"
+                }
               ]
             }
           }
@@ -2403,7 +3048,12 @@
           "name": "Update Teacher Attendance",
           "request": {
             "method": "PUT",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": {
               "raw": "{{base_url}}{{api_version}}/teacher-attendance/{{teacher_att_id}}",
               "host": [

@@ -8,6 +8,8 @@ import (
 	"github.com/thalalhassan/edu_management/internal/modules/class_section"
 	"github.com/thalalhassan/edu_management/internal/modules/department"
 	"github.com/thalalhassan/edu_management/internal/modules/enrollment"
+	"github.com/thalalhassan/edu_management/internal/modules/parent"
+	"github.com/thalalhassan/edu_management/internal/modules/staff"
 	"github.com/thalalhassan/edu_management/internal/modules/standard"
 	"github.com/thalalhassan/edu_management/internal/modules/student"
 	"github.com/thalalhassan/edu_management/internal/modules/teacher"
@@ -27,6 +29,12 @@ func RegisterModules(api *gin.RouterGroup, app *app.App) {
 
 	// Register teacher module routes
 	teacher.RegisterRouter(api, app)
+
+	// Register parent module routes
+	parent.RegisterRouter(api, app)
+
+	// Register staff module routes
+	staff.RegisterRouter(api, app)
 
 	// Register department module routes
 	department.RegisterRouter(api, app)

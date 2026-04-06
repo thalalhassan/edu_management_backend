@@ -3,6 +3,7 @@ package modules
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/thalalhassan/edu_management/internal/app"
+	"github.com/thalalhassan/edu_management/internal/modules/academic_year"
 	"github.com/thalalhassan/edu_management/internal/modules/auth"
 	"github.com/thalalhassan/edu_management/internal/modules/class_section"
 	"github.com/thalalhassan/edu_management/internal/modules/department"
@@ -38,5 +39,8 @@ func RegisterModules(api *gin.RouterGroup, app *app.App) {
 
 	// Register enrollment module routes
 	enrollment.RegisterRouter(api, app)
+
+	// Register academic year module routes
+	academic_year.RegisterRouter(api, app)
 
 }

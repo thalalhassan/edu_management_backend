@@ -3,6 +3,7 @@ package auth
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/thalalhassan/edu_management/internal/app"
+	"github.com/thalalhassan/edu_management/internal/middleware"
 	"github.com/thalalhassan/edu_management/internal/modules/user"
 	"github.com/thalalhassan/edu_management/internal/shared/response"
 )
@@ -76,11 +77,12 @@ func (h *Handler) logout(c *gin.Context) {
 }
 
 func (h *Handler) logoutAll(c *gin.Context) {
-	userID := c.GetString("userID") // Assume userID is set in context by auth middleware
-	if userID == "" {
-		response.Unauthorized(c, "user ID not found in context")
+	userID, err := middleware.GetUserIDFromContext(c)
+	if err != nil {
+		response.Unauthorized(c, err.Error())
 		return
 	}
+
 	if err := h.service.LogoutAllSessions(c.Request.Context(), userID); err != nil {
 		response.InternalError(c, err.Error())
 		return

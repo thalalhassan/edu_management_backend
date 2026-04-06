@@ -70,12 +70,9 @@ func (h *Handler) getByID(c *gin.Context) {
 // listByAcademicYear reads academic_year_id from the X-Academic-Year-ID header first,
 // falling back to a query param for cases where the header is not set.
 func (h *Handler) listByAcademicYear(c *gin.Context) {
-	academicYearID := c.GetHeader("X-Academic-Year-ID")
-	if academicYearID == "" {
-		academicYearID = c.Query("academic_year_id")
-	}
-	if academicYearID == "" {
-		response.BadRequest(c, "academic_year_id is required — pass via X-Academic-Year-ID header or query param")
+	academicYearID, err := middleware.GetAcademicYearIDFromContext(c)
+	if err != nil {
+		response.BadRequest(c, err.Error())
 		return
 	}
 
@@ -89,12 +86,10 @@ func (h *Handler) listByAcademicYear(c *gin.Context) {
 
 func (h *Handler) listByStandard(c *gin.Context) {
 	standardID := c.Param("standard_id")
-	academicYearID := c.GetHeader("X-Academic-Year-ID")
-	if academicYearID == "" {
-		academicYearID = c.Query("academic_year_id")
-	}
-	if academicYearID == "" {
-		response.BadRequest(c, "academic_year_id is required")
+
+	academicYearID, err := middleware.GetAcademicYearIDFromContext(c)
+	if err != nil {
+		response.BadRequest(c, err.Error())
 		return
 	}
 
@@ -108,12 +103,10 @@ func (h *Handler) listByStandard(c *gin.Context) {
 
 func (h *Handler) listByTeacher(c *gin.Context) {
 	teacherID := c.Param("teacher_id")
-	academicYearID := c.GetHeader("X-Academic-Year-ID")
-	if academicYearID == "" {
-		academicYearID = c.Query("academic_year_id")
-	}
-	if academicYearID == "" {
-		response.BadRequest(c, "academic_year_id is required")
+
+	academicYearID, err := middleware.GetAcademicYearIDFromContext(c)
+	if err != nil {
+		response.BadRequest(c, err.Error())
 		return
 	}
 

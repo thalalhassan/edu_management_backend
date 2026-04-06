@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/thalalhassan/edu_management/internal/config"
+	"github.com/thalalhassan/edu_management/internal/constants"
 	"github.com/thalalhassan/edu_management/internal/shared/response"
 	"github.com/thalalhassan/edu_management/pkg/jwt"
 )
@@ -39,9 +40,9 @@ func AuthCheckMiddleware(jwtConfig *config.JWTConfig) gin.HandlerFunc {
 
 		// Store claims in context for later use
 
-		c.Set("userID", claims.UserID)
-		c.Set("email", claims.Email)
-		c.Set("role", claims.Role)
+		c.Set(constants.UserIDContextKey, claims.UserID)
+		c.Set(constants.EmailContextKey, claims.Email)
+		c.Set(constants.RoleContextKey, claims.Role)
 
 		c.Next()
 	}
@@ -49,22 +50,12 @@ func AuthCheckMiddleware(jwtConfig *config.JWTConfig) gin.HandlerFunc {
 
 // GetUserIDFromContext extracts user ID from context
 func GetUserIDFromContext(c *gin.Context) (string, error) {
-	return getStringFromContext(c, "userID")
+	return getStringFromContext(c, constants.UserIDContextKey)
 }
 
 // GetRoleFromContext extracts user role from context
 func GetRoleFromContext(c *gin.Context) (string, error) {
-	return getStringFromContext(c, "role")
-}
-
-// GetUsernameFromContext extracts username from context
-func GetUsernameFromContext(c *gin.Context) (string, error) {
-	return getStringFromContext(c, "username")
-}
-
-// GetMobileFromContext extracts mobile from context
-func GetMobileFromContext(c *gin.Context) (string, error) {
-	return getStringFromContext(c, "mobile")
+	return getStringFromContext(c, constants.RoleContextKey)
 }
 
 // helper function to get string value from context

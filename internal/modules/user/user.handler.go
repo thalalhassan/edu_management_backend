@@ -126,11 +126,12 @@ func (h *Handler) registerAdmin(c *gin.Context) {
 }
 
 func (h *Handler) userProfile(c *gin.Context) {
-	userID := c.GetString("userID") // Assume userID is set in context by auth middleware
-	if userID == "" {
-		response.Unauthorized(c, "user ID not found in context")
+	userID, err := middleware.GetUserIDFromContext(c)
+	if err != nil {
+		response.Unauthorized(c, err.Error())
 		return
 	}
+
 	resp, err := h.service.GetByID(c.Request.Context(), userID)
 	if err != nil {
 		response.InternalError(c, err.Error())
@@ -202,9 +203,9 @@ func (h *Handler) changePassword(c *gin.Context) {
 }
 
 func (h *Handler) userUpdateProfile(c *gin.Context) {
-	id := c.GetString("userID") // Override ID with authenticated user's ID to prevent tampering
-	if id == "" {
-		response.Unauthorized(c, "user ID not found in context")
+	userID, err := middleware.GetUserIDFromContext(c)
+	if err != nil {
+		response.Unauthorized(c, err.Error())
 		return
 	}
 	var req UpdateUserRequest
@@ -212,7 +213,7 @@ func (h *Handler) userUpdateProfile(c *gin.Context) {
 		response.BadRequest(c, err.Error())
 		return
 	}
-	resp, err := h.service.Update(c.Request.Context(), id, req)
+	resp, err := h.service.Update(c.Request.Context(), userID, req)
 	if err != nil {
 		response.InternalError(c, err.Error())
 		return

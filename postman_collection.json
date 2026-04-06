@@ -1274,6 +1274,152 @@
           }
         }
       ]
+    },
+    {
+      "name": "Academic Year",
+      "item": [
+        {
+          "name": "List Academic Years",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}{{api_version}}/academic-year/"
+          }
+        },
+        {
+          "name": "Get Active Academic Year",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data) {",
+                  "  pm.collectionVariables.set('academic_year_id', res.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}{{api_version}}/academic-year/active"
+          }
+        },
+        {
+          "name": "Create Academic Year",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}{{api_version}}/academic-year/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"2024-25\",\n  \"start_date\": \"2024-06-01T00:00:00Z\",\n  \"end_date\": \"2025-03-31T00:00:00Z\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Academic Year By ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": "{{base_url}}{{api_version}}/academic-year/:id",
+            "variable": [{ "key": "id", "value": "{{academic_year_id}}" }]
+          }
+        },
+        {
+          "name": "Update Academic Year",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}{{api_version}}/academic-year/:id",
+            "variable": [{ "key": "id", "value": "{{academic_year_id}}" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"2024-25\",\n  \"start_date\": \"2024-06-01T00:00:00Z\",\n  \"end_date\": \"2025-04-30T00:00:00Z\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Set Academic Year Active",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data) {",
+                  "  pm.collectionVariables.set('academic_year_id', res.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "url": "{{base_url}}{{api_version}}/academic-year/:id/activate",
+            "variable": [{ "key": "id", "value": "ACADEMIC_YEAR_ID_HERE" }]
+          }
+        },
+        {
+          "name": "Delete Academic Year",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "url": "{{base_url}}{{api_version}}/academic-year/:id",
+            "variable": [{ "key": "id", "value": "ACADEMIC_YEAR_ID_HERE" }]
+          }
+        }
+      ]
     }
   ]
 }

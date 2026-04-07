@@ -472,6 +472,26 @@ type TeacherAttendance struct {
 
 func (TeacherAttendance) TableName() string { return "teacher_attendance" }
 
+// type Attendance struct {
+// 	Base
+
+// 	EntityType string `gorm:"column:entity_type;type:varchar(20);not null;index:idx_attendance_unique,unique" json:"entity_type"` // "student", "teacher"
+// 	EntityID   string `gorm:"column:entity_id;type:uuid;not null;index:idx_attendance_unique,unique" json:"entity_id"`
+
+// 	Date time.Time `gorm:"column:date;type:date;not null;index:idx_attendance_unique,unique;index:idx_attendance_date" json:"date"`
+
+// 	Status int16 `gorm:"column:status;type:smallint;not null" json:"status"`
+
+// 	Remark *string `gorm:"column:remark;type:text" json:"remark,omitempty"`
+
+// 	RecordedByID   *string `gorm:"column:recorded_by_id;type:uuid;index" json:"recorded_by_id,omitempty"`
+// 	RecordedByType *string `gorm:"column:recorded_by_type;type:varchar(20)" json:"recorded_by_type,omitempty"` // "teacher", "admin"
+
+// 	RecordedAt time.Time `gorm:"column:recorded_at;autoCreateTime" json:"recorded_at"`
+// }
+
+// func (Attendance) TableName() string { return "attendance" }
+
 // ==========================================
 // LEAVE MANAGEMENT
 // ==========================================

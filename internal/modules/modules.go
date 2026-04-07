@@ -4,10 +4,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/thalalhassan/edu_management/internal/app"
 	"github.com/thalalhassan/edu_management/internal/modules/academic_year"
+	"github.com/thalalhassan/edu_management/internal/modules/attendance"
 	"github.com/thalalhassan/edu_management/internal/modules/auth"
 	"github.com/thalalhassan/edu_management/internal/modules/class_section"
 	"github.com/thalalhassan/edu_management/internal/modules/department"
 	"github.com/thalalhassan/edu_management/internal/modules/enrollment"
+	"github.com/thalalhassan/edu_management/internal/modules/exam"
 	"github.com/thalalhassan/edu_management/internal/modules/fee"
 	"github.com/thalalhassan/edu_management/internal/modules/leave"
 	"github.com/thalalhassan/edu_management/internal/modules/notice"
@@ -16,7 +18,10 @@ import (
 	"github.com/thalalhassan/edu_management/internal/modules/staff"
 	"github.com/thalalhassan/edu_management/internal/modules/standard"
 	"github.com/thalalhassan/edu_management/internal/modules/student"
+	"github.com/thalalhassan/edu_management/internal/modules/subject"
 	"github.com/thalalhassan/edu_management/internal/modules/teacher"
+	"github.com/thalalhassan/edu_management/internal/modules/teacher_assignment"
+	"github.com/thalalhassan/edu_management/internal/modules/timetable"
 	"github.com/thalalhassan/edu_management/internal/modules/user"
 )
 
@@ -66,5 +71,20 @@ func RegisterModules(api *gin.RouterGroup, app *app.App) {
 
 	// Register report module routes
 	report.RegisterRouter(api, app)
+
+	// Attendance module
+	attendance.RegisterRouter(api, app)
+
+	// Exam module
+	exam.RegisterRouter(api, app)
+
+	// subject module
+	subject.RegisterRouter(api, app)
+
+	// teacher assignment module
+	teacher_assignment.RegisterRouter(api, app)
+
+	// timetable module
+	timetable.RegisterRouter(api, app)
 
 }

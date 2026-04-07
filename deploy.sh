@@ -32,11 +32,11 @@ BUILD_PATH_SEED="./bin/seed"
 SERVER_BUILD_PATH="/bin/"
 SERVER_CMD_BUILD_PATH="/cmd/"
 
-DOCKER_COMPOSE_FILE="./docker/docker-compose.yml"
-DOCKER_FILE="./docker/Dockerfile"
+DOCKER_COMPOSE_FILE="./docker/cloud/docker-compose.yml"
+DOCKER_FILE="./docker/cloud/Dockerfile"
 
-SERVER_DOCKER_COMPOSE_FILE="docker-compose.yml"
-SERVER_DOCKER_FILE="Dockerfile"
+SERVER_DOCKER_COMPOSE_FILE="/docker-compose.yml"
+SERVER_DOCKER_FILE="/Dockerfile"
 
 LOCAL_APP_PATH="./cmd/api"
 LOCAL_MIGRATION_PATH="./cmd/migrate"
@@ -44,6 +44,8 @@ LOCAL_SEED_PATH="./cmd/seeder"
 
 ENV_FILE=".env.prod"
 ENV_CMD_FILE=".env.prod.cmd"
+
+OPEN_API_FILE="docs/openapi.yaml"
 
 # ----------------------------------------------------------------
 # COLORS
@@ -96,6 +98,7 @@ SKIP_BUILD=false
 RUN_SEED=false
 RUN_MIGRATION=false
 RUN_RESET=false # upload dockers and configs
+ADD_OPENAPI=false
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -103,6 +106,7 @@ while [[ $# -gt 0 ]]; do
     --seed)         RUN_SEED=true;          shift ;;
     --migrate)         RUN_MIGRATION=true;          shift ;;
     --full-reset)         RUN_RESET=true;          shift ;;
+    --open-api)         ADD_OPENAPI=true;          shift ;;
     *)              die "Unknown option: $1" ;;
   esac
 done
@@ -192,6 +196,10 @@ if [[ "${RUN_SEED}" == true ]]; then
   scp -i "${SSH_KEY}" -o StrictHostKeyChecking=no "${BUILD_PATH_SEED}" "${VM_USER}@${VM_HOST}:${REMOTE_PATH}${SERVER_CMD_BUILD_PATH}" || die "SCP transfer failed"
 fi
 
+if [[ "${ADD_OPENAPI}" == true ]]; then
+scp -i "${SSH_KEY}" -o StrictHostKeyChecking=no "./${OPEN_API_FILE}" "${VM_USER}@${VM_HOST}:${REMOTE_PATH}/${OPEN_API_FILE}" || die "SCP transfer failed"
+fi
+
 if [[ "${RUN_RESET}" == true ]]; then
 scp -i "${SSH_KEY}" -o StrictHostKeyChecking=no "${ENV_FILE}" "${VM_USER}@${VM_HOST}:${REMOTE_PATH}/.env" || die "SCP transfer failed"
 scp -i "${SSH_KEY}" -o StrictHostKeyChecking=no "${ENV_CMD_FILE}" "${VM_USER}@${VM_HOST}:${REMOTE_PATH}/cmd/.env" || die "SCP transfer failed"
@@ -216,7 +224,7 @@ remote bash -euo pipefail << REMOTE
   docker compose down --timeout 30
 
   echo "Starting new containers..."
-  docker compose up -d --remove-orphans
+  docker compose up -d  --build --force-recreate --remove-orphans
 
   echo "Removing dangling images..."
   docker image prune -f

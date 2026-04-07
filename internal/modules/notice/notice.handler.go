@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/thalalhassan/edu_management/internal/app"
 	"github.com/thalalhassan/edu_management/internal/config"
+	"github.com/thalalhassan/edu_management/internal/constants"
 	"github.com/thalalhassan/edu_management/internal/middleware"
 	"github.com/thalalhassan/edu_management/internal/shared/pagination"
 	"github.com/thalalhassan/edu_management/internal/shared/query_params"
@@ -37,7 +38,7 @@ func RegisterRouter(r *gin.RouterGroup, a *app.App) {
 //   - PATCH  /:id/publish  → admin / principal publishes or unpublishes
 //   - DELETE /:id          → admin / principal deletes an unpublished notice
 func (h *Handler) Routes(r *gin.RouterGroup) {
-	notice := r.Group("/notice")
+	notice := r.Group(constants.ApiNoticePath)
 	notice.Use(middleware.AuthCheckMiddleware(&h.config.JWT))
 	{
 		notice.POST("/", h.create)

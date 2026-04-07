@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/thalalhassan/edu_management/internal/app"
 	"github.com/thalalhassan/edu_management/internal/config"
+	"github.com/thalalhassan/edu_management/internal/constants"
 	"github.com/thalalhassan/edu_management/internal/middleware"
 	"github.com/thalalhassan/edu_management/internal/shared/pagination"
 	"github.com/thalalhassan/edu_management/internal/shared/query_params"
@@ -29,7 +30,7 @@ func RegisterRouter(r *gin.RouterGroup, a *app.App) {
 
 func (h *Handler) Routes(r *gin.RouterGroup) {
 	// ── Student Attendance ────────────────────────────────────────────────────
-	att := r.Group("/attendance")
+	att := r.Group(constants.ApiAttendancePath)
 	att.Use(middleware.AuthCheckMiddleware(&h.config.JWT))
 	{
 		att.POST("/", h.markAttendance)
@@ -44,7 +45,7 @@ func (h *Handler) Routes(r *gin.RouterGroup) {
 	}
 
 	// ── Teacher Attendance ────────────────────────────────────────────────────
-	ta := r.Group("/teacher-attendance")
+	ta := r.Group(constants.ApiTeacherAttendancePath)
 	ta.Use(middleware.AuthCheckMiddleware(&h.config.JWT))
 	{
 		ta.POST("/", h.markTeacherAttendance)

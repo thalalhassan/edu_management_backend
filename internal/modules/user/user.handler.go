@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/thalalhassan/edu_management/internal/app"
 	"github.com/thalalhassan/edu_management/internal/config"
+	"github.com/thalalhassan/edu_management/internal/constants"
 	"github.com/thalalhassan/edu_management/internal/middleware"
 	"github.com/thalalhassan/edu_management/internal/shared/pagination"
 	"github.com/thalalhassan/edu_management/internal/shared/response"
@@ -27,7 +28,7 @@ func RegisterRouter(r *gin.RouterGroup, a *app.App) {
 func (h *Handler) Routes(r *gin.RouterGroup) {
 
 	// ── User management routes ──────────────────────────────
-	users := r.Group("/users")
+	users := r.Group(constants.ApiUserPath)
 	users.Use(middleware.AuthCheckMiddleware(&h.config.JWT))
 	{
 		users.GET("/", middleware.IsAdmin(), h.list)

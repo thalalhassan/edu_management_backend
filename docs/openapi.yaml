@@ -365,7 +365,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /student/:
+  /students/:
     get:
       tags:
         - 👨‍🎓 Students
@@ -388,7 +388,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /student/{id}:
+  /students/{id}:
     get:
       tags:
         - 👨‍🎓 Students
@@ -454,7 +454,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /teacher/:
+  /teachers/:
     get:
       tags:
         - 👩‍🏫 Teachers
@@ -477,7 +477,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /teacher/{id}:
+  /teachers/{id}:
     get:
       tags:
         - 👩‍🏫 Teachers
@@ -544,7 +544,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /teacher/employee/{employee_id}:
+  /teachers/employee/{employee_id}:
     get:
       tags:
         - 👩‍🏫 Teachers
@@ -562,7 +562,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /teacher/{id}/active:
+  /teachers/{id}/active:
     patch:
       tags:
         - 👩‍🏫 Teachers
@@ -591,7 +591,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /enrollment/:
+  /enrollments/:
     post:
       tags:
         - 📑 Enrollment
@@ -619,7 +619,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /enrollment/{id}:
+  /enrollments/{id}:
     get:
       tags:
         - 📑 Enrollment
@@ -654,7 +654,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /enrollment/student/{student_id}:
+  /enrollments/student/{student_id}:
     get:
       tags:
         - 📑 Enrollment
@@ -683,7 +683,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /enrollment/class/{class_section_id}/roster:
+  /enrollments/class/{class_section_id}/roster:
     get:
       tags:
         - 📑 Enrollment
@@ -701,7 +701,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /enrollment/{id}/status:
+  /enrollments/{id}/status:
     patch:
       tags:
         - 📑 Enrollment
@@ -742,7 +742,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /department/:
+  /departments/:
     post:
       tags:
         - 🏢 Department
@@ -780,7 +780,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /department/{id}:
+  /departments/{id}:
     get:
       tags:
         - 🏢 Department
@@ -845,7 +845,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /department/{id}/head:
+  /departments/{id}/head:
     patch:
       tags:
         - 🏢 Department
@@ -874,7 +874,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /standard/:
+  /standards/:
     post:
       tags:
         - 📏 Standard
@@ -912,7 +912,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /standard/{id}:
+  /standards/{id}:
     get:
       tags:
         - 📏 Standard
@@ -977,7 +977,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /standard/department/{department_id}:
+  /standards/department/{department_id}:
     get:
       tags:
         - 📏 Standard
@@ -995,7 +995,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /standard/{id}/subjects:
+  /standards/{id}/subjects:
     get:
       tags:
         - 📏 Standard
@@ -1043,7 +1043,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /standard/{id}/subjects/{subject_id}:
+  /standards/{id}/subjects/{subject_id}:
     delete:
       tags:
         - 📏 Standard
@@ -1066,7 +1066,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /class-section/:
+  /class-sections/:
     post:
       tags:
         - 🏫 Class Section
@@ -1116,7 +1116,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /class-section/{id}:
+  /class-sections/{id}:
     get:
       tags:
         - 🏫 Class Section
@@ -1181,7 +1181,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /class-section/standard/{standard_id}:
+  /class-sections/standard/{standard_id}:
     get:
       tags:
         - 🏫 Class Section
@@ -1204,7 +1204,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /class-section/teacher/{teacher_id}:
+  /class-sections/teacher/{teacher_id}:
     get:
       tags:
         - 🏫 Class Section
@@ -1227,7 +1227,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /class-section/{id}/teacher:
+  /class-sections/{id}/teacher:
     patch:
       tags:
         - 🏫 Class Section
@@ -1256,7 +1256,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /academic-year/:
+  /academic-years/:
     get:
       tags:
         - 📅 Academic Year
@@ -1292,7 +1292,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /academic-year/active:
+  /academic-years/active:
     get:
       tags:
         - 📅 Academic Year
@@ -1302,7 +1302,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /academic-year/{id}:
+  /academic-years/{id}:
     get:
       tags:
         - 📅 Academic Year
@@ -1368,7 +1368,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /academic-year/{id}/activate:
+  /academic-years/{id}/activate:
     patch:
       tags:
         - 📅 Academic Year
@@ -1388,7 +1388,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /subject/:
+  /subjects/:
     post:
       tags:
         - 📚 Subject
@@ -1432,7 +1432,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /subject/{id}:
+  /subjects/{id}:
     get:
       tags:
         - 📚 Subject
@@ -1497,7 +1497,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /timetable/:
+  /timetables/:
     post:
       tags:
         - ⏳ Timetable
@@ -1555,7 +1555,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /timetable/{id}:
+  /timetables/{id}:
     get:
       tags:
         - ⏳ Timetable
@@ -1621,7 +1621,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /timetable/class/{class_section_id}/schedule:
+  /timetables/class/{class_section_id}/schedule:
     get:
       tags:
         - ⏳ Timetable
@@ -1642,7 +1642,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /timetable/teacher/{teacher_id}/schedule:
+  /timetables/teacher/{teacher_id}/schedule:
     get:
       tags:
         - ⏳ Timetable
@@ -1663,7 +1663,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /exam/:
+  /exams/:
     post:
       tags:
         - 🎓 Exam
@@ -1725,7 +1725,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /exam/{exam_id}:
+  /exams/{exam_id}:
     get:
       tags:
         - 🎓 Exam
@@ -1784,7 +1784,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /exam/{exam_id}/publish:
+  /exams/{exam_id}/publish:
     patch:
       tags:
         - 🎓 Exam
@@ -1811,7 +1811,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /exam/{exam_id}/schedule:
+  /exams/{exam_id}/schedule:
     post:
       tags:
         - 📅 Exam Schedule
@@ -1860,7 +1860,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /exam-schedule/{schedule_id}:
+  /exams-schedule/{schedule_id}:
     get:
       tags:
         - 📅 Exam Schedule
@@ -1920,7 +1920,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /exam-schedule/class-section/{class_section_id}:
+  /exams-schedule/class-section/{class_section_id}:
     get:
       tags:
         - 📅 Exam Schedule
@@ -1936,7 +1936,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /exam-schedule/{schedule_id}/result:
+  /exams-schedule/{schedule_id}/result:
     post:
       tags:
         - 📊 Exam Result
@@ -1981,7 +1981,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /exam-schedule/{schedule_id}/result/bulk:
+  /exams-schedule/{schedule_id}/result/bulk:
     post:
       tags:
         - 📊 Exam Result
@@ -2015,7 +2015,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /exam-result/{result_id}:
+  /exams-result/{result_id}:
     get:
       tags:
         - 📊 Exam Result
@@ -2074,7 +2074,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /exam-result/student/{enrollment_id}:
+  /exams-result/student/{enrollment_id}:
     get:
       tags:
         - 📊 Exam Result
@@ -2274,7 +2274,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /teacher-attendance/:
+  /teachers-attendance/:
     post:
       tags:
         - 👩‍🏫 Teacher Attendance
@@ -2344,7 +2344,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /teacher-attendance/bulk:
+  /teachers-attendance/bulk:
     post:
       tags:
         - 👩‍🏫 Teacher Attendance
@@ -2372,7 +2372,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /teacher-attendance/{teacher_att_id}:
+  /teachers-attendance/{teacher_att_id}:
     get:
       tags:
         - 👩‍🏫 Teacher Attendance
@@ -2431,7 +2431,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /fee/structure/:
+  /fees/structure/:
     post:
       tags:
         - 💰 Fee > Structure
@@ -2492,7 +2492,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /fee/structure/bulk:
+  /fees/structure/bulk:
     post:
       tags:
         - 💰 Fee > Structure
@@ -2528,7 +2528,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /fee/structure/standard/{standard_id}:
+  /fees/structure/standard/{standard_id}:
     get:
       tags:
         - 💰 Fee > Structure
@@ -2552,7 +2552,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /fee/structure/{id}:
+  /fees/structure/{id}:
     get:
       tags:
         - 💰 Fee > Structure
@@ -2617,7 +2617,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /fee/record/:
+  /fees/record/:
     post:
       tags:
         - 💰 Fee > Records
@@ -2672,7 +2672,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /fee/record/bulk-generate:
+  /fees/record/bulk-generate:
     post:
       tags:
         - 💰 Fee > Records
@@ -2699,7 +2699,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /fee/record/{id}:
+  /fees/record/{id}:
     get:
       tags:
         - 💰 Fee > Records
@@ -2735,7 +2735,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /fee/record/student/{enrollment_id}/summary:
+  /fees/record/student/{enrollment_id}/summary:
     get:
       tags:
         - 💰 Fee > Records
@@ -2756,7 +2756,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /fee/record/{id}/pay:
+  /fees/record/{id}/pay:
     patch:
       tags:
         - 💰 Fee > Records
@@ -2788,7 +2788,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /fee/record/{id}/waive:
+  /fees/record/{id}/waive:
     patch:
       tags:
         - 💰 Fee > Records
@@ -2817,7 +2817,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /leave/:
+  /leaves/:
     post:
       tags:
         - '🌴 Leave '
@@ -2873,7 +2873,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /leave/{leave_id}:
+  /leaves/{leave_id}:
     get:
       tags:
         - '🌴 Leave '
@@ -2932,7 +2932,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /leave/{leave_id}/review:
+  /leaves/{leave_id}/review:
     patch:
       tags:
         - '🌴 Leave '
@@ -2961,7 +2961,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /leave/{leave_id}/cancel:
+  /leaves/{leave_id}/cancel:
     patch:
       tags:
         - '🌴 Leave '
@@ -2979,7 +2979,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /report/report-card:
+  /reports/report-card:
     get:
       tags:
         - 📈 Reports
@@ -2998,7 +2998,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /report/attendance/student:
+  /reports/attendance/student:
     get:
       tags:
         - 📈 Reports
@@ -3026,7 +3026,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /report/attendance/class:
+  /reports/attendance/class:
     get:
       tags:
         - 📈 Reports
@@ -3050,7 +3050,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /report/performance/class:
+  /reports/performance/class:
     get:
       tags:
         - 📈 Reports
@@ -3076,7 +3076,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /report/fee-collection:
+  /reports/fee-collection:
     get:
       tags:
         - 📈 Reports
@@ -3099,7 +3099,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /report/attendance/teacher:
+  /reports/attendance/teacher:
     get:
       tags:
         - 📈 Reports
@@ -3122,7 +3122,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /notice/:
+  /notices/:
     post:
       tags:
         - 📢 Notice
@@ -3172,7 +3172,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /notice/{notice_id}:
+  /notices/{notice_id}:
     get:
       tags:
         - 📢 Notice
@@ -3231,7 +3231,7 @@ paths:
           description: Successful response
           content:
             application/json: {}
-  /notice/{notice_id}/publish:
+  /notices/{notice_id}/publish:
     patch:
       tags:
         - 📢 Notice

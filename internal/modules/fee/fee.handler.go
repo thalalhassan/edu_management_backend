@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/thalalhassan/edu_management/internal/app"
 	"github.com/thalalhassan/edu_management/internal/config"
+	"github.com/thalalhassan/edu_management/internal/constants"
 	"github.com/thalalhassan/edu_management/internal/middleware"
 	"github.com/thalalhassan/edu_management/internal/shared/pagination"
 	"github.com/thalalhassan/edu_management/internal/shared/query_params"
@@ -34,7 +35,7 @@ func RegisterRouter(r *gin.RouterGroup, a *app.App) {
 }
 
 func (h *Handler) Routes(r *gin.RouterGroup) {
-	fee := r.Group("/fee")
+	fee := r.Group(constants.ApiFeePath)
 	fee.Use(middleware.AuthCheckMiddleware(&h.config.JWT))
 	{
 		// ── Fee Structure ──────────────────────────────────

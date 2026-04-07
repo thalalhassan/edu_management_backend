@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/thalalhassan/edu_management/internal/app"
 	"github.com/thalalhassan/edu_management/internal/config"
+	"github.com/thalalhassan/edu_management/internal/constants"
 	"github.com/thalalhassan/edu_management/internal/middleware"
 	"github.com/thalalhassan/edu_management/internal/shared/pagination"
 	"github.com/thalalhassan/edu_management/internal/shared/query_params"
@@ -38,7 +39,7 @@ func RegisterRouter(r *gin.RouterGroup, a *app.App) {
 //   - PATCH  /:id/cancel → teacher cancels own PENDING request
 //   - DELETE /:id        → admin deletes a PENDING / REJECTED request
 func (h *Handler) Routes(r *gin.RouterGroup) {
-	leave := r.Group("/leave")
+	leave := r.Group(constants.ApiLeavePath)
 	leave.Use(middleware.AuthCheckMiddleware(&h.config.JWT))
 	{
 		leave.POST("/", h.apply)

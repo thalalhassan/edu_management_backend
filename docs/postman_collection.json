@@ -423,7 +423,7 @@
             },
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/student/?page=1&limit=10",
+              "raw": "{{base_url}}{{api_version}}/students/?page=1&limit=10",
               "host": ["{{base_url}}{{api_version}}"],
               "path": ["student", ""],
               "query": [
@@ -453,7 +453,7 @@
               ]
             },
             "method": "GET",
-            "url": "{{base_url}}{{api_version}}/student/:id",
+            "url": "{{base_url}}{{api_version}}/students/:id",
             "variable": [
               {
                 "key": "id",
@@ -482,7 +482,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{base_url}}{{api_version}}/student/:id",
+            "url": "{{base_url}}{{api_version}}/students/:id",
             "variable": [
               {
                 "key": "id",
@@ -509,7 +509,7 @@
               ]
             },
             "method": "DELETE",
-            "url": "{{base_url}}{{api_version}}/student/:id",
+            "url": "{{base_url}}{{api_version}}/students/:id",
             "variable": [
               {
                 "key": "id",
@@ -538,7 +538,7 @@
             },
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/teacher/?page=1&limit=10",
+              "raw": "{{base_url}}{{api_version}}/teachers/?page=1&limit=10",
               "host": ["{{base_url}}{{api_version}}"],
               "path": ["teacher", ""],
               "query": [
@@ -568,7 +568,7 @@
               ]
             },
             "method": "GET",
-            "url": "{{base_url}}{{api_version}}/teacher/:id",
+            "url": "{{base_url}}{{api_version}}/teachers/:id",
             "variable": [
               {
                 "key": "id",
@@ -591,7 +591,7 @@
               ]
             },
             "method": "GET",
-            "url": "{{base_url}}{{api_version}}/teacher/employee/:employee_id",
+            "url": "{{base_url}}{{api_version}}/teachers/employee/:employee_id",
             "variable": [
               {
                 "key": "employee_id",
@@ -620,7 +620,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{base_url}}{{api_version}}/teacher/:id",
+            "url": "{{base_url}}{{api_version}}/teachers/:id",
             "variable": [
               {
                 "key": "id",
@@ -653,7 +653,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{base_url}}{{api_version}}/teacher/:id/active",
+            "url": "{{base_url}}{{api_version}}/teachers/:id/active",
             "variable": [
               {
                 "key": "id",
@@ -680,7 +680,7 @@
               ]
             },
             "method": "DELETE",
-            "url": "{{base_url}}{{api_version}}/teacher/:id",
+            "url": "{{base_url}}{{api_version}}/teachers/:id",
             "variable": [
               {
                 "key": "id",
@@ -714,7 +714,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{base_url}}{{api_version}}/enrollment/",
+            "url": "{{base_url}}{{api_version}}/enrollments/",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"student_id\": \"STUDENT_ID_HERE\",\n  \"class_section_id\": \"CLASS_SECTION_ID_HERE\",\n  \"roll_number\": 1,\n  \"enrollment_date\": \"2024-06-01T00:00:00Z\"\n}"
@@ -735,7 +735,7 @@
               ]
             },
             "method": "GET",
-            "url": "{{base_url}}{{api_version}}/enrollment/:id",
+            "url": "{{base_url}}{{api_version}}/enrollments/:id",
             "variable": [
               {
                 "key": "id",
@@ -759,7 +759,7 @@
             },
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/enrollment/student/:student_id?page=1&limit=10",
+              "raw": "{{base_url}}{{api_version}}/enrollments/student/:student_id?page=1&limit=10",
               "host": ["{{base_url}}{{api_version}}"],
               "path": ["enrollment", "student", ":student_id"],
               "query": [
@@ -795,7 +795,7 @@
               ]
             },
             "method": "GET",
-            "url": "{{base_url}}{{api_version}}/enrollment/class/:class_section_id/roster",
+            "url": "{{base_url}}{{api_version}}/enrollments/class/:class_section_id/roster",
             "variable": [
               {
                 "key": "class_section_id",
@@ -824,7 +824,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{base_url}}{{api_version}}/enrollment/:id/status",
+            "url": "{{base_url}}{{api_version}}/enrollments/:id/status",
             "variable": [
               {
                 "key": "id",
@@ -857,7 +857,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{base_url}}{{api_version}}/enrollment/:id/status",
+            "url": "{{base_url}}{{api_version}}/enrollments/:id/status",
             "variable": [
               {
                 "key": "id",
@@ -890,7 +890,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{base_url}}{{api_version}}/enrollment/:id/status",
+            "url": "{{base_url}}{{api_version}}/enrollments/:id/status",
             "variable": [
               {
                 "key": "id",
@@ -917,7 +917,7 @@
               ]
             },
             "method": "DELETE",
-            "url": "{{base_url}}{{api_version}}/enrollment/:id",
+            "url": "{{base_url}}{{api_version}}/enrollments/:id",
             "variable": [
               {
                 "key": "id",
@@ -963,7 +963,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{base_url}}{{api_version}}/department/",
+            "url": "{{base_url}}{{api_version}}/departments/",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"Primary School\",\n  \"code\": \"PRI\",\n  \"description\": \"Grades 1 to 5\",\n  \"head_teacher_id\": null\n}"
@@ -984,7 +984,7 @@
               ]
             },
             "method": "GET",
-            "url": "{{base_url}}{{api_version}}/department/"
+            "url": "{{base_url}}{{api_version}}/departments/"
           }
         },
         {
@@ -1001,7 +1001,7 @@
               ]
             },
             "method": "GET",
-            "url": "{{base_url}}{{api_version}}/department/:id",
+            "url": "{{base_url}}{{api_version}}/departments/:id",
             "variable": [
               {
                 "key": "id",
@@ -1030,7 +1030,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{base_url}}{{api_version}}/department/:id",
+            "url": "{{base_url}}{{api_version}}/departments/:id",
             "variable": [
               {
                 "key": "id",
@@ -1063,7 +1063,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{base_url}}{{api_version}}/department/:id/head",
+            "url": "{{base_url}}{{api_version}}/departments/:id/head",
             "variable": [
               {
                 "key": "id",
@@ -1096,7 +1096,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{base_url}}{{api_version}}/department/:id/head",
+            "url": "{{base_url}}{{api_version}}/departments/:id/head",
             "variable": [
               {
                 "key": "id",
@@ -1123,7 +1123,7 @@
               ]
             },
             "method": "DELETE",
-            "url": "{{base_url}}{{api_version}}/department/:id",
+            "url": "{{base_url}}{{api_version}}/departments/:id",
             "variable": [
               {
                 "key": "id",
@@ -1157,7 +1157,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{base_url}}{{api_version}}/standard/",
+            "url": "{{base_url}}{{api_version}}/standards/",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"Grade 1\",\n  \"department_id\": \"DEPARTMENT_ID_HERE\",\n  \"order_index\": 1,\n  \"description\": \"First grade\"\n}"
@@ -1178,7 +1178,7 @@
               ]
             },
             "method": "GET",
-            "url": "{{base_url}}{{api_version}}/standard/"
+            "url": "{{base_url}}{{api_version}}/standards/"
           }
         },
         {
@@ -1195,7 +1195,7 @@
               ]
             },
             "method": "GET",
-            "url": "{{base_url}}{{api_version}}/standard/:id",
+            "url": "{{base_url}}{{api_version}}/standards/:id",
             "variable": [
               {
                 "key": "id",
@@ -1218,7 +1218,7 @@
               ]
             },
             "method": "GET",
-            "url": "{{base_url}}{{api_version}}/standard/department/:department_id",
+            "url": "{{base_url}}{{api_version}}/standards/department/:department_id",
             "variable": [
               {
                 "key": "department_id",
@@ -1247,7 +1247,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{base_url}}{{api_version}}/standard/:id",
+            "url": "{{base_url}}{{api_version}}/standards/:id",
             "variable": [
               {
                 "key": "id",
@@ -1274,7 +1274,7 @@
               ]
             },
             "method": "DELETE",
-            "url": "{{base_url}}{{api_version}}/standard/:id",
+            "url": "{{base_url}}{{api_version}}/standards/:id",
             "variable": [
               {
                 "key": "id",
@@ -1297,7 +1297,7 @@
               ]
             },
             "method": "GET",
-            "url": "{{base_url}}{{api_version}}/standard/:id/subjects",
+            "url": "{{base_url}}{{api_version}}/standards/:id/subjects",
             "variable": [
               {
                 "key": "id",
@@ -1326,7 +1326,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{base_url}}{{api_version}}/standard/:id/subjects",
+            "url": "{{base_url}}{{api_version}}/standards/:id/subjects",
             "variable": [
               {
                 "key": "id",
@@ -1353,7 +1353,7 @@
               ]
             },
             "method": "DELETE",
-            "url": "{{base_url}}{{api_version}}/standard/:id/subjects/:subject_id",
+            "url": "{{base_url}}{{api_version}}/standards/:id/subjects/:subject_id",
             "variable": [
               {
                 "key": "id",
@@ -1395,7 +1395,7 @@
                 "value": "{{academic_year_id}}"
               }
             ],
-            "url": "{{base_url}}{{api_version}}/class-section/",
+            "url": "{{base_url}}{{api_version}}/class-sections/",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"academic_year_id\": \"ACADEMIC_YEAR_ID_HERE\",\n  \"standard_id\": \"STANDARD_ID_HERE\",\n  \"section_name\": \"A\",\n  \"class_teacher_id\": null,\n  \"room_number\": \"101\",\n  \"max_strength\": 40\n}"
@@ -1422,7 +1422,7 @@
                 "value": "{{academic_year_id}}"
               }
             ],
-            "url": "{{base_url}}{{api_version}}/class-section/"
+            "url": "{{base_url}}{{api_version}}/class-sections/"
           }
         },
         {
@@ -1439,7 +1439,7 @@
               ]
             },
             "method": "GET",
-            "url": "{{base_url}}{{api_version}}/class-section/:id",
+            "url": "{{base_url}}{{api_version}}/class-sections/:id",
             "variable": [
               {
                 "key": "id",
@@ -1468,7 +1468,7 @@
                 "value": "{{academic_year_id}}"
               }
             ],
-            "url": "{{base_url}}{{api_version}}/class-section/standard/:standard_id",
+            "url": "{{base_url}}{{api_version}}/class-sections/standard/:standard_id",
             "variable": [
               {
                 "key": "standard_id",
@@ -1497,7 +1497,7 @@
                 "value": "{{academic_year_id}}"
               }
             ],
-            "url": "{{base_url}}{{api_version}}/class-section/teacher/:teacher_id",
+            "url": "{{base_url}}{{api_version}}/class-sections/teacher/:teacher_id",
             "variable": [
               {
                 "key": "teacher_id",
@@ -1526,7 +1526,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{base_url}}{{api_version}}/class-section/:id",
+            "url": "{{base_url}}{{api_version}}/class-sections/:id",
             "variable": [
               {
                 "key": "id",
@@ -1559,7 +1559,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{base_url}}{{api_version}}/class-section/:id/teacher",
+            "url": "{{base_url}}{{api_version}}/class-sections/:id/teacher",
             "variable": [
               {
                 "key": "id",
@@ -1592,7 +1592,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{base_url}}{{api_version}}/class-section/:id/teacher",
+            "url": "{{base_url}}{{api_version}}/class-sections/:id/teacher",
             "variable": [
               {
                 "key": "id",
@@ -1619,7 +1619,7 @@
               ]
             },
             "method": "DELETE",
-            "url": "{{base_url}}{{api_version}}/class-section/:id",
+            "url": "{{base_url}}{{api_version}}/class-sections/:id",
             "variable": [
               {
                 "key": "id",
@@ -1637,7 +1637,7 @@
           "name": "List Academic Years",
           "request": {
             "method": "GET",
-            "url": "{{base_url}}{{api_version}}/academic-year/"
+            "url": "{{base_url}}{{api_version}}/academic-years/"
           }
         },
         {
@@ -1658,7 +1658,7 @@
           ],
           "request": {
             "method": "GET",
-            "url": "{{base_url}}{{api_version}}/academic-year/active"
+            "url": "{{base_url}}{{api_version}}/academic-years/active"
           }
         },
         {
@@ -1681,7 +1681,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{base_url}}{{api_version}}/academic-year/",
+            "url": "{{base_url}}{{api_version}}/academic-years/",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"2024-25\",\n  \"start_date\": \"2024-06-01T00:00:00Z\",\n  \"end_date\": \"2025-03-31T00:00:00Z\"\n}"
@@ -1702,7 +1702,7 @@
               ]
             },
             "method": "GET",
-            "url": "{{base_url}}{{api_version}}/academic-year/:id",
+            "url": "{{base_url}}{{api_version}}/academic-years/:id",
             "variable": [
               {
                 "key": "id",
@@ -1731,7 +1731,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{base_url}}{{api_version}}/academic-year/:id",
+            "url": "{{base_url}}{{api_version}}/academic-years/:id",
             "variable": [
               {
                 "key": "id",
@@ -1772,7 +1772,7 @@
               ]
             },
             "method": "PATCH",
-            "url": "{{base_url}}{{api_version}}/academic-year/:id/activate",
+            "url": "{{base_url}}{{api_version}}/academic-years/:id/activate",
             "variable": [
               {
                 "key": "id",
@@ -1795,7 +1795,7 @@
               ]
             },
             "method": "DELETE",
-            "url": "{{base_url}}{{api_version}}/academic-year/:id",
+            "url": "{{base_url}}{{api_version}}/academic-years/:id",
             "variable": [
               {
                 "key": "id",
@@ -1829,7 +1829,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{base_url}}{{api_version}}/subject/",
+            "url": "{{base_url}}{{api_version}}/subjects/",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"code\": \"MATH101\",\n  \"name\": \"Mathematics\",\n  \"description\": \"Core mathematics\",\n  \"is_elective\": false\n}"
@@ -1851,7 +1851,7 @@
             },
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/subject/?page=1&limit=10&sort_by=name&sort_dir=asc",
+              "raw": "{{base_url}}{{api_version}}/subjects/?page=1&limit=10&sort_by=name&sort_dir=asc",
               "host": ["{{base_url}}{{api_version}}"],
               "path": ["subject", ""],
               "query": [
@@ -1904,7 +1904,7 @@
             },
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/subject/?is_elective=true&sort_by=name&sort_dir=asc",
+              "raw": "{{base_url}}{{api_version}}/subjects/?is_elective=true&sort_by=name&sort_dir=asc",
               "host": ["{{base_url}}{{api_version}}"],
               "path": ["subject", ""],
               "query": [
@@ -1939,7 +1939,7 @@
             },
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/subject/?search=math",
+              "raw": "{{base_url}}{{api_version}}/subjects/?search=math",
               "host": ["{{base_url}}{{api_version}}"],
               "path": ["subject", ""],
               "query": [
@@ -1965,7 +1965,7 @@
               ]
             },
             "method": "GET",
-            "url": "{{base_url}}{{api_version}}/subject/:id",
+            "url": "{{base_url}}{{api_version}}/subjects/:id",
             "variable": [
               {
                 "key": "id",
@@ -1994,7 +1994,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{base_url}}{{api_version}}/subject/:id",
+            "url": "{{base_url}}{{api_version}}/subjects/:id",
             "variable": [
               {
                 "key": "id",
@@ -2021,7 +2021,7 @@
               ]
             },
             "method": "DELETE",
-            "url": "{{base_url}}{{api_version}}/subject/:id",
+            "url": "{{base_url}}{{api_version}}/subjects/:id",
             "variable": [
               {
                 "key": "id",
@@ -2055,7 +2055,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{base_url}}{{api_version}}/timetable/",
+            "url": "{{base_url}}{{api_version}}/timetables/",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"class_section_id\": \"CLASS_SECTION_ID_HERE\",\n  \"subject_id\": \"SUBJECT_ID_HERE\",\n  \"teacher_id\": \"TEACHER_ID_HERE\",\n  \"day_of_week\": 1,\n  \"start_time\": \"2024-01-01T08:00:00Z\",\n  \"end_time\": \"2024-01-01T09:00:00Z\",\n  \"room_number\": \"101\"\n}"
@@ -2078,7 +2078,7 @@
             },
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/timetable/?page=1&limit=20&sort_by=day_of_week&sort_dir=asc",
+              "raw": "{{base_url}}{{api_version}}/timetables/?page=1&limit=20&sort_by=day_of_week&sort_dir=asc",
               "host": ["{{base_url}}{{api_version}}"],
               "path": ["timetable", ""],
               "query": [
@@ -2142,7 +2142,7 @@
             },
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/timetable/?class_section_id=CLASS_SECTION_ID_HERE&sort_by=day_of_week&sort_dir=asc",
+              "raw": "{{base_url}}{{api_version}}/timetables/?class_section_id=CLASS_SECTION_ID_HERE&sort_by=day_of_week&sort_dir=asc",
               "host": ["{{base_url}}{{api_version}}"],
               "path": ["timetable", ""],
               "query": [
@@ -2177,7 +2177,7 @@
             },
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/timetable/?teacher_id=TEACHER_ID_HERE&sort_by=day_of_week&sort_dir=asc",
+              "raw": "{{base_url}}{{api_version}}/timetables/?teacher_id=TEACHER_ID_HERE&sort_by=day_of_week&sort_dir=asc",
               "host": ["{{base_url}}{{api_version}}"],
               "path": ["timetable", ""],
               "query": [
@@ -2212,7 +2212,7 @@
             },
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/timetable/?day_of_week=1&sort_by=start_time&sort_dir=asc",
+              "raw": "{{base_url}}{{api_version}}/timetables/?day_of_week=1&sort_by=start_time&sort_dir=asc",
               "host": ["{{base_url}}{{api_version}}"],
               "path": ["timetable", ""],
               "query": [
@@ -2247,7 +2247,7 @@
               ]
             },
             "method": "GET",
-            "url": "{{base_url}}{{api_version}}/timetable/:id",
+            "url": "{{base_url}}{{api_version}}/timetables/:id",
             "variable": [
               {
                 "key": "id",
@@ -2270,7 +2270,7 @@
               ]
             },
             "method": "GET",
-            "url": "{{base_url}}{{api_version}}/timetable/class/:class_section_id/schedule",
+            "url": "{{base_url}}{{api_version}}/timetables/class/:class_section_id/schedule",
             "variable": [
               {
                 "key": "class_section_id",
@@ -2294,7 +2294,7 @@
               ]
             },
             "method": "GET",
-            "url": "{{base_url}}{{api_version}}/timetable/teacher/:teacher_id/schedule",
+            "url": "{{base_url}}{{api_version}}/timetables/teacher/:teacher_id/schedule",
             "variable": [
               {
                 "key": "teacher_id",
@@ -2324,7 +2324,7 @@
                 "value": "application/json"
               }
             ],
-            "url": "{{base_url}}{{api_version}}/timetable/:id",
+            "url": "{{base_url}}{{api_version}}/timetables/:id",
             "variable": [
               {
                 "key": "id",
@@ -2351,7 +2351,7 @@
               ]
             },
             "method": "DELETE",
-            "url": "{{base_url}}{{api_version}}/timetable/:id",
+            "url": "{{base_url}}{{api_version}}/timetables/:id",
             "variable": [
               {
                 "key": "id",
@@ -2390,8 +2390,8 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}{{api_version}}/exam/",
-              "host": ["{{base_url}}{{api_version}}/exam/"]
+              "raw": "{{base_url}}{{api_version}}/exams/",
+              "host": ["{{base_url}}{{api_version}}/exams/"]
             },
             "body": {
               "mode": "raw",
@@ -2404,8 +2404,8 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/exam/?academic_year_id={{academic_year_id}}&page=1&page_size=10&sort_by=start_date&sort_dir=asc",
-              "host": ["{{base_url}}{{api_version}}/exam/"],
+              "raw": "{{base_url}}{{api_version}}/exams/?academic_year_id={{academic_year_id}}&page=1&page_size=10&sort_by=start_date&sort_dir=asc",
+              "host": ["{{base_url}}{{api_version}}/exams/"],
               "query": [
                 {
                   "key": "academic_year_id",
@@ -2446,8 +2446,8 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/exam/{{exam_id}}",
-              "host": ["{{base_url}}{{api_version}}/exam/{{exam_id}}"]
+              "raw": "{{base_url}}{{api_version}}/exams/{{exam_id}}",
+              "host": ["{{base_url}}{{api_version}}/exams/{{exam_id}}"]
             }
           }
         },
@@ -2462,8 +2462,8 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}{{api_version}}/exam/{{exam_id}}",
-              "host": ["{{base_url}}{{api_version}}/exam/{{exam_id}}"]
+              "raw": "{{base_url}}{{api_version}}/exams/{{exam_id}}",
+              "host": ["{{base_url}}{{api_version}}/exams/{{exam_id}}"]
             },
             "body": {
               "mode": "raw",
@@ -2482,8 +2482,8 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}{{api_version}}/exam/{{exam_id}}/publish",
-              "host": ["{{base_url}}{{api_version}}/exam/{{exam_id}}/publish"]
+              "raw": "{{base_url}}{{api_version}}/exams/{{exam_id}}/publish",
+              "host": ["{{base_url}}{{api_version}}/exams/{{exam_id}}/publish"]
             },
             "body": {
               "mode": "raw",
@@ -2502,8 +2502,8 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}{{api_version}}/exam/{{exam_id}}/publish",
-              "host": ["{{base_url}}{{api_version}}/exam/{{exam_id}}/publish"]
+              "raw": "{{base_url}}{{api_version}}/exams/{{exam_id}}/publish",
+              "host": ["{{base_url}}{{api_version}}/exams/{{exam_id}}/publish"]
             },
             "body": {
               "mode": "raw",
@@ -2516,8 +2516,8 @@
           "request": {
             "method": "DELETE",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/exam/{{exam_id}}",
-              "host": ["{{base_url}}{{api_version}}/exam/{{exam_id}}"]
+              "raw": "{{base_url}}{{api_version}}/exams/{{exam_id}}",
+              "host": ["{{base_url}}{{api_version}}/exams/{{exam_id}}"]
             }
           }
         }
@@ -2551,8 +2551,8 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}{{api_version}}/exam/{{exam_id}}/schedule",
-              "host": ["{{base_url}}{{api_version}}/exam/{{exam_id}}/schedule"]
+              "raw": "{{base_url}}{{api_version}}/exams/{{exam_id}}/schedule",
+              "host": ["{{base_url}}{{api_version}}/exams/{{exam_id}}/schedule"]
             },
             "body": {
               "mode": "raw",
@@ -2565,8 +2565,8 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/exam/{{exam_id}}/schedule",
-              "host": ["{{base_url}}{{api_version}}/exam/{{exam_id}}/schedule"]
+              "raw": "{{base_url}}{{api_version}}/exams/{{exam_id}}/schedule",
+              "host": ["{{base_url}}{{api_version}}/exams/{{exam_id}}/schedule"]
             }
           }
         },
@@ -2575,9 +2575,9 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/exam-schedule/{{schedule_id}}",
+              "raw": "{{base_url}}{{api_version}}/exams-schedule/{{schedule_id}}",
               "host": [
-                "{{base_url}}{{api_version}}/exam-schedule/{{schedule_id}}"
+                "{{base_url}}{{api_version}}/exams-schedule/{{schedule_id}}"
               ]
             }
           }
@@ -2587,9 +2587,9 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/exam-schedule/class-section/{{class_section_id}}",
+              "raw": "{{base_url}}{{api_version}}/exams-schedule/class-section/{{class_section_id}}",
               "host": [
-                "{{base_url}}{{api_version}}/exam-schedule/class-section/{{class_section_id}}"
+                "{{base_url}}{{api_version}}/exams-schedule/class-section/{{class_section_id}}"
               ]
             }
           }
@@ -2605,9 +2605,9 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}{{api_version}}/exam-schedule/{{schedule_id}}",
+              "raw": "{{base_url}}{{api_version}}/exams-schedule/{{schedule_id}}",
               "host": [
-                "{{base_url}}{{api_version}}/exam-schedule/{{schedule_id}}"
+                "{{base_url}}{{api_version}}/exams-schedule/{{schedule_id}}"
               ]
             },
             "body": {
@@ -2621,9 +2621,9 @@
           "request": {
             "method": "DELETE",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/exam-schedule/{{schedule_id}}",
+              "raw": "{{base_url}}{{api_version}}/exams-schedule/{{schedule_id}}",
               "host": [
-                "{{base_url}}{{api_version}}/exam-schedule/{{schedule_id}}"
+                "{{base_url}}{{api_version}}/exams-schedule/{{schedule_id}}"
               ]
             }
           }
@@ -2658,9 +2658,9 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}{{api_version}}/exam-schedule/{{schedule_id}}/result",
+              "raw": "{{base_url}}{{api_version}}/exams-schedule/{{schedule_id}}/result",
               "host": [
-                "{{base_url}}{{api_version}}/exam-schedule/{{schedule_id}}/result"
+                "{{base_url}}{{api_version}}/exams-schedule/{{schedule_id}}/result"
               ]
             },
             "body": {
@@ -2680,9 +2680,9 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}{{api_version}}/exam-schedule/{{schedule_id}}/result/bulk",
+              "raw": "{{base_url}}{{api_version}}/exams-schedule/{{schedule_id}}/result/bulk",
               "host": [
-                "{{base_url}}{{api_version}}/exam-schedule/{{schedule_id}}/result/bulk"
+                "{{base_url}}{{api_version}}/exams-schedule/{{schedule_id}}/result/bulk"
               ]
             },
             "body": {
@@ -2696,9 +2696,9 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/exam-schedule/{{schedule_id}}/result",
+              "raw": "{{base_url}}{{api_version}}/exams-schedule/{{schedule_id}}/result",
               "host": [
-                "{{base_url}}{{api_version}}/exam-schedule/{{schedule_id}}/result"
+                "{{base_url}}{{api_version}}/exams-schedule/{{schedule_id}}/result"
               ]
             }
           }
@@ -2708,8 +2708,8 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/exam-result/{{result_id}}",
-              "host": ["{{base_url}}{{api_version}}/exam-result/{{result_id}}"]
+              "raw": "{{base_url}}{{api_version}}/exams-result/{{result_id}}",
+              "host": ["{{base_url}}{{api_version}}/exams-result/{{result_id}}"]
             }
           }
         },
@@ -2718,9 +2718,9 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/exam-result/student/{{enrollment_id}}",
+              "raw": "{{base_url}}{{api_version}}/exams-result/student/{{enrollment_id}}",
               "host": [
-                "{{base_url}}{{api_version}}/exam-result/student/{{enrollment_id}}"
+                "{{base_url}}{{api_version}}/exams-result/student/{{enrollment_id}}"
               ]
             }
           }
@@ -2736,8 +2736,8 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}{{api_version}}/exam-result/{{result_id}}",
-              "host": ["{{base_url}}{{api_version}}/exam-result/{{result_id}}"]
+              "raw": "{{base_url}}{{api_version}}/exams-result/{{result_id}}",
+              "host": ["{{base_url}}{{api_version}}/exams-result/{{result_id}}"]
             },
             "body": {
               "mode": "raw",
@@ -2750,8 +2750,8 @@
           "request": {
             "method": "DELETE",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/exam-result/{{result_id}}",
-              "host": ["{{base_url}}{{api_version}}/exam-result/{{result_id}}"]
+              "raw": "{{base_url}}{{api_version}}/exams-result/{{result_id}}",
+              "host": ["{{base_url}}{{api_version}}/exams-result/{{result_id}}"]
             }
           }
         }
@@ -2958,8 +2958,8 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}{{api_version}}/teacher-attendance/",
-              "host": ["{{base_url}}{{api_version}}/teacher-attendance/"]
+              "raw": "{{base_url}}{{api_version}}/teachers-attendance/",
+              "host": ["{{base_url}}{{api_version}}/teachers-attendance/"]
             },
             "body": {
               "mode": "raw",
@@ -2978,8 +2978,8 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}{{api_version}}/teacher-attendance/bulk",
-              "host": ["{{base_url}}{{api_version}}/teacher-attendance/bulk"]
+              "raw": "{{base_url}}{{api_version}}/teachers-attendance/bulk",
+              "host": ["{{base_url}}{{api_version}}/teachers-attendance/bulk"]
             },
             "body": {
               "mode": "raw",
@@ -2992,8 +2992,8 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/teacher-attendance/?teacher_id={{teacher_id}}&date_from=2025-09-01&date_to=2025-09-30&page=1&page_size=20&sort_by=date&sort_dir=desc",
-              "host": ["{{base_url}}{{api_version}}/teacher-attendance/"],
+              "raw": "{{base_url}}{{api_version}}/teachers-attendance/?teacher_id={{teacher_id}}&date_from=2025-09-01&date_to=2025-09-30&page=1&page_size=20&sort_by=date&sort_dir=desc",
+              "host": ["{{base_url}}{{api_version}}/teachers-attendance/"],
               "query": [
                 {
                   "key": "teacher_id",
@@ -3037,9 +3037,9 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/teacher-attendance/{{teacher_att_id}}",
+              "raw": "{{base_url}}{{api_version}}/teachers-attendance/{{teacher_att_id}}",
               "host": [
-                "{{base_url}}{{api_version}}/teacher-attendance/{{teacher_att_id}}"
+                "{{base_url}}{{api_version}}/teachers-attendance/{{teacher_att_id}}"
               ]
             }
           }
@@ -3055,9 +3055,9 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}{{api_version}}/teacher-attendance/{{teacher_att_id}}",
+              "raw": "{{base_url}}{{api_version}}/teachers-attendance/{{teacher_att_id}}",
               "host": [
-                "{{base_url}}{{api_version}}/teacher-attendance/{{teacher_att_id}}"
+                "{{base_url}}{{api_version}}/teachers-attendance/{{teacher_att_id}}"
               ]
             },
             "body": {
@@ -3071,9 +3071,9 @@
           "request": {
             "method": "DELETE",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/teacher-attendance/{{teacher_att_id}}",
+              "raw": "{{base_url}}{{api_version}}/teachers-attendance/{{teacher_att_id}}",
               "host": [
-                "{{base_url}}{{api_version}}/teacher-attendance/{{teacher_att_id}}"
+                "{{base_url}}{{api_version}}/teachers-attendance/{{teacher_att_id}}"
               ]
             }
           }
@@ -3103,7 +3103,7 @@
                 "header": [
                   { "key": "Content-Type", "value": "application/json" }
                 ],
-                "url": "{{base_url}}{{api_version}}/fee/structure/",
+                "url": "{{base_url}}{{api_version}}/fees/structure/",
                 "body": {
                   "mode": "raw",
                   "raw": "{\n  \"academic_year_id\": \"{{academic_year_id}}\",\n  \"standard_id\": \"STANDARD_ID_HERE\",\n  \"fee_component\": \"Tuition\",\n  \"amount\": \"5000.00\",\n  \"due_date\": \"2024-07-15T00:00:00Z\"\n}"
@@ -3127,7 +3127,7 @@
                 "header": [
                   { "key": "Content-Type", "value": "application/json" }
                 ],
-                "url": "{{base_url}}{{api_version}}/fee/structure/bulk",
+                "url": "{{base_url}}{{api_version}}/fees/structure/bulk",
                 "body": {
                   "mode": "raw",
                   "raw": "{\n  \"academic_year_id\": \"{{academic_year_id}}\",\n  \"standard_id\": \"STANDARD_ID_HERE\",\n  \"components\": [\n    {\n      \"fee_component\": \"Tuition\",\n      \"amount\": \"5000.00\",\n      \"due_date\": \"2024-07-15T00:00:00Z\"\n    },\n    {\n      \"fee_component\": \"Transport\",\n      \"amount\": \"1500.00\",\n      \"due_date\": \"2024-07-15T00:00:00Z\"\n    },\n    {\n      \"fee_component\": \"Library\",\n      \"amount\": \"500.00\"\n    }\n  ]\n}"
@@ -3150,7 +3150,7 @@
                 },
                 "method": "GET",
                 "url": {
-                  "raw": "{{base_url}}{{api_version}}/fee/structure/?page=1&limit=20&sort_by=fee_component&sort_dir=asc",
+                  "raw": "{{base_url}}{{api_version}}/fees/structure/?page=1&limit=20&sort_by=fee_component&sort_dir=asc",
                   "host": ["{{base_url}}{{api_version}}"],
                   "path": ["fee", "structure", ""],
                   "query": [
@@ -3198,7 +3198,7 @@
                     "value": "{{academic_year_id}}"
                   }
                 ],
-                "url": "{{base_url}}{{api_version}}/fee/structure/standard/:standard_id",
+                "url": "{{base_url}}{{api_version}}/fees/structure/standard/:standard_id",
                 "variable": [
                   { "key": "standard_id", "value": "STANDARD_ID_HERE" }
                 ],
@@ -3219,7 +3219,7 @@
                   ]
                 },
                 "method": "GET",
-                "url": "{{base_url}}{{api_version}}/fee/structure/:id",
+                "url": "{{base_url}}{{api_version}}/fees/structure/:id",
                 "variable": [{ "key": "id", "value": "FEE_STRUCTURE_ID_HERE" }]
               }
             },
@@ -3240,7 +3240,7 @@
                 "header": [
                   { "key": "Content-Type", "value": "application/json" }
                 ],
-                "url": "{{base_url}}{{api_version}}/fee/structure/:id",
+                "url": "{{base_url}}{{api_version}}/fees/structure/:id",
                 "variable": [{ "key": "id", "value": "FEE_STRUCTURE_ID_HERE" }],
                 "body": {
                   "mode": "raw",
@@ -3262,7 +3262,7 @@
                   ]
                 },
                 "method": "DELETE",
-                "url": "{{base_url}}{{api_version}}/fee/structure/:id",
+                "url": "{{base_url}}{{api_version}}/fees/structure/:id",
                 "variable": [{ "key": "id", "value": "FEE_STRUCTURE_ID_HERE" }]
               }
             }
@@ -3288,7 +3288,7 @@
                 "header": [
                   { "key": "Content-Type", "value": "application/json" }
                 ],
-                "url": "{{base_url}}{{api_version}}/fee/record/",
+                "url": "{{base_url}}{{api_version}}/fees/record/",
                 "body": {
                   "mode": "raw",
                   "raw": "{\n  \"student_enrollment_id\": \"ENROLLMENT_ID_HERE\",\n  \"fee_component\": \"Tuition\",\n  \"amount_due\": \"5000.00\",\n  \"due_date\": \"2024-07-15T00:00:00Z\",\n  \"remarks\": \"Term 1 fee\"\n}"
@@ -3312,7 +3312,7 @@
                 "header": [
                   { "key": "Content-Type", "value": "application/json" }
                 ],
-                "url": "{{base_url}}{{api_version}}/fee/record/bulk-generate",
+                "url": "{{base_url}}{{api_version}}/fees/record/bulk-generate",
                 "body": {
                   "mode": "raw",
                   "raw": "{\n  \"class_section_id\": \"CLASS_SECTION_ID_HERE\"\n}"
@@ -3335,7 +3335,7 @@
                 },
                 "method": "GET",
                 "url": {
-                  "raw": "{{base_url}}{{api_version}}/fee/record/?page=1&limit=20&sort_by=due_date&sort_dir=asc",
+                  "raw": "{{base_url}}{{api_version}}/fees/record/?page=1&limit=20&sort_by=due_date&sort_dir=asc",
                   "host": ["{{base_url}}{{api_version}}"],
                   "path": ["fee", "record", ""],
                   "query": [
@@ -3380,7 +3380,7 @@
                 },
                 "method": "GET",
                 "url": {
-                  "raw": "{{base_url}}{{api_version}}/fee/record/?status=OVERDUE&sort_by=due_date&sort_dir=asc",
+                  "raw": "{{base_url}}{{api_version}}/fees/record/?status=OVERDUE&sort_by=due_date&sort_dir=asc",
                   "host": ["{{base_url}}{{api_version}}"],
                   "path": ["fee", "record", ""],
                   "query": [
@@ -3405,7 +3405,7 @@
                   ]
                 },
                 "method": "GET",
-                "url": "{{base_url}}{{api_version}}/fee/record/:id",
+                "url": "{{base_url}}{{api_version}}/fees/record/:id",
                 "variable": [{ "key": "id", "value": "FEE_RECORD_ID_HERE" }]
               }
             },
@@ -3423,7 +3423,7 @@
                   ]
                 },
                 "method": "GET",
-                "url": "{{base_url}}{{api_version}}/fee/record/student/:enrollment_id/summary",
+                "url": "{{base_url}}{{api_version}}/fees/record/student/:enrollment_id/summary",
                 "variable": [
                   { "key": "enrollment_id", "value": "ENROLLMENT_ID_HERE" }
                 ],
@@ -3447,7 +3447,7 @@
                 "header": [
                   { "key": "Content-Type", "value": "application/json" }
                 ],
-                "url": "{{base_url}}{{api_version}}/fee/record/:id/pay",
+                "url": "{{base_url}}{{api_version}}/fees/record/:id/pay",
                 "variable": [{ "key": "id", "value": "FEE_RECORD_ID_HERE" }],
                 "body": {
                   "mode": "raw",
@@ -3472,7 +3472,7 @@
                 "header": [
                   { "key": "Content-Type", "value": "application/json" }
                 ],
-                "url": "{{base_url}}{{api_version}}/fee/record/:id/waive",
+                "url": "{{base_url}}{{api_version}}/fees/record/:id/waive",
                 "variable": [{ "key": "id", "value": "FEE_RECORD_ID_HERE" }],
                 "body": {
                   "mode": "raw",
@@ -3494,7 +3494,7 @@
                   ]
                 },
                 "method": "DELETE",
-                "url": "{{base_url}}{{api_version}}/fee/record/:id",
+                "url": "{{base_url}}{{api_version}}/fees/record/:id",
                 "variable": [{ "key": "id", "value": "FEE_RECORD_ID_HERE" }],
                 "description": "Blocked if the record is already paid."
               }
@@ -3528,8 +3528,8 @@
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": {
-              "raw": "{{base_url}}{{api_version}}/leave/",
-              "host": ["{{base_url}}{{api_version}}/leave/"]
+              "raw": "{{base_url}}{{api_version}}/leaves/",
+              "host": ["{{base_url}}{{api_version}}/leaves/"]
             },
             "body": {
               "mode": "raw",
@@ -3557,8 +3557,8 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/leave/?page=1&page_size=10&sort_by=created_at&sort_dir=desc",
-              "host": ["{{base_url}}{{api_version}}/leave/"],
+              "raw": "{{base_url}}{{api_version}}/leaves/?page=1&page_size=10&sort_by=created_at&sort_dir=desc",
+              "host": ["{{base_url}}{{api_version}}/leaves/"],
               "query": [
                 {
                   "key": "teacher_id",
@@ -3581,8 +3581,8 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/leave/?teacher_id={{teacher_id}}&page=1&page_size=20&sort_by=from_date&sort_dir=asc",
-              "host": ["{{base_url}}{{api_version}}/leave/"],
+              "raw": "{{base_url}}{{api_version}}/leaves/?teacher_id={{teacher_id}}&page=1&page_size=20&sort_by=from_date&sort_dir=asc",
+              "host": ["{{base_url}}{{api_version}}/leaves/"],
               "query": [
                 { "key": "teacher_id", "value": "{{teacher_id}}" },
                 { "key": "page", "value": "1" },
@@ -3598,8 +3598,8 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/leave/?status=PENDING&page=1&page_size=20",
-              "host": ["{{base_url}}{{api_version}}/leave/"],
+              "raw": "{{base_url}}{{api_version}}/leaves/?status=PENDING&page=1&page_size=20",
+              "host": ["{{base_url}}{{api_version}}/leaves/"],
               "query": [
                 { "key": "status", "value": "PENDING" },
                 { "key": "page", "value": "1" },
@@ -3613,8 +3613,8 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/leave/?date_from=2025-10-01&date_to=2025-10-31&page=1&page_size=20",
-              "host": ["{{base_url}}{{api_version}}/leave/"],
+              "raw": "{{base_url}}{{api_version}}/leaves/?date_from=2025-10-01&date_to=2025-10-31&page=1&page_size=20",
+              "host": ["{{base_url}}{{api_version}}/leaves/"],
               "query": [
                 { "key": "date_from", "value": "2025-10-01" },
                 { "key": "date_to", "value": "2025-10-31" },
@@ -3643,8 +3643,8 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/leave/{{leave_id}}",
-              "host": ["{{base_url}}{{api_version}}/leave/{{leave_id}}"]
+              "raw": "{{base_url}}{{api_version}}/leaves/{{leave_id}}",
+              "host": ["{{base_url}}{{api_version}}/leaves/{{leave_id}}"]
             }
           }
         },
@@ -3668,8 +3668,8 @@
             "method": "PUT",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": {
-              "raw": "{{base_url}}{{api_version}}/leave/{{leave_id}}",
-              "host": ["{{base_url}}{{api_version}}/leave/{{leave_id}}"]
+              "raw": "{{base_url}}{{api_version}}/leaves/{{leave_id}}",
+              "host": ["{{base_url}}{{api_version}}/leaves/{{leave_id}}"]
             },
             "body": {
               "mode": "raw",
@@ -3699,8 +3699,8 @@
             "method": "PATCH",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": {
-              "raw": "{{base_url}}{{api_version}}/leave/{{leave_id}}/review",
-              "host": ["{{base_url}}{{api_version}}/leave/{{leave_id}}/review"]
+              "raw": "{{base_url}}{{api_version}}/leaves/{{leave_id}}/review",
+              "host": ["{{base_url}}{{api_version}}/leaves/{{leave_id}}/review"]
             },
             "body": {
               "mode": "raw",
@@ -3728,8 +3728,8 @@
             "method": "PATCH",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": {
-              "raw": "{{base_url}}{{api_version}}/leave/{{leave_id}}/review",
-              "host": ["{{base_url}}{{api_version}}/leave/{{leave_id}}/review"]
+              "raw": "{{base_url}}{{api_version}}/leaves/{{leave_id}}/review",
+              "host": ["{{base_url}}{{api_version}}/leaves/{{leave_id}}/review"]
             },
             "body": {
               "mode": "raw",
@@ -3757,8 +3757,8 @@
           "request": {
             "method": "PATCH",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/leave/{{leave_id}}/cancel",
-              "host": ["{{base_url}}{{api_version}}/leave/{{leave_id}}/cancel"]
+              "raw": "{{base_url}}{{api_version}}/leaves/{{leave_id}}/cancel",
+              "host": ["{{base_url}}{{api_version}}/leaves/{{leave_id}}/cancel"]
             }
           }
         },
@@ -3777,8 +3777,8 @@
           "request": {
             "method": "DELETE",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/leave/{{leave_id}}",
-              "host": ["{{base_url}}{{api_version}}/leave/{{leave_id}}"]
+              "raw": "{{base_url}}{{api_version}}/leaves/{{leave_id}}",
+              "host": ["{{base_url}}{{api_version}}/leaves/{{leave_id}}"]
             }
           }
         },
@@ -3798,8 +3798,8 @@
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": {
-              "raw": "{{base_url}}{{api_version}}/leave/",
-              "host": ["{{base_url}}{{api_version}}/leave/"]
+              "raw": "{{base_url}}{{api_version}}/leaves/",
+              "host": ["{{base_url}}{{api_version}}/leaves/"]
             },
             "body": {
               "mode": "raw",
@@ -3823,8 +3823,8 @@
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": {
-              "raw": "{{base_url}}{{api_version}}/leave/",
-              "host": ["{{base_url}}{{api_version}}/leave/"]
+              "raw": "{{base_url}}{{api_version}}/leaves/",
+              "host": ["{{base_url}}{{api_version}}/leaves/"]
             },
             "body": {
               "mode": "raw",
@@ -3848,8 +3848,8 @@
             "method": "PATCH",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": {
-              "raw": "{{base_url}}{{api_version}}/leave/{{leave_id}}/review",
-              "host": ["{{base_url}}{{api_version}}/leave/{{leave_id}}/review"]
+              "raw": "{{base_url}}{{api_version}}/leaves/{{leave_id}}/review",
+              "host": ["{{base_url}}{{api_version}}/leaves/{{leave_id}}/review"]
             },
             "body": {
               "mode": "raw",
@@ -3873,8 +3873,8 @@
             "method": "PUT",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": {
-              "raw": "{{base_url}}{{api_version}}/leave/{{leave_id}}",
-              "host": ["{{base_url}}{{api_version}}/leave/{{leave_id}}"]
+              "raw": "{{base_url}}{{api_version}}/leaves/{{leave_id}}",
+              "host": ["{{base_url}}{{api_version}}/leaves/{{leave_id}}"]
             },
             "body": {
               "mode": "raw",
@@ -3902,7 +3902,7 @@
             },
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/report/report-card?student_enrollment_id=ENROLLMENT_ID_HERE&exam_id=EXAM_ID_HERE",
+              "raw": "{{base_url}}{{api_version}}/reports/report-card?student_enrollment_id=ENROLLMENT_ID_HERE&exam_id=EXAM_ID_HERE",
               "host": ["{{base_url}}{{api_version}}"],
               "path": ["report", "report-card"],
               "query": [
@@ -3931,7 +3931,7 @@
             },
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/report/report-card?student_enrollment_id=ENROLLMENT_ID_HERE",
+              "raw": "{{base_url}}{{api_version}}/reports/report-card?student_enrollment_id=ENROLLMENT_ID_HERE",
               "host": ["{{base_url}}{{api_version}}"],
               "path": ["report", "report-card"],
               "query": [
@@ -3959,7 +3959,7 @@
             },
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/report/attendance/student?student_enrollment_id=ENROLLMENT_ID_HERE",
+              "raw": "{{base_url}}{{api_version}}/reports/attendance/student?student_enrollment_id=ENROLLMENT_ID_HERE",
               "host": ["{{base_url}}{{api_version}}"],
               "path": ["report", "attendance", "student"],
               "query": [
@@ -3989,7 +3989,7 @@
             },
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/report/attendance/student?student_enrollment_id=ENROLLMENT_ID_HERE&from_date=2024-06-01&to_date=2024-09-30",
+              "raw": "{{base_url}}{{api_version}}/reports/attendance/student?student_enrollment_id=ENROLLMENT_ID_HERE&from_date=2024-06-01&to_date=2024-09-30",
               "host": ["{{base_url}}{{api_version}}"],
               "path": ["report", "attendance", "student"],
               "query": [
@@ -4018,7 +4018,7 @@
             },
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/report/attendance/class?class_section_id=CLASS_SECTION_ID_HERE&month=7&year=2024",
+              "raw": "{{base_url}}{{api_version}}/reports/attendance/class?class_section_id=CLASS_SECTION_ID_HERE&month=7&year=2024",
               "host": ["{{base_url}}{{api_version}}"],
               "path": ["report", "attendance", "class"],
               "query": [
@@ -4045,7 +4045,7 @@
             },
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/report/attendance/class?class_section_id=CLASS_SECTION_ID_HERE&date=2024-07-15",
+              "raw": "{{base_url}}{{api_version}}/reports/attendance/class?class_section_id=CLASS_SECTION_ID_HERE&date=2024-07-15",
               "host": ["{{base_url}}{{api_version}}"],
               "path": ["report", "attendance", "class"],
               "query": [
@@ -4071,7 +4071,7 @@
             },
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/report/performance/class?class_section_id=CLASS_SECTION_ID_HERE&exam_id=EXAM_ID_HERE",
+              "raw": "{{base_url}}{{api_version}}/reports/performance/class?class_section_id=CLASS_SECTION_ID_HERE&exam_id=EXAM_ID_HERE",
               "host": ["{{base_url}}{{api_version}}"],
               "path": ["report", "performance", "class"],
               "query": [
@@ -4097,7 +4097,7 @@
             },
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/report/fee-collection?academic_year_id={{academic_year_id}}",
+              "raw": "{{base_url}}{{api_version}}/reports/fee-collection?academic_year_id={{academic_year_id}}",
               "host": ["{{base_url}}{{api_version}}"],
               "path": ["report", "fee-collection"],
               "query": [
@@ -4122,7 +4122,7 @@
             },
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/report/fee-collection?academic_year_id={{academic_year_id}}&standard_id=STANDARD_ID_HERE",
+              "raw": "{{base_url}}{{api_version}}/reports/fee-collection?academic_year_id={{academic_year_id}}&standard_id=STANDARD_ID_HERE",
               "host": ["{{base_url}}{{api_version}}"],
               "path": ["report", "fee-collection"],
               "query": [
@@ -4147,7 +4147,7 @@
             },
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/report/fee-collection?academic_year_id={{academic_year_id}}&class_section_id=CLASS_SECTION_ID_HERE",
+              "raw": "{{base_url}}{{api_version}}/reports/fee-collection?academic_year_id={{academic_year_id}}&class_section_id=CLASS_SECTION_ID_HERE",
               "host": ["{{base_url}}{{api_version}}"],
               "path": ["report", "fee-collection"],
               "query": [
@@ -4172,7 +4172,7 @@
             },
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/report/attendance/teacher?month=7&year=2024",
+              "raw": "{{base_url}}{{api_version}}/reports/attendance/teacher?month=7&year=2024",
               "host": ["{{base_url}}{{api_version}}"],
               "path": ["report", "attendance", "teacher"],
               "query": [
@@ -4198,7 +4198,7 @@
             },
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/report/attendance/teacher?teacher_id=TEACHER_ID_HERE&month=7&year=2024",
+              "raw": "{{base_url}}{{api_version}}/reports/attendance/teacher?teacher_id=TEACHER_ID_HERE&month=7&year=2024",
               "host": ["{{base_url}}{{api_version}}"],
               "path": ["report", "attendance", "teacher"],
               "query": [
@@ -4224,7 +4224,7 @@
             },
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/report/attendance/teacher?from_date=2024-06-01&to_date=2024-11-30",
+              "raw": "{{base_url}}{{api_version}}/reports/attendance/teacher?from_date=2024-06-01&to_date=2024-11-30",
               "host": ["{{base_url}}{{api_version}}"],
               "path": ["report", "attendance", "teacher"],
               "query": [
@@ -4261,8 +4261,8 @@
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": {
-              "raw": "{{base_url}}{{api_version}}/notice/",
-              "host": ["{{base_url}}{{api_version}}/notice/"]
+              "raw": "{{base_url}}{{api_version}}/notices/",
+              "host": ["{{base_url}}{{api_version}}/notices/"]
             },
             "body": {
               "mode": "raw",
@@ -4291,8 +4291,8 @@
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": {
-              "raw": "{{base_url}}{{api_version}}/notice/",
-              "host": ["{{base_url}}{{api_version}}/notice/"]
+              "raw": "{{base_url}}{{api_version}}/notices/",
+              "host": ["{{base_url}}{{api_version}}/notices/"]
             },
             "body": {
               "mode": "raw",
@@ -4321,8 +4321,8 @@
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": {
-              "raw": "{{base_url}}{{api_version}}/notice/",
-              "host": ["{{base_url}}{{api_version}}/notice/"]
+              "raw": "{{base_url}}{{api_version}}/notices/",
+              "host": ["{{base_url}}{{api_version}}/notices/"]
             },
             "body": {
               "mode": "raw",
@@ -4336,8 +4336,8 @@
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": {
-              "raw": "{{base_url}}{{api_version}}/notice/",
-              "host": ["{{base_url}}{{api_version}}/notice/"]
+              "raw": "{{base_url}}{{api_version}}/notices/",
+              "host": ["{{base_url}}{{api_version}}/notices/"]
             },
             "body": {
               "mode": "raw",
@@ -4367,8 +4367,8 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/notice/{{notice_id}}",
-              "host": ["{{base_url}}{{api_version}}/notice/{{notice_id}}"]
+              "raw": "{{base_url}}{{api_version}}/notices/{{notice_id}}",
+              "host": ["{{base_url}}{{api_version}}/notices/{{notice_id}}"]
             }
           }
         },
@@ -4393,8 +4393,8 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/notice/?page=1&page_size=10&sort_by=created_at&sort_dir=desc",
-              "host": ["{{base_url}}{{api_version}}/notice/"],
+              "raw": "{{base_url}}{{api_version}}/notices/?page=1&page_size=10&sort_by=created_at&sort_dir=desc",
+              "host": ["{{base_url}}{{api_version}}/notices/"],
               "query": [
                 { "key": "audience", "value": "", "disabled": true },
                 { "key": "is_published", "value": "", "disabled": true },
@@ -4413,8 +4413,8 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/notice/?is_published=false&page=1&page_size=10",
-              "host": ["{{base_url}}{{api_version}}/notice/"],
+              "raw": "{{base_url}}{{api_version}}/notices/?is_published=false&page=1&page_size=10",
+              "host": ["{{base_url}}{{api_version}}/notices/"],
               "query": [
                 { "key": "is_published", "value": "false" },
                 { "key": "page", "value": "1" },
@@ -4428,8 +4428,8 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/notice/?is_published=true&page=1&page_size=10&sort_by=published_at&sort_dir=desc",
-              "host": ["{{base_url}}{{api_version}}/notice/"],
+              "raw": "{{base_url}}{{api_version}}/notices/?is_published=true&page=1&page_size=10&sort_by=published_at&sort_dir=desc",
+              "host": ["{{base_url}}{{api_version}}/notices/"],
               "query": [
                 { "key": "is_published", "value": "true" },
                 { "key": "page", "value": "1" },
@@ -4445,8 +4445,8 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/notice/?audience=STUDENTS&is_published=true&page=1&page_size=10",
-              "host": ["{{base_url}}{{api_version}}/notice/"],
+              "raw": "{{base_url}}{{api_version}}/notices/?audience=STUDENTS&is_published=true&page=1&page_size=10",
+              "host": ["{{base_url}}{{api_version}}/notices/"],
               "query": [
                 { "key": "audience", "value": "STUDENTS" },
                 { "key": "is_published", "value": "true" },
@@ -4461,8 +4461,8 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/notice/?class_section_id={{class_section_id}}&is_published=true&page=1&page_size=20",
-              "host": ["{{base_url}}{{api_version}}/notice/"],
+              "raw": "{{base_url}}{{api_version}}/notices/?class_section_id={{class_section_id}}&is_published=true&page=1&page_size=20",
+              "host": ["{{base_url}}{{api_version}}/notices/"],
               "query": [
                 { "key": "class_section_id", "value": "{{class_section_id}}" },
                 { "key": "is_published", "value": "true" },
@@ -4477,8 +4477,8 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/notice/?search=Sports&page=1&page_size=10",
-              "host": ["{{base_url}}{{api_version}}/notice/"],
+              "raw": "{{base_url}}{{api_version}}/notices/?search=Sports&page=1&page_size=10",
+              "host": ["{{base_url}}{{api_version}}/notices/"],
               "query": [
                 { "key": "search", "value": "Sports" },
                 { "key": "page", "value": "1" },
@@ -4507,8 +4507,8 @@
             "method": "PUT",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": {
-              "raw": "{{base_url}}{{api_version}}/notice/{{notice_id}}",
-              "host": ["{{base_url}}{{api_version}}/notice/{{notice_id}}"]
+              "raw": "{{base_url}}{{api_version}}/notices/{{notice_id}}",
+              "host": ["{{base_url}}{{api_version}}/notices/{{notice_id}}"]
             },
             "body": {
               "mode": "raw",
@@ -4537,9 +4537,9 @@
             "method": "PATCH",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": {
-              "raw": "{{base_url}}{{api_version}}/notice/{{notice_id}}/publish",
+              "raw": "{{base_url}}{{api_version}}/notices/{{notice_id}}/publish",
               "host": [
-                "{{base_url}}{{api_version}}/notice/{{notice_id}}/publish"
+                "{{base_url}}{{api_version}}/notices/{{notice_id}}/publish"
               ]
             },
             "body": {
@@ -4569,9 +4569,9 @@
             "method": "PATCH",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": {
-              "raw": "{{base_url}}{{api_version}}/notice/{{notice_id}}/publish",
+              "raw": "{{base_url}}{{api_version}}/notices/{{notice_id}}/publish",
               "host": [
-                "{{base_url}}{{api_version}}/notice/{{notice_id}}/publish"
+                "{{base_url}}{{api_version}}/notices/{{notice_id}}/publish"
               ]
             },
             "body": {
@@ -4595,8 +4595,8 @@
           "request": {
             "method": "DELETE",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/notice/{{notice_id}}",
-              "host": ["{{base_url}}{{api_version}}/notice/{{notice_id}}"]
+              "raw": "{{base_url}}{{api_version}}/notices/{{notice_id}}",
+              "host": ["{{base_url}}{{api_version}}/notices/{{notice_id}}"]
             }
           }
         },
@@ -4616,8 +4616,8 @@
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": {
-              "raw": "{{base_url}}{{api_version}}/notice/",
-              "host": ["{{base_url}}{{api_version}}/notice/"]
+              "raw": "{{base_url}}{{api_version}}/notices/",
+              "host": ["{{base_url}}{{api_version}}/notices/"]
             },
             "body": {
               "mode": "raw",
@@ -4641,8 +4641,8 @@
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": {
-              "raw": "{{base_url}}{{api_version}}/notice/",
-              "host": ["{{base_url}}{{api_version}}/notice/"]
+              "raw": "{{base_url}}{{api_version}}/notices/",
+              "host": ["{{base_url}}{{api_version}}/notices/"]
             },
             "body": {
               "mode": "raw",
@@ -4666,8 +4666,8 @@
             "method": "PUT",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": {
-              "raw": "{{base_url}}{{api_version}}/notice/{{notice_id}}",
-              "host": ["{{base_url}}{{api_version}}/notice/{{notice_id}}"]
+              "raw": "{{base_url}}{{api_version}}/notices/{{notice_id}}",
+              "host": ["{{base_url}}{{api_version}}/notices/{{notice_id}}"]
             },
             "body": {
               "mode": "raw",
@@ -4690,8 +4690,8 @@
           "request": {
             "method": "DELETE",
             "url": {
-              "raw": "{{base_url}}{{api_version}}/notice/{{notice_id}}",
-              "host": ["{{base_url}}{{api_version}}/notice/{{notice_id}}"]
+              "raw": "{{base_url}}{{api_version}}/notices/{{notice_id}}",
+              "host": ["{{base_url}}{{api_version}}/notices/{{notice_id}}"]
             }
           }
         },
@@ -4711,9 +4711,9 @@
             "method": "PATCH",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": {
-              "raw": "{{base_url}}{{api_version}}/notice/{{notice_id}}/publish",
+              "raw": "{{base_url}}{{api_version}}/notices/{{notice_id}}/publish",
               "host": [
-                "{{base_url}}{{api_version}}/notice/{{notice_id}}/publish"
+                "{{base_url}}{{api_version}}/notices/{{notice_id}}/publish"
               ]
             },
             "body": {

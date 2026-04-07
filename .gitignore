@@ -42,3 +42,5 @@ go.work
 # Application specific
 *.log
 .aider*
+
+docker/cloud/bin/

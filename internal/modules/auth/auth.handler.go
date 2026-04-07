@@ -3,6 +3,7 @@ package auth
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/thalalhassan/edu_management/internal/app"
+	"github.com/thalalhassan/edu_management/internal/constants"
 	"github.com/thalalhassan/edu_management/internal/middleware"
 	"github.com/thalalhassan/edu_management/internal/modules/user"
 	"github.com/thalalhassan/edu_management/internal/shared/response"
@@ -26,7 +27,7 @@ func RegisterRouter(r *gin.RouterGroup, app *app.App) {
 }
 
 func (h *Handler) Routes(r *gin.RouterGroup) {
-	auth := r.Group("/auth")
+	auth := r.Group(constants.ApiAuthPath)
 	{
 		auth.POST("/login", h.login)
 		auth.POST("/refresh", h.refresh)

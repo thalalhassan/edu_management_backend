@@ -1,7 +1,6 @@
 package server
 
 import (
-	"embed"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -17,8 +16,6 @@ import (
 )
 
 func StartServer(appInstance *app.App) *gin.Engine {
-	var openapiFS embed.FS
-
 	if appInstance.Config.App.Env != "production" {
 		gin.SetMode(gin.DebugMode)
 	} else {
@@ -44,25 +41,24 @@ func StartServer(appInstance *app.App) *gin.Engine {
 
 	ginRouter.Use(middleware.AcademicYearMiddleware())
 
+	const CurApiVersion = constants.ApiV1
+
 	// API versioning
-	api := ginRouter.Group(constants.ApiVersion)
+	api := ginRouter.Group(CurApiVersion)
 
 	if appInstance.Config.App.Env != "production" {
 		// Swagger documentation setup
-		docs.SwaggerInfo.BasePath = constants.ApiVersion
+		docs.SwaggerInfo.BasePath = CurApiVersion
 
-		data, _ := openapiFS.ReadFile("docs/openapi.yaml")
-		api.GET("/swagger-doc/doc.yaml", func(c *gin.Context) {
-			c.Data(200, "application/yaml", data)
-		})
+		api.StaticFile("/swagger-doc/doc.yaml", "./docs/openapi.yaml")
 
 		api.GET("/docs/*any", ginSwagger.WrapHandler(
 			swaggerFiles.Handler,
-			ginSwagger.URL(constants.ApiVersion+"/swagger-doc/doc.yaml"),
+			ginSwagger.URL(CurApiVersion+"/swagger-doc/doc.yaml"),
 			ginSwagger.PersistAuthorization(true),
 		))
 		api.GET("/docs", func(c *gin.Context) {
-			c.Redirect(302, constants.ApiVersion+"/docs/index.html")
+			c.Redirect(302, CurApiVersion+"/docs/index.html")
 		})
 	}
 

@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/thalalhassan/edu_management/internal/app"
 	"github.com/thalalhassan/edu_management/internal/config"
+	"github.com/thalalhassan/edu_management/internal/constants"
 	"github.com/thalalhassan/edu_management/internal/middleware"
 	"github.com/thalalhassan/edu_management/internal/shared/pagination"
 	"github.com/thalalhassan/edu_management/internal/shared/query_params"
@@ -28,7 +29,7 @@ func RegisterRouter(r *gin.RouterGroup, a *app.App) {
 }
 
 func (h *Handler) Routes(r *gin.RouterGroup) {
-	exam := r.Group("/exam")
+	exam := r.Group(constants.ApiExamPath)
 	exam.Use(middleware.AuthCheckMiddleware(&h.config.JWT))
 	{
 		// ── Exam CRUD ──────────────────────────────────────────────────────
@@ -39,12 +40,12 @@ func (h *Handler) Routes(r *gin.RouterGroup) {
 		exam.PATCH("/:id/publish", h.publishExam)
 		exam.DELETE("/:id", h.deleteExam)
 
-		// ── ExamSchedule — nested under /exam/:exam_id/schedule ────────────
-		exam.POST("/:exam_id/schedule", h.createSchedule)
-		exam.GET("/:exam_id/schedule", h.listSchedulesByExam)
+		// ── ExamSchedule — nested under /exam/:id/schedule ────────────
+		exam.POST("/:id/schedule", h.createSchedule)
+		exam.GET("/:id/schedule", h.listSchedulesByExam)
 
 		// ── ExamSchedule — flat routes for easy cross-section queries ──────
-		schedule := r.Group("/exam-schedule")
+		schedule := r.Group(constants.ApiScheduleExamPath)
 		schedule.Use(middleware.AuthCheckMiddleware(&h.config.JWT))
 		{
 			schedule.GET("/:id", h.getSchedule)
@@ -53,13 +54,13 @@ func (h *Handler) Routes(r *gin.RouterGroup) {
 			schedule.GET("/class-section/:class_section_id", h.listSchedulesByClassSection)
 
 			// ── ExamResult nested under schedule ───────────────────────────
-			schedule.POST("/:schedule_id/result", h.createResult)
-			schedule.POST("/:schedule_id/result/bulk", h.bulkCreateResults)
-			schedule.GET("/:schedule_id/result", h.listResultsBySchedule)
+			schedule.POST("/:id/result", h.createResult)
+			schedule.POST("/:id/result/bulk", h.bulkCreateResults)
+			schedule.GET("/:id/result", h.listResultsBySchedule)
 		}
 
 		// ── ExamResult — flat routes ───────────────────────────────────────
-		result := r.Group("/exam-result")
+		result := r.Group(constants.ApiResultExamPath)
 		result.Use(middleware.AuthCheckMiddleware(&h.config.JWT))
 		{
 			result.GET("/:id", h.getResult)
@@ -164,7 +165,7 @@ func (h *Handler) deleteExam(c *gin.Context) {
 // ─── ExamSchedule handlers ────────────────────────────────────────────────────
 
 func (h *Handler) createSchedule(c *gin.Context) {
-	examID := c.Param("exam_id")
+	examID := c.Param("id")
 	var req CreateScheduleRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(c, err.Error())
@@ -189,7 +190,7 @@ func (h *Handler) getSchedule(c *gin.Context) {
 }
 
 func (h *Handler) listSchedulesByExam(c *gin.Context) {
-	examID := c.Param("exam_id")
+	examID := c.Param("id")
 	resp, err := h.service.ListSchedulesByExam(c.Request.Context(), examID)
 	if err != nil {
 		response.InternalError(c, err.Error())
@@ -235,7 +236,7 @@ func (h *Handler) deleteSchedule(c *gin.Context) {
 // ─── ExamResult handlers ──────────────────────────────────────────────────────
 
 func (h *Handler) createResult(c *gin.Context) {
-	scheduleID := c.Param("schedule_id")
+	scheduleID := c.Param("id")
 	var req CreateResultRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(c, err.Error())
@@ -250,7 +251,7 @@ func (h *Handler) createResult(c *gin.Context) {
 }
 
 func (h *Handler) bulkCreateResults(c *gin.Context) {
-	scheduleID := c.Param("schedule_id")
+	scheduleID := c.Param("id")
 	var req BulkCreateResultRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(c, err.Error())
@@ -275,7 +276,7 @@ func (h *Handler) getResult(c *gin.Context) {
 }
 
 func (h *Handler) listResultsBySchedule(c *gin.Context) {
-	scheduleID := c.Param("schedule_id")
+	scheduleID := c.Param("id")
 	resp, err := h.service.ListResultsBySchedule(c.Request.Context(), scheduleID)
 	if err != nil {
 		response.InternalError(c, err.Error())

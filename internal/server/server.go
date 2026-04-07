@@ -1,6 +1,7 @@
 package server
 
 import (
+	"embed"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -16,6 +17,7 @@ import (
 )
 
 func StartServer(appInstance *app.App) *gin.Engine {
+	var openapiFS embed.FS
 
 	if appInstance.Config.App.Env != "production" {
 		gin.SetMode(gin.DebugMode)
@@ -48,7 +50,12 @@ func StartServer(appInstance *app.App) *gin.Engine {
 	if appInstance.Config.App.Env != "production" {
 		// Swagger documentation setup
 		docs.SwaggerInfo.BasePath = constants.ApiVersion
-		api.StaticFile("/swagger-doc/doc.yaml", "./docs/openapi.yaml")
+
+		data, _ := openapiFS.ReadFile("docs/openapi.yaml")
+		api.GET("/swagger-doc/doc.yaml", func(c *gin.Context) {
+			c.Data(200, "application/yaml", data)
+		})
+
 		api.GET("/docs/*any", ginSwagger.WrapHandler(
 			swaggerFiles.Handler,
 			ginSwagger.URL(constants.ApiVersion+"/swagger-doc/doc.yaml"),

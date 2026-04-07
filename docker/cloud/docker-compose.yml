@@ -21,16 +21,14 @@ services:
       - edu_net
 
   api: # ← MUST be inside `services`
-    image: alpine:3.20
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: edu_api
     restart: unless-stopped
     depends_on:
       postgres:
         condition: service_healthy
-    working_dir: /app
-    volumes:
-      - ./bin/app:/app/app
-    command: ["/bin/sh", "-c", "chmod +x /app/app && /app/app"]
     env_file:
       - .env
     ports:

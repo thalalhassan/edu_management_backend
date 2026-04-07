@@ -88,7 +88,7 @@ func (h *Handler) setActive(c *gin.Context) {
 	id := c.Param("id")
 
 	var body struct {
-		IsActive bool `json:"is_active" binding:"required"`
+		IsActive bool `json:"is_active"`
 	}
 	if err := c.ShouldBindJSON(&body); err != nil {
 		response.BadRequest(c, err.Error())

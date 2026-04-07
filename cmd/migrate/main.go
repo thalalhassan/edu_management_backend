@@ -18,10 +18,10 @@ func main() {
 
 	db := appInstance.DB
 
-	command := os.Args[1]
+	command := "up" // default command
 
-	if command == "" {
-		command = "up"
+	if len(os.Args) > 1 {
+		command = os.Args[1]
 	}
 
 	switch command {

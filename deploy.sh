@@ -32,8 +32,11 @@ BUILD_PATH_SEED="./bin/seed"
 SERVER_BUILD_PATH="/bin/"
 SERVER_CMD_BUILD_PATH="/cmd/"
 
-DOCKER_COMPOSE_FILE="./docker/docker-compose-cloud.yml"
+DOCKER_COMPOSE_FILE="./docker/docker-compose.yml"
+DOCKER_FILE="./docker/Dockerfile"
+
 SERVER_DOCKER_COMPOSE_FILE="docker-compose.yml"
+SERVER_DOCKER_FILE="Dockerfile"
 
 LOCAL_APP_PATH="./cmd/api"
 LOCAL_MIGRATION_PATH="./cmd/migrate"
@@ -92,12 +95,14 @@ shift 2
 SKIP_BUILD=false
 RUN_SEED=false
 RUN_MIGRATION=false
+RUN_RESET=false # upload dockers and configs
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --skip-build)   SKIP_BUILD=true;        shift ;;
     --seed)         RUN_SEED=true;          shift ;;
     --migrate)         RUN_MIGRATION=true;          shift ;;
+    --full-reset)         RUN_RESET=true;          shift ;;
     *)              die "Unknown option: $1" ;;
   esac
 done
@@ -187,10 +192,12 @@ if [[ "${RUN_SEED}" == true ]]; then
   scp -i "${SSH_KEY}" -o StrictHostKeyChecking=no "${BUILD_PATH_SEED}" "${VM_USER}@${VM_HOST}:${REMOTE_PATH}${SERVER_CMD_BUILD_PATH}" || die "SCP transfer failed"
 fi
 
+if [[ "${RUN_RESET}" == true ]]; then
 scp -i "${SSH_KEY}" -o StrictHostKeyChecking=no "${ENV_FILE}" "${VM_USER}@${VM_HOST}:${REMOTE_PATH}/.env" || die "SCP transfer failed"
 scp -i "${SSH_KEY}" -o StrictHostKeyChecking=no "${ENV_CMD_FILE}" "${VM_USER}@${VM_HOST}:${REMOTE_PATH}/cmd/.env" || die "SCP transfer failed"
-
 scp -i "${SSH_KEY}" -o StrictHostKeyChecking=no "${DOCKER_COMPOSE_FILE}" "${VM_USER}@${VM_HOST}:${REMOTE_PATH}${SERVER_DOCKER_COMPOSE_FILE}" || die "SCP transfer failed"
+scp -i "${SSH_KEY}" -o StrictHostKeyChecking=no "${DOCKER_FILE}" "${VM_USER}@${VM_HOST}:${REMOTE_PATH}${SERVER_DOCKER_FILE}" || die "SCP transfer failed"
+fi
 
 success "Transfer complete"
 

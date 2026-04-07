@@ -20,6 +20,10 @@ func main() {
 
 	command := os.Args[1]
 
+	if command == "" {
+		command = "up"
+	}
+
 	switch command {
 	case "up":
 		migration_up(db)

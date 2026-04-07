@@ -36,8 +36,8 @@ go.work
 /tmp/
 
 # Environment variables
-.env
-.env.local
+.env*
+!.env.sample
 
 # Application specific
 *.log

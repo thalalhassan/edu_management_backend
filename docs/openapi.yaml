@@ -38,6 +38,8 @@ tags:
   - name: '🌴 Leave '
   - name: 📈 Reports
   - name: 📢 Notice
+  - name: Parent
+  - name: Teacher Assignment
 paths:
   /auth/login:
     post:
@@ -3255,6 +3257,206 @@ paths:
           required: true
       responses:
         '400':
+          description: Successful response
+          content:
+            application/json: {}
+  /parents/:
+    get:
+      tags:
+        - Parent
+      summary: List Parents
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+          example: '1'
+        - name: limit
+          in: query
+          schema:
+            type: integer
+          example: '10'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /parents/{id}:
+    get:
+      tags:
+        - Parent
+      summary: Get Parent By ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    put:
+      tags:
+        - Parent
+      summary: Update Parent
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"first_name\": \"Suresh\",\n  \"last_name\":
+                \"Sharma\",\n  \"relationship\": \"Father\",\n  \"phone\":
+                \"9000000001\",\n  \"address\": \"123 Main Street, Chennai\",\n 
+                \"occupation\": \"Engineer\"\n}"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    delete:
+      tags:
+        - Parent
+      summary: Delete Parent
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /teacher-assignments/:
+    post:
+      tags:
+        - Teacher Assignment
+      summary: Create Teacher Assignment
+      description: Assigns a teacher to teach a subject in a class section.
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"teacher_id\": \"TEACHER_ID_HERE\",\n 
+                \"class_section_id\": \"CLASS_SECTION_ID_HERE\",\n 
+                \"subject_id\": \"SUBJECT_ID_HERE\"\n}"
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    get:
+      tags:
+        - Teacher Assignment
+      summary: List Teacher Assignments — By Class Section
+      description: Returns all subjects and their assigned teachers for a class section.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: class_section_id
+          in: query
+          schema:
+            type: string
+          example: CLASS_SECTION_ID_HERE
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /teacher-assignments/{id}:
+    get:
+      tags:
+        - Teacher Assignment
+      summary: Get Teacher Assignment By ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    put:
+      tags:
+        - Teacher Assignment
+      summary: Update Teacher Assignment
+      description: Reassign a different teacher to the same subject + class section.
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: '"{\n  \"teacher_id\": \"NEW_TEACHER_ID_HERE\"\n}"'
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    delete:
+      tags:
+        - Teacher Assignment
+      summary: Delete Teacher Assignment
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
           description: Successful response
           content:
             application/json: {}

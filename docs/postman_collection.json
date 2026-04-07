@@ -425,7 +425,7 @@
             "url": {
               "raw": "{{base_url}}{{api_version}}/students/?page=1&limit=10",
               "host": ["{{base_url}}{{api_version}}"],
-              "path": ["student", ""],
+              "path": ["students", ""],
               "query": [
                 {
                   "key": "page",
@@ -540,7 +540,7 @@
             "url": {
               "raw": "{{base_url}}{{api_version}}/teachers/?page=1&limit=10",
               "host": ["{{base_url}}{{api_version}}"],
-              "path": ["teacher", ""],
+              "path": ["teachers", ""],
               "query": [
                 {
                   "key": "page",
@@ -761,7 +761,7 @@
             "url": {
               "raw": "{{base_url}}{{api_version}}/enrollments/student/:student_id?page=1&limit=10",
               "host": ["{{base_url}}{{api_version}}"],
-              "path": ["enrollment", "student", ":student_id"],
+              "path": ["enrollments", "student", ":student_id"],
               "query": [
                 {
                   "key": "page",
@@ -1853,7 +1853,7 @@
             "url": {
               "raw": "{{base_url}}{{api_version}}/subjects/?page=1&limit=10&sort_by=name&sort_dir=asc",
               "host": ["{{base_url}}{{api_version}}"],
-              "path": ["subject", ""],
+              "path": ["subjects", ""],
               "query": [
                 {
                   "key": "page",
@@ -1906,7 +1906,7 @@
             "url": {
               "raw": "{{base_url}}{{api_version}}/subjects/?is_elective=true&sort_by=name&sort_dir=asc",
               "host": ["{{base_url}}{{api_version}}"],
-              "path": ["subject", ""],
+              "path": ["subjects", ""],
               "query": [
                 {
                   "key": "is_elective",
@@ -1941,7 +1941,7 @@
             "url": {
               "raw": "{{base_url}}{{api_version}}/subjects/?search=math",
               "host": ["{{base_url}}{{api_version}}"],
-              "path": ["subject", ""],
+              "path": ["subjects", ""],
               "query": [
                 {
                   "key": "search",
@@ -2080,7 +2080,7 @@
             "url": {
               "raw": "{{base_url}}{{api_version}}/timetables/?page=1&limit=20&sort_by=day_of_week&sort_dir=asc",
               "host": ["{{base_url}}{{api_version}}"],
-              "path": ["timetable", ""],
+              "path": ["timetables", ""],
               "query": [
                 {
                   "key": "page",
@@ -2144,7 +2144,7 @@
             "url": {
               "raw": "{{base_url}}{{api_version}}/timetables/?class_section_id=CLASS_SECTION_ID_HERE&sort_by=day_of_week&sort_dir=asc",
               "host": ["{{base_url}}{{api_version}}"],
-              "path": ["timetable", ""],
+              "path": ["timetables", ""],
               "query": [
                 {
                   "key": "class_section_id",
@@ -2179,7 +2179,7 @@
             "url": {
               "raw": "{{base_url}}{{api_version}}/timetables/?teacher_id=TEACHER_ID_HERE&sort_by=day_of_week&sort_dir=asc",
               "host": ["{{base_url}}{{api_version}}"],
-              "path": ["timetable", ""],
+              "path": ["timetables", ""],
               "query": [
                 {
                   "key": "teacher_id",
@@ -2214,7 +2214,7 @@
             "url": {
               "raw": "{{base_url}}{{api_version}}/timetables/?day_of_week=1&sort_by=start_time&sort_dir=asc",
               "host": ["{{base_url}}{{api_version}}"],
-              "path": ["timetable", ""],
+              "path": ["timetables", ""],
               "query": [
                 {
                   "key": "day_of_week",
@@ -3152,7 +3152,7 @@
                 "url": {
                   "raw": "{{base_url}}{{api_version}}/fees/structure/?page=1&limit=20&sort_by=fee_component&sort_dir=asc",
                   "host": ["{{base_url}}{{api_version}}"],
-                  "path": ["fee", "structure", ""],
+                  "path": ["fees", "structure", ""],
                   "query": [
                     { "key": "page", "value": "1" },
                     { "key": "limit", "value": "20" },
@@ -3337,7 +3337,7 @@
                 "url": {
                   "raw": "{{base_url}}{{api_version}}/fees/record/?page=1&limit=20&sort_by=due_date&sort_dir=asc",
                   "host": ["{{base_url}}{{api_version}}"],
-                  "path": ["fee", "record", ""],
+                  "path": ["fees", "record", ""],
                   "query": [
                     { "key": "page", "value": "1" },
                     { "key": "limit", "value": "20" },
@@ -3382,7 +3382,7 @@
                 "url": {
                   "raw": "{{base_url}}{{api_version}}/fees/record/?status=OVERDUE&sort_by=due_date&sort_dir=asc",
                   "host": ["{{base_url}}{{api_version}}"],
-                  "path": ["fee", "record", ""],
+                  "path": ["fees", "record", ""],
                   "query": [
                     { "key": "status", "value": "OVERDUE" },
                     { "key": "sort_by", "value": "due_date" },
@@ -3904,7 +3904,7 @@
             "url": {
               "raw": "{{base_url}}{{api_version}}/reports/report-card?student_enrollment_id=ENROLLMENT_ID_HERE&exam_id=EXAM_ID_HERE",
               "host": ["{{base_url}}{{api_version}}"],
-              "path": ["report", "report-card"],
+              "path": ["reports", "report-card"],
               "query": [
                 {
                   "key": "student_enrollment_id",
@@ -3933,7 +3933,7 @@
             "url": {
               "raw": "{{base_url}}{{api_version}}/reports/report-card?student_enrollment_id=ENROLLMENT_ID_HERE",
               "host": ["{{base_url}}{{api_version}}"],
-              "path": ["report", "report-card"],
+              "path": ["reports", "report-card"],
               "query": [
                 {
                   "key": "student_enrollment_id",
@@ -3961,7 +3961,7 @@
             "url": {
               "raw": "{{base_url}}{{api_version}}/reports/attendance/student?student_enrollment_id=ENROLLMENT_ID_HERE",
               "host": ["{{base_url}}{{api_version}}"],
-              "path": ["report", "attendance", "student"],
+              "path": ["reports", "attendance", "student"],
               "query": [
                 {
                   "key": "student_enrollment_id",
@@ -3991,7 +3991,7 @@
             "url": {
               "raw": "{{base_url}}{{api_version}}/reports/attendance/student?student_enrollment_id=ENROLLMENT_ID_HERE&from_date=2024-06-01&to_date=2024-09-30",
               "host": ["{{base_url}}{{api_version}}"],
-              "path": ["report", "attendance", "student"],
+              "path": ["reports", "attendance", "student"],
               "query": [
                 {
                   "key": "student_enrollment_id",
@@ -4020,7 +4020,7 @@
             "url": {
               "raw": "{{base_url}}{{api_version}}/reports/attendance/class?class_section_id=CLASS_SECTION_ID_HERE&month=7&year=2024",
               "host": ["{{base_url}}{{api_version}}"],
-              "path": ["report", "attendance", "class"],
+              "path": ["reports", "attendance", "class"],
               "query": [
                 { "key": "class_section_id", "value": "CLASS_SECTION_ID_HERE" },
                 { "key": "month", "value": "7" },
@@ -4047,7 +4047,7 @@
             "url": {
               "raw": "{{base_url}}{{api_version}}/reports/attendance/class?class_section_id=CLASS_SECTION_ID_HERE&date=2024-07-15",
               "host": ["{{base_url}}{{api_version}}"],
-              "path": ["report", "attendance", "class"],
+              "path": ["reports", "attendance", "class"],
               "query": [
                 { "key": "class_section_id", "value": "CLASS_SECTION_ID_HERE" },
                 { "key": "date", "value": "2024-07-15" }
@@ -4073,7 +4073,7 @@
             "url": {
               "raw": "{{base_url}}{{api_version}}/reports/performance/class?class_section_id=CLASS_SECTION_ID_HERE&exam_id=EXAM_ID_HERE",
               "host": ["{{base_url}}{{api_version}}"],
-              "path": ["report", "performance", "class"],
+              "path": ["reports", "performance", "class"],
               "query": [
                 { "key": "class_section_id", "value": "CLASS_SECTION_ID_HERE" },
                 { "key": "exam_id", "value": "EXAM_ID_HERE" }
@@ -4099,7 +4099,7 @@
             "url": {
               "raw": "{{base_url}}{{api_version}}/reports/fee-collection?academic_year_id={{academic_year_id}}",
               "host": ["{{base_url}}{{api_version}}"],
-              "path": ["report", "fee-collection"],
+              "path": ["reports", "fee-collection"],
               "query": [
                 { "key": "academic_year_id", "value": "{{academic_year_id}}" }
               ]
@@ -4124,7 +4124,7 @@
             "url": {
               "raw": "{{base_url}}{{api_version}}/reports/fee-collection?academic_year_id={{academic_year_id}}&standard_id=STANDARD_ID_HERE",
               "host": ["{{base_url}}{{api_version}}"],
-              "path": ["report", "fee-collection"],
+              "path": ["reports", "fee-collection"],
               "query": [
                 { "key": "academic_year_id", "value": "{{academic_year_id}}" },
                 { "key": "standard_id", "value": "STANDARD_ID_HERE" }
@@ -4149,7 +4149,7 @@
             "url": {
               "raw": "{{base_url}}{{api_version}}/reports/fee-collection?academic_year_id={{academic_year_id}}&class_section_id=CLASS_SECTION_ID_HERE",
               "host": ["{{base_url}}{{api_version}}"],
-              "path": ["report", "fee-collection"],
+              "path": ["reports", "fee-collection"],
               "query": [
                 { "key": "academic_year_id", "value": "{{academic_year_id}}" },
                 { "key": "class_section_id", "value": "CLASS_SECTION_ID_HERE" }
@@ -4174,7 +4174,7 @@
             "url": {
               "raw": "{{base_url}}{{api_version}}/reports/attendance/teacher?month=7&year=2024",
               "host": ["{{base_url}}{{api_version}}"],
-              "path": ["report", "attendance", "teacher"],
+              "path": ["reports", "attendance", "teacher"],
               "query": [
                 { "key": "month", "value": "7" },
                 { "key": "year", "value": "2024" }
@@ -4200,7 +4200,7 @@
             "url": {
               "raw": "{{base_url}}{{api_version}}/reports/attendance/teacher?teacher_id=TEACHER_ID_HERE&month=7&year=2024",
               "host": ["{{base_url}}{{api_version}}"],
-              "path": ["report", "attendance", "teacher"],
+              "path": ["reports", "attendance", "teacher"],
               "query": [
                 { "key": "teacher_id", "value": "TEACHER_ID_HERE" },
                 { "key": "month", "value": "7" },
@@ -4226,7 +4226,7 @@
             "url": {
               "raw": "{{base_url}}{{api_version}}/reports/attendance/teacher?from_date=2024-06-01&to_date=2024-11-30",
               "host": ["{{base_url}}{{api_version}}"],
-              "path": ["report", "attendance", "teacher"],
+              "path": ["reports", "attendance", "teacher"],
               "query": [
                 { "key": "from_date", "value": "2024-06-01" },
                 { "key": "to_date", "value": "2024-11-30" }
@@ -4720,6 +4720,287 @@
               "mode": "raw",
               "raw": "{\n  \"is_published\": true\n}"
             }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Parent",
+      "item": [
+        {
+          "name": "List Parents",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/parents/?page=1&limit=10",
+              "host": ["{{base_url}}{{api_version}}"],
+              "path": ["parents", ""],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Parent By ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": "{{base_url}}{{api_version}}/parents/:id",
+            "variable": [{ "key": "id", "value": "PARENT_ID_HERE" }]
+          }
+        },
+        {
+          "name": "Update Parent",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}{{api_version}}/parents/:id",
+            "variable": [{ "key": "id", "value": "PARENT_ID_HERE" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Suresh\",\n  \"last_name\": \"Sharma\",\n  \"relationship\": \"Father\",\n  \"phone\": \"9000000001\",\n  \"address\": \"123 Main Street, Chennai\",\n  \"occupation\": \"Engineer\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Parent",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "url": "{{base_url}}{{api_version}}/parents/:id",
+            "variable": [{ "key": "id", "value": "PARENT_ID_HERE" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Teacher Assignment",
+      "item": [
+        {
+          "name": "Create Teacher Assignment",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}{{api_version}}/teacher-assignments/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"teacher_id\": \"TEACHER_ID_HERE\",\n  \"class_section_id\": \"CLASS_SECTION_ID_HERE\",\n  \"subject_id\": \"SUBJECT_ID_HERE\"\n}"
+            },
+            "description": "Assigns a teacher to teach a subject in a class section."
+          }
+        },
+        {
+          "name": "List Teacher Assignments",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/teacher-assignments/?page=1&limit=10&sort_by=created_at&sort_dir=desc",
+              "host": ["{{base_url}}{{api_version}}"],
+              "path": ["teacher-assignments", ""],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                {
+                  "key": "sort_by",
+                  "value": "created_at",
+                  "description": "created_at"
+                },
+                {
+                  "key": "sort_dir",
+                  "value": "desc",
+                  "description": "asc | desc"
+                },
+                {
+                  "key": "teacher_id",
+                  "value": "",
+                  "description": "Filter by teacher",
+                  "disabled": true
+                },
+                {
+                  "key": "class_section_id",
+                  "value": "",
+                  "description": "Filter by class section",
+                  "disabled": true
+                },
+                {
+                  "key": "subject_id",
+                  "value": "",
+                  "description": "Filter by subject",
+                  "disabled": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Teacher Assignments — By Teacher",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/teacher-assignments/?teacher_id=TEACHER_ID_HERE&sort_by=created_at&sort_dir=desc",
+              "host": ["{{base_url}}{{api_version}}"],
+              "path": ["teacher-assignments", ""],
+              "query": [
+                { "key": "teacher_id", "value": "TEACHER_ID_HERE" },
+                { "key": "sort_by", "value": "created_at" },
+                { "key": "sort_dir", "value": "desc" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Teacher Assignments — By Class Section",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/teacher-assignments/?class_section_id=CLASS_SECTION_ID_HERE",
+              "host": ["{{base_url}}{{api_version}}"],
+              "path": ["teacher-assignments", ""],
+              "query": [
+                { "key": "class_section_id", "value": "CLASS_SECTION_ID_HERE" }
+              ]
+            },
+            "description": "Returns all subjects and their assigned teachers for a class section."
+          }
+        },
+        {
+          "name": "Get Teacher Assignment By ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": "{{base_url}}{{api_version}}/teacher-assignments/:id",
+            "variable": [{ "key": "id", "value": "ASSIGNMENT_ID_HERE" }]
+          }
+        },
+        {
+          "name": "Update Teacher Assignment",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}{{api_version}}/teacher-assignments/:id",
+            "variable": [{ "key": "id", "value": "ASSIGNMENT_ID_HERE" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"teacher_id\": \"NEW_TEACHER_ID_HERE\"\n}"
+            },
+            "description": "Reassign a different teacher to the same subject + class section."
+          }
+        },
+        {
+          "name": "Delete Teacher Assignment",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "url": "{{base_url}}{{api_version}}/teacher-assignments/:id",
+            "variable": [{ "key": "id", "value": "ASSIGNMENT_ID_HERE" }]
           }
         }
       ]

@@ -28,7 +28,7 @@ func NewApp(ctx context.Context) (*App, error) {
 		return nil, err
 	}
 
-	db, err := database.New(ctx, config)
+	db, err := database.New(ctx, config, appLogger)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}

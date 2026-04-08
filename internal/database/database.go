@@ -7,41 +7,39 @@ import (
 	"time"
 
 	"github.com/thalalhassan/edu_management/internal/config"
+	"github.com/thalalhassan/edu_management/pkg/logger"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 type DB struct {
-	Gorm *gorm.DB // manage ORM features, migrations, and complex queries
-	PSQL *sql.DB  // manage db connection pool and health checks
+	Gorm *gorm.DB // ORM features, migrations, complex queries
+	PSQL *sql.DB  // connection-pool management and health checks
 }
 
-// New initializes DB with retry + pooling + validation
-func New(ctx context.Context, cfg *config.Config) (*DB, error) {
-	var gormDB *gorm.DB
-	var err error
-
-	gormDB, err = gorm.Open(postgres.Open(cfg.Database.URL), &gorm.Config{
-		Logger: NewGormLogger(), // custom logger (see below)
+// New initialises a DB with connection-pool tuning and an initial ping.
+func New(ctx context.Context, cfg *config.Config, zapLogger logger.Logger) (*DB, error) {
+	gormDB, err := gorm.Open(postgres.Open(cfg.Database.URL), &gorm.Config{
+		// NewGormLogger now takes a single argument; the log level can be
+		// changed later via gormDB.Logger = gormDB.Logger.LogMode(…).
+		Logger: NewGormLogger(zapLogger),
 	})
-
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect DB: %w", err)
 	}
 
-	// ---- GET SQL DB ----
 	sqlDB, err := gormDB.DB()
 	if err != nil {
 		return nil, err
 	}
 
-	// ---- CONNECTION POOL TUNING ----
+	// ── Connection-pool tuning ────────────────────────────────────────────────
 	sqlDB.SetMaxOpenConns(cfg.Database.MaxOpenConns)
 	sqlDB.SetMaxIdleConns(cfg.Database.MaxIdleConns)
 	sqlDB.SetConnMaxLifetime(cfg.Database.ConnMaxLifetime)
 	sqlDB.SetConnMaxIdleTime(cfg.Database.ConnMaxIdleTime)
 
-	// ---- INITIAL PING ----
+	// ── Initial ping ──────────────────────────────────────────────────────────
 	dbCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 
@@ -55,12 +53,12 @@ func New(ctx context.Context, cfg *config.Config) (*DB, error) {
 	}, nil
 }
 
-// Health check (used in readiness probes)
+// Health is used by readiness probes.
 func (db *DB) Health(ctx context.Context) error {
 	return db.PSQL.PingContext(ctx)
 }
 
-// Graceful shutdown
+// Close performs a graceful shutdown of the connection pool.
 func (db *DB) Close() error {
 	return db.PSQL.Close()
 }

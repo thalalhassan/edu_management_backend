@@ -13,6 +13,7 @@ type Repository interface {
 	GetByEmployeeID(ctx context.Context, employeeID string) (*Teacher, error)
 	FindAll(ctx context.Context, p pagination.Params) ([]*Teacher, int64, error)
 	Update(ctx context.Context, id string, teacher *Teacher) error
+	UpdateStatus(ctx context.Context, id string, isActive bool) error
 	Delete(ctx context.Context, id string) error
 }
 
@@ -66,7 +67,11 @@ func (r *repositoryImpl) FindAll(ctx context.Context, p pagination.Params) ([]*T
 }
 
 func (r *repositoryImpl) Update(ctx context.Context, id string, teacher *Teacher) error {
-	return r.db.WithContext(ctx).Where("id = ?", id).Save(teacher).Error
+	return r.db.WithContext(ctx).Where("id = ?", id).Updates(teacher).Error
+}
+
+func (r *repositoryImpl) UpdateStatus(ctx context.Context, id string, isActive bool) error {
+	return r.db.WithContext(ctx).Where("id = ?", id).Update("is_active", isActive).Error
 }
 
 func (r *repositoryImpl) Delete(ctx context.Context, id string) error {

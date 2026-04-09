@@ -8,6 +8,7 @@ import (
 	"github.com/thalalhassan/edu_management/internal/middleware"
 	"github.com/thalalhassan/edu_management/internal/shared/pagination"
 	"github.com/thalalhassan/edu_management/internal/shared/response"
+	"github.com/thalalhassan/edu_management/internal/shared/validation"
 )
 
 type Handler struct {
@@ -72,7 +73,8 @@ func (h *Handler) update(c *gin.Context) {
 	id := c.Param("id")
 	var req UpdateRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, err.Error())
+
+		response.BadRequest(c, validation.FormatErrors(err))
 		return
 	}
 	resp, err := h.service.Update(c.Request.Context(), id, req)
@@ -102,6 +104,7 @@ func (h *Handler) setActive(c *gin.Context) {
 		response.InternalError(c, err.Error())
 		return
 	}
+
 	response.Success(c, resp, "Teacher status updated successfully")
 }
 

@@ -6,6 +6,7 @@ import (
 
 	"github.com/thalalhassan/edu_management/internal/config"
 	"github.com/thalalhassan/edu_management/internal/database"
+	"github.com/thalalhassan/edu_management/internal/shared/validation"
 	"github.com/thalalhassan/edu_management/pkg/logger"
 )
 
@@ -32,6 +33,8 @@ func NewApp(ctx context.Context) (*App, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
+
+	validation.InitValidator()
 
 	return &App{
 		Config: config,

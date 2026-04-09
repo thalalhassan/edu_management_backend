@@ -110,6 +110,7 @@ func (s *service) SetActive(ctx context.Context, id string, active bool) (*Teach
 	if err := s.repo.UpdateStatus(ctx, id, active); err != nil {
 		return nil, fmt.Errorf("teacher.Service.SetActive.Save: %w", err)
 	}
+
 	return ToTeacherResponse(t), nil
 }
 

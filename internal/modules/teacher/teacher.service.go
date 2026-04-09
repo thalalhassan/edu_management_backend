@@ -5,13 +5,13 @@ import (
 	"fmt"
 
 	"github.com/thalalhassan/edu_management/internal/database"
-	"github.com/thalalhassan/edu_management/internal/shared/pagination"
+	"github.com/thalalhassan/edu_management/internal/shared/query_params"
 )
 
 type Service interface {
 	GetByID(ctx context.Context, id string) (*TeacherResponse, error)
 	GetByEmployeeID(ctx context.Context, employeeID string) (*TeacherResponse, error)
-	List(ctx context.Context, p pagination.Params) ([]*TeacherResponse, int64, error)
+	List(ctx context.Context, q query_params.Query[FilterParams]) ([]*TeacherResponse, int64, error)
 	Update(ctx context.Context, id string, req UpdateRequest) (*TeacherResponse, error)
 	SetActive(ctx context.Context, id string, active bool) (*TeacherResponse, error)
 	Delete(ctx context.Context, id string) error
@@ -41,8 +41,8 @@ func (s *service) GetByEmployeeID(ctx context.Context, employeeID string) (*Teac
 	return ToTeacherResponse(t), nil
 }
 
-func (s *service) List(ctx context.Context, p pagination.Params) ([]*TeacherResponse, int64, error) {
-	teachers, total, err := s.repo.FindAll(ctx, p)
+func (s *service) List(ctx context.Context, q query_params.Query[FilterParams]) ([]*TeacherResponse, int64, error) {
+	teachers, total, err := s.repo.FindAll(ctx, q)
 	if err != nil {
 		return nil, 0, fmt.Errorf("teacher.Service.List: %w", err)
 	}

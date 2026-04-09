@@ -7,6 +7,7 @@ import (
 	"github.com/thalalhassan/edu_management/internal/constants"
 	"github.com/thalalhassan/edu_management/internal/middleware"
 	"github.com/thalalhassan/edu_management/internal/shared/pagination"
+	"github.com/thalalhassan/edu_management/internal/shared/query_params"
 	"github.com/thalalhassan/edu_management/internal/shared/response"
 	"github.com/thalalhassan/edu_management/internal/shared/validation"
 )
@@ -60,13 +61,25 @@ func (h *Handler) getByEmployeeID(c *gin.Context) {
 }
 
 func (h *Handler) list(c *gin.Context) {
-	p := pagination.NewFromRequest(c)
-	resp, total, err := h.service.List(c.Request.Context(), p)
+	var f FilterParams
+
+	if err := c.ShouldBindQuery(&f); err != nil {
+		response.BadRequest(c, err.Error())
+		return
+	}
+
+	q := query_params.Query[FilterParams]{
+		Pagination: pagination.NewFromRequest(c),
+		Sort:       query_params.NewSortFromRequest(c, AllowedTeacherSortFields, "created_at"),
+		Filter:     f,
+	}
+
+	resp, total, err := h.service.List(c.Request.Context(), q)
 	if err != nil {
 		response.InternalError(c, err.Error())
 		return
 	}
-	response.SuccessPaginated(c, resp, pagination.NewMeta(total, p), "Teachers listed successfully")
+	response.SuccessPaginated(c, resp, pagination.NewMeta(total, q.Pagination), "Teachers listed successfully")
 }
 
 func (h *Handler) update(c *gin.Context) {

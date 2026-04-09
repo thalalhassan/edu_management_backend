@@ -29,7 +29,7 @@ func InitValidator() {
 
 			v.RegisterValidation("gender", func(fl validator.FieldLevel) bool {
 				g := fl.Field().String()
-				return g == "male" || g == "female" || g == "other"
+				return g == "FEMALE" || g == "MALE"
 			})
 		}
 

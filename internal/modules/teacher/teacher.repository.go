@@ -4,14 +4,14 @@ import (
 	"context"
 
 	"github.com/thalalhassan/edu_management/internal/database"
-	"github.com/thalalhassan/edu_management/internal/shared/pagination"
+	"github.com/thalalhassan/edu_management/internal/shared/query_params"
 	"gorm.io/gorm"
 )
 
 type Repository interface {
 	GetByID(ctx context.Context, id string) (*Teacher, error)
 	GetByEmployeeID(ctx context.Context, employeeID string) (*Teacher, error)
-	FindAll(ctx context.Context, p pagination.Params) ([]*Teacher, int64, error)
+	FindAll(ctx context.Context, q query_params.Query[FilterParams]) ([]*Teacher, int64, error)
 	Update(ctx context.Context, id string, teacher *Teacher) error
 	UpdateStatus(ctx context.Context, id string, isActive bool) error
 	Delete(ctx context.Context, id string) error
@@ -46,18 +46,29 @@ func (r *repositoryImpl) GetByEmployeeID(ctx context.Context, employeeID string)
 	return &t, nil
 }
 
-func (r *repositoryImpl) FindAll(ctx context.Context, p pagination.Params) ([]*Teacher, int64, error) {
+func (r *repositoryImpl) FindAll(ctx context.Context, q query_params.Query[FilterParams]) ([]*Teacher, int64, error) {
 	var teachers []*Teacher
 	var total int64
 
 	query := r.db.WithContext(ctx)
+
+	// Filter : Note change filter to scoped chain for standard
+	f := q.Filter
+
+	if f.Search != nil {
+		like := "%" + *f.Search + "%"
+		query = query.Where("first_name ILIKE ? OR last_name ILIKE ?", like, like)
+	}
+
+	query = query.Where(f.ToMap())
+
 	if err := query.Count(&total).Error; err != nil {
 		return nil, 0, err
 	}
-
 	err := query.
-		Offset((p.Page - 1) * p.Limit).
-		Limit(p.Limit).
+		Offset(q.Pagination.Offset).
+		Limit(q.Pagination.Limit).
+		Order(q.Sort).
 		Find(&teachers).Error
 	if err != nil {
 		return nil, 0, err

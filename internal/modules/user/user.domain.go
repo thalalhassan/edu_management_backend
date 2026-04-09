@@ -32,7 +32,7 @@ type CreateStudentUserRequest struct {
 	FirstName     string                 `json:"first_name"     binding:"required"`
 	LastName      string                 `json:"last_name"      binding:"required"`
 	DOB           time.Time              `json:"dob"            binding:"required"`
-	Gender        database.Gender        `json:"gender"         binding:"required,oneof=MALE FEMALE OTHER"`
+	Gender        database.Gender        `json:"gender"         binding:"required,oneof=MALE FEMALE"`
 	Status        database.StudentStatus `json:"status,omitempty"`
 	Phone         *string                `json:"phone,omitempty"`
 	Address       *string                `json:"address,omitempty"`
@@ -51,7 +51,7 @@ type CreateTeacherUserRequest struct {
 	EmployeeID     string          `json:"employee_id"     binding:"required"`
 	FirstName      string          `json:"first_name"      binding:"required"`
 	LastName       string          `json:"last_name"       binding:"required"`
-	Gender         database.Gender `json:"gender"          binding:"required,oneof=MALE FEMALE OTHER"`
+	Gender         database.Gender `json:"gender"          binding:"required,oneof=MALE FEMALE"`
 	DOB            *time.Time      `json:"dob,omitempty"`
 	Phone          *string         `json:"phone,omitempty"`
 	Address        *string         `json:"address,omitempty"`
@@ -89,7 +89,7 @@ type CreateStaffUserRequest struct {
 	EmployeeID  string          `json:"employee_id"  binding:"required"`
 	FirstName   string          `json:"first_name"   binding:"required"`
 	LastName    string          `json:"last_name"    binding:"required"`
-	Gender      database.Gender `json:"gender"       binding:"required,oneof=MALE FEMALE OTHER"`
+	Gender      database.Gender `json:"gender"       binding:"required,oneof=MALE FEMALE"`
 	Designation string          `json:"designation"  binding:"required"`
 	Phone       *string         `json:"phone,omitempty"`
 	JoiningDate time.Time       `json:"joining_date" binding:"required"`

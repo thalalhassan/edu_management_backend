@@ -1,6 +1,6 @@
 {
   "info": {
-    "name": "🚀 Edu Management API",
+    "name": "🚀 Education Management API",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "description": "Education Management System API collection"
   },
@@ -4725,7 +4725,7 @@
       ]
     },
     {
-      "name": "Parent",
+      "name": "👨‍👩‍👧‍👦 Parent",
       "item": [
         {
           "name": "List Parents",
@@ -4814,7 +4814,7 @@
       ]
     },
     {
-      "name": "Teacher Assignment",
+      "name": "📋 Teacher Assignment",
       "item": [
         {
           "name": "Create Teacher Assignment",

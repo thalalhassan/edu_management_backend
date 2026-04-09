@@ -98,7 +98,7 @@ SKIP_BUILD=false
 RUN_SEED=false
 RUN_MIGRATION=false
 RUN_RESET=false # upload dockers and configs
-ADD_OPENAPI=false
+ADD_API_DOC=false
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -106,7 +106,7 @@ while [[ $# -gt 0 ]]; do
     --seed)         RUN_SEED=true;          shift ;;
     --migrate)         RUN_MIGRATION=true;          shift ;;
     --full-reset)         RUN_RESET=true;          shift ;;
-    --open-api)         ADD_OPENAPI=true;          shift ;;
+    --api-doc)         ADD_API_DOC=true;          shift ;;
     *)              die "Unknown option: $1" ;;
   esac
 done
@@ -131,13 +131,15 @@ fi
 success "SSH connection OK"
 
 log "Configuration:"
-echo -e "  Image:       ${BOLD}${BUILD_PATH}${RESET}"
-echo -e "  Host:        ${BOLD}${VM_HOST}${RESET}"
-echo -e "  User:        ${BOLD}${VM_USER}${RESET}"
-echo -e "  Deploy path: ${BOLD}${REMOTE_PATH}${RESET}"
-echo -e "  Skip build:  ${BOLD}${SKIP_BUILD}${RESET}"
-echo -e "  Run seed:    ${BOLD}${RUN_SEED}${RESET}"
-echo -e "  Run migration:    ${BOLD}${RUN_MIGRATION}${RESET}"
+echo -e "  Image:                     ${BOLD}${BUILD_PATH}${RESET}"
+echo -e "  Host:                      ${BOLD}${VM_HOST}${RESET}"
+echo -e "  User:                      ${BOLD}${VM_USER}${RESET}"
+echo -e "  Deploy path:               ${BOLD}${REMOTE_PATH}${RESET}"
+echo -e "  Skip build:                ${BOLD}${SKIP_BUILD}${RESET}"
+echo -e "  Run seed:                  ${BOLD}${RUN_SEED}${RESET}"
+echo -e "  Run migration:             ${BOLD}${RUN_MIGRATION}${RESET}"
+echo -e "  Upload docs:               ${BOLD}${ADD_API_DOC}${RESET}"
+echo -e "  Upload docker config:      ${BOLD}${RUN_RESET}${RESET}"
 
 # ----------------------------------------------------------------
 # BUILD
@@ -196,7 +198,7 @@ if [[ "${RUN_SEED}" == true ]]; then
   scp -i "${SSH_KEY}" -o StrictHostKeyChecking=no "${BUILD_PATH_SEED}" "${VM_USER}@${VM_HOST}:${REMOTE_PATH}${SERVER_CMD_BUILD_PATH}" || die "SCP transfer failed"
 fi
 
-if [[ "${ADD_OPENAPI}" == true ]]; then
+if [[ "${ADD_API_DOC}" == true ]]; then
 scp -i "${SSH_KEY}" -o StrictHostKeyChecking=no "./${OPEN_API_FILE}" "${VM_USER}@${VM_HOST}:${REMOTE_PATH}/${OPEN_API_FILE}" || die "SCP transfer failed"
 fi
 

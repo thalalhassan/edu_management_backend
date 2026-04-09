@@ -68,7 +68,7 @@ func (r *repositoryImpl) FindAll(ctx context.Context, q query_params.Query[Filte
 	query.Count(&total)
 
 	err := q.Sort.Apply(query).
-		Order("start_date DESC").
+		Order(q.Sort).
 		Find(&years).Error
 	return years, err
 }

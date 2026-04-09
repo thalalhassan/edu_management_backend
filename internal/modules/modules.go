@@ -7,6 +7,7 @@ import (
 	"github.com/thalalhassan/edu_management/internal/modules/attendance"
 	"github.com/thalalhassan/edu_management/internal/modules/auth"
 	"github.com/thalalhassan/edu_management/internal/modules/class_section"
+	"github.com/thalalhassan/edu_management/internal/modules/dashboard"
 	"github.com/thalalhassan/edu_management/internal/modules/department"
 	"github.com/thalalhassan/edu_management/internal/modules/enrollment"
 	"github.com/thalalhassan/edu_management/internal/modules/exam"
@@ -29,6 +30,9 @@ func RegisterModules(api *gin.RouterGroup, app *app.App) {
 
 	// Register auth module routes
 	auth.RegisterRouter(api, app)
+
+	// Dashboard
+	dashboard.RegisterRouter(api, app)
 
 	// Register user module routes
 	user.RegisterRouter(api, app)

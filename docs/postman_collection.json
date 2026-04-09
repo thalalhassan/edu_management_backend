@@ -5004,6 +5004,44 @@
           }
         }
       ]
+    },
+    {
+      "name": "📊 Dashboard",
+      "item": [
+        {
+          "name": "Get Dashboard",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              { "key": "X-Academic-Year-ID", "value": "{{academic_year_id}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/dashboard/",
+              "host": ["{{base_url}}{{api_version}}"],
+              "path": ["dashboard", ""],
+              "query": [
+                {
+                  "key": "academic_year_id",
+                  "value": "{{academic_year_id}}",
+                  "description": "Fallback if header is not set",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Returns Institution Overview, Fees & Collections, and Payroll & Salaries sections for the selected academic year."
+          }
+        }
+      ]
     }
   ]
 }

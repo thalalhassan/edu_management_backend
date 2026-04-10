@@ -40,6 +40,7 @@ tags:
   - name: 📢 Notice
   - name: 👨‍👩‍👧‍👦 Parent
   - name: 📋 Teacher Assignment
+  - name: 📊 Dashboard
 paths:
   /auth/login:
     post:
@@ -3455,6 +3456,27 @@ paths:
           schema:
             type: string
           required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /dashboard/:
+    get:
+      tags:
+        - 📊 Dashboard
+      summary: Get Dashboard
+      description: >-
+        Returns Institution Overview, Fees & Collections, and Payroll & Salaries
+        sections for the selected academic year.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: X-Academic-Year-ID
+          in: header
+          schema:
+            type: string
+          example: '{{academic_year_id}}'
       responses:
         '200':
           description: Successful response

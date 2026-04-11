@@ -5042,6 +5042,149 @@
           }
         }
       ]
+    },
+    {
+      "name": "📑 Salary",
+      "item": [
+        {
+          "name": "🏗️ Salary Structure",
+          "item": [
+            {
+              "name": "Create Structure",
+              "request": {
+                "method": "POST",
+                "url": "{{base_url}}/{{api_version}}/salary/structure",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"teacher_id\": \"uuid\",\n  \"basic_salary\": \"50000\",\n  \"hra\": \"10000\",\n  \"da\": \"5000\",\n  \"other_allowance\": \"2000\",\n  \"pf\": \"3000\",\n  \"tds\": \"2000\",\n  \"other_deduction\": \"500\",\n  \"effective_from\": \"2026-01-01T00:00:00Z\"\n}"
+                }
+              }
+            },
+            {
+              "name": "List Structures",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/{{api_version}}/salary/structure"
+              }
+            },
+            {
+              "name": "Get Structure By ID",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/{{api_version}}/salary/structure/{{id}}"
+              }
+            },
+            {
+              "name": "List By Teacher",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/{{api_version}}/salary/structure/teacher/{{teacher_id}}"
+              }
+            },
+            {
+              "name": "Get Active Structure",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/{{api_version}}/salary/structure/teacher/{{teacher_id}}/active"
+              }
+            },
+            {
+              "name": "Update Structure",
+              "request": {
+                "method": "PUT",
+                "url": "{{base_url}}/{{api_version}}/salary/structure/{{id}}"
+              }
+            },
+            {
+              "name": "Delete Structure",
+              "request": {
+                "method": "DELETE",
+                "url": "{{base_url}}/{{api_version}}/salary/structure/{{id}}"
+              }
+            }
+          ]
+        },
+        {
+          "name": "📑 Salary Records",
+          "item": [
+            {
+              "name": "Bulk Generate",
+              "request": {
+                "method": "POST",
+                "url": "{{base_url}}/{{api_version}}/salary/record/bulk-generate",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"academic_year_id\": \"uuid\",\n  \"month\": 4,\n  \"year\": 2026,\n  \"prorate\": true\n}"
+                }
+              }
+            },
+            {
+              "name": "List Records",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/{{api_version}}/salary/record"
+              }
+            },
+            {
+              "name": "Get Record By ID",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/{{api_version}}/salary/record/{{id}}"
+              }
+            },
+            {
+              "name": "List Records By Teacher",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/{{api_version}}/salary/record/teacher/{{teacher_id}}"
+              }
+            },
+            {
+              "name": "Monthly Summary",
+              "request": {
+                "method": "GET",
+                "url": "{{base_url}}/{{api_version}}/salary/record/summary"
+              }
+            },
+            {
+              "name": "Record Payment",
+              "request": {
+                "method": "PATCH",
+                "url": "{{base_url}}/{{api_version}}/salary/record/{{id}}/pay",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"paid_amount\": \"45000\",\n  \"paid_date\": \"2026-04-10T00:00:00Z\"\n}"
+                }
+              }
+            },
+            {
+              "name": "Delete Record",
+              "request": {
+                "method": "DELETE",
+                "url": "{{base_url}}/{{api_version}}/salary/record/{{id}}"
+              }
+            }
+          ]
+        }
+      ],
+      "variable": [
+        {
+          "key": "base_url",
+          "value": "http://localhost:8080"
+        },
+        {
+          "key": "api_version",
+          "value": "/api/v1"
+        },
+        {
+          "key": "id",
+          "value": ""
+        },
+        {
+          "key": "teacher_id",
+          "value": ""
+        }
+      ]
     }
   ]
 }

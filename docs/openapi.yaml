@@ -41,6 +41,9 @@ tags:
   - name: 👨‍👩‍👧‍👦 Parent
   - name: 📋 Teacher Assignment
   - name: 📊 Dashboard
+  - name: 📑 Salary
+  - name: 📑 Salary > 🏗️ Salary Structure
+  - name: 📑 Salary > 📑 Salary Records
 paths:
   /auth/login:
     post:
@@ -3477,6 +3480,300 @@ paths:
           schema:
             type: string
           example: '{{academic_year_id}}'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /{api_version}/salary/structure:
+    post:
+      tags:
+        - 📑 Salary > 🏗️ Salary Structure
+      summary: Create Structure
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"teacher_id\": \"uuid\",\n  \"basic_salary\":
+                \"50000\",\n  \"hra\": \"10000\",\n  \"da\": \"5000\",\n 
+                \"other_allowance\": \"2000\",\n  \"pf\": \"3000\",\n  \"tds\":
+                \"2000\",\n  \"other_deduction\": \"500\",\n 
+                \"effective_from\": \"2026-01-01T00:00:00Z\"\n}"
+      parameters:
+        - name: api_version
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    get:
+      tags:
+        - 📑 Salary > 🏗️ Salary Structure
+      summary: List Structures
+      parameters:
+        - name: api_version
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /{api_version}/salary/structure/{id}:
+    get:
+      tags:
+        - 📑 Salary > 🏗️ Salary Structure
+      summary: Get Structure By ID
+      parameters:
+        - name: api_version
+          in: path
+          schema:
+            type: string
+          required: true
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    put:
+      tags:
+        - 📑 Salary > 🏗️ Salary Structure
+      summary: Update Structure
+      requestBody:
+        content: {}
+      parameters:
+        - name: api_version
+          in: path
+          schema:
+            type: string
+          required: true
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    delete:
+      tags:
+        - 📑 Salary > 🏗️ Salary Structure
+      summary: Delete Structure
+      parameters:
+        - name: api_version
+          in: path
+          schema:
+            type: string
+          required: true
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /{api_version}/salary/structure/teacher/{teacher_id}:
+    get:
+      tags:
+        - 📑 Salary > 🏗️ Salary Structure
+      summary: List By Teacher
+      parameters:
+        - name: api_version
+          in: path
+          schema:
+            type: string
+          required: true
+        - name: teacher_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /{api_version}/salary/structure/teacher/{teacher_id}/active:
+    get:
+      tags:
+        - 📑 Salary > 🏗️ Salary Structure
+      summary: Get Active Structure
+      parameters:
+        - name: api_version
+          in: path
+          schema:
+            type: string
+          required: true
+        - name: teacher_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /{api_version}/salary/record/bulk-generate:
+    post:
+      tags:
+        - 📑 Salary > 📑 Salary Records
+      summary: Bulk Generate
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"academic_year_id\": \"uuid\",\n  \"month\": 4,\n 
+                \"year\": 2026,\n  \"prorate\": true\n}"
+      parameters:
+        - name: api_version
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /{api_version}/salary/record:
+    get:
+      tags:
+        - 📑 Salary > 📑 Salary Records
+      summary: List Records
+      parameters:
+        - name: api_version
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /{api_version}/salary/record/{id}:
+    get:
+      tags:
+        - 📑 Salary > 📑 Salary Records
+      summary: Get Record By ID
+      parameters:
+        - name: api_version
+          in: path
+          schema:
+            type: string
+          required: true
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    delete:
+      tags:
+        - 📑 Salary > 📑 Salary Records
+      summary: Delete Record
+      parameters:
+        - name: api_version
+          in: path
+          schema:
+            type: string
+          required: true
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /{api_version}/salary/record/teacher/{teacher_id}:
+    get:
+      tags:
+        - 📑 Salary > 📑 Salary Records
+      summary: List Records By Teacher
+      parameters:
+        - name: api_version
+          in: path
+          schema:
+            type: string
+          required: true
+        - name: teacher_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /{api_version}/salary/record/summary:
+    get:
+      tags:
+        - 📑 Salary > 📑 Salary Records
+      summary: Monthly Summary
+      parameters:
+        - name: api_version
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /{api_version}/salary/record/{id}/pay:
+    patch:
+      tags:
+        - 📑 Salary > 📑 Salary Records
+      summary: Record Payment
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: >-
+                "{\n  \"paid_amount\": \"45000\",\n  \"paid_date\":
+                \"2026-04-10T00:00:00Z\"\n}"
+      parameters:
+        - name: api_version
+          in: path
+          schema:
+            type: string
+          required: true
+        - name: id
+          in: path
+          schema:
+            type: string
+          required: true
       responses:
         '200':
           description: Successful response

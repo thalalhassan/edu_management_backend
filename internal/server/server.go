@@ -50,11 +50,12 @@ func StartServer(appInstance *app.App) *gin.Engine {
 		// Swagger documentation setup
 		docs.SwaggerInfo.BasePath = CurApiVersion
 
-		api.StaticFile("/swagger-doc/doc.yaml", "./docs/openapi.yaml")
+		api.StaticFile("/openapi/doc.yaml", "./docs/openapi.yaml")
+		api.StaticFile("/postman/doc.json", "./docs/postman_collection.json")
 
 		api.GET("/docs/*any", ginSwagger.WrapHandler(
 			swaggerFiles.Handler,
-			ginSwagger.URL(CurApiVersion+"/swagger-doc/doc.yaml"),
+			ginSwagger.URL(CurApiVersion+"/openapi/doc.yaml"),
 			ginSwagger.PersistAuthorization(true),
 		))
 		api.GET("/docs", func(c *gin.Context) {

@@ -627,6 +627,65 @@ type Notice struct {
 func (Notice) TableName() string { return "notice" }
 
 // ==========================================
+// PAYROLL
+// ==========================================
+
+type SalaryStatus string
+
+const (
+	SalaryStatusPending SalaryStatus = "PENDING"
+	SalaryStatusPaid    SalaryStatus = "PAID"
+	SalaryStatusPartial SalaryStatus = "PARTIAL"
+	SalaryStatusOnHold  SalaryStatus = "ON_HOLD"
+)
+
+// SalaryStructure defines the pay components for a teacher.
+// Updated whenever a teacher's package is revised.
+// Effective from EffectiveFrom date — allows tracking revisions over time.
+type SalaryStructure struct {
+	Base
+	TeacherID      string          `gorm:"column:teacher_id;type:uuid;not null;index"      json:"teacher_id"`
+	BasicSalary    decimal.Decimal `gorm:"column:basic_salary;type:decimal(10,2);not null" json:"basic_salary"`
+	HRA            decimal.Decimal `gorm:"column:hra;type:decimal(10,2);default:0"         json:"hra"` // House Rent Allowance
+	DA             decimal.Decimal `gorm:"column:da;type:decimal(10,2);default:0"          json:"da"`  // Dearness Allowance
+	OtherAllowance decimal.Decimal `gorm:"column:other_allowance;type:decimal(10,2);default:0" json:"other_allowance"`
+	PF             decimal.Decimal `gorm:"column:pf;type:decimal(10,2);default:0"          json:"pf"`  // Provident Fund deduction
+	TDS            decimal.Decimal `gorm:"column:tds;type:decimal(10,2);default:0"         json:"tds"` // Tax deduction
+	OtherDeduction decimal.Decimal `gorm:"column:other_deduction;type:decimal(10,2);default:0" json:"other_deduction"`
+	EffectiveFrom  time.Time       `gorm:"column:effective_from;not null"                  json:"effective_from"`
+	Remarks        *string         `gorm:"column:remarks;type:text"                        json:"remarks,omitempty"`
+
+	Teacher Teacher `gorm:"foreignKey:TeacherID" json:"teacher,omitempty"`
+}
+
+func (SalaryStructure) TableName() string { return "salary_structure" }
+
+// SalaryRecord is the monthly payslip for a teacher.
+// Generated once per teacher per month — either manually or via bulk generation.
+type SalaryRecord struct {
+	Base
+	TeacherID      string          `gorm:"column:teacher_id;type:uuid;not null;index"          json:"teacher_id"`
+	AcademicYearID string          `gorm:"column:academic_year_id;type:uuid;not null;index"    json:"academic_year_id"`
+	Month          int             `gorm:"column:month;not null"                               json:"month"` // 1–12
+	Year           int             `gorm:"column:year;not null"                                json:"year"`
+	WorkingDays    int             `gorm:"column:working_days;not null;default:0"              json:"working_days"`
+	PresentDays    int             `gorm:"column:present_days;not null;default:0"              json:"present_days"`
+	GrossSalary    decimal.Decimal `gorm:"column:gross_salary;type:decimal(10,2);not null"     json:"gross_salary"`
+	TotalDeduction decimal.Decimal `gorm:"column:total_deduction;type:decimal(10,2);default:0" json:"total_deduction"`
+	NetSalary      decimal.Decimal `gorm:"column:net_salary;type:decimal(10,2);not null"       json:"net_salary"`
+	PaidAmount     decimal.Decimal `gorm:"column:paid_amount;type:decimal(10,2);default:0"     json:"paid_amount"`
+	PaidDate       *time.Time      `gorm:"column:paid_date"                                    json:"paid_date,omitempty"`
+	Status         SalaryStatus    `gorm:"column:status;type:text;default:'PENDING'"           json:"status"`
+	TransactionRef *string         `gorm:"column:transaction_ref"                              json:"transaction_ref,omitempty"`
+	Remarks        *string         `gorm:"column:remarks;type:text"                            json:"remarks,omitempty"`
+
+	Teacher      Teacher      `gorm:"foreignKey:TeacherID"      json:"teacher,omitempty"`
+	AcademicYear AcademicYear `gorm:"foreignKey:AcademicYearID" json:"academic_year,omitempty"`
+}
+
+func (SalaryRecord) TableName() string { return "salary_record" }
+
+// ==========================================
 // ALL MODELS (for AutoMigrate)
 // ==========================================
 
@@ -678,5 +737,80 @@ func AllModels() []any {
 
 		// Communication
 		&Notice{},
+
+		// Payroll
+		&SalaryStructure{},
+		&SalaryRecord{},
 	}
 }
+
+// ==========================================
+//  MODELS FULL RBAC
+// ==========================================
+
+// type Role struct {
+// 	Base
+// 	Name        string `gorm:"column:name;uniqueIndex;not null"` // ADMIN, TEACHER
+// 	Description string `gorm:"column:description"`
+// }
+
+// func (Role) TableName() string { return "roles" }
+
+// type Permission struct {
+// 	Base
+// 	Resource    string           `gorm:"column:resource;not null;index:idx_resource_action,unique"`
+// 	Action      PermissionAction `gorm:"column:action;type:text;not null;index:idx_resource_action,unique"`
+// 	Description string           `gorm:"column:description"`
+// }
+
+// func (Permission) TableName() string { return "permissions" }
+
+// type RolePermission struct {
+// 	Base
+// 	RoleID       string `gorm:"column:role_id;type:uuid;not null;index:idx_role_perm,unique"`
+// 	PermissionID string `gorm:"column:permission_id;type:uuid;not null;index:idx_role_perm,unique"`
+
+// 	Role       Role       `gorm:"foreignKey:RoleID"`
+// 	Permission Permission `gorm:"foreignKey:PermissionID"`
+// }
+
+// func (RolePermission) TableName() string { return "role_permissions" }
+
+// type UserRole struct {
+// 	Base
+// 	UserID string `gorm:"column:user_id;type:uuid;not null;index:idx_user_role,unique"`
+// 	RoleID string `gorm:"column:role_id;type:uuid;not null;index:idx_user_role,unique"`
+
+// 	User User `gorm:"foreignKey:UserID"`
+// 	Role Role `gorm:"foreignKey:RoleID"`
+// }
+
+// func (UserRole) TableName() string { return "user_roles" }
+
+// type UserPermission struct {
+// 	Base
+// 	UserID       string `gorm:"column:user_id;type:uuid;not null;index"`
+// 	PermissionID string `gorm:"column:permission_id;type:uuid;not null;index"`
+
+// 	ScopeType *string `gorm:"column:scope_type"` // e.g. "class_section"
+// 	ScopeID   *string `gorm:"column:scope_id;type:uuid"`
+
+// 	User       User       `gorm:"foreignKey:UserID"`
+// 	Permission Permission `gorm:"foreignKey:PermissionID"`
+// }
+
+// func (UserPermission) TableName() string { return "user_permissions" }
+
+// type UserPermission struct {
+// 	Base
+// 	UserID       string `gorm:"column:user_id;type:uuid;not null;index"`
+// 	PermissionID string `gorm:"column:permission_id;type:uuid;not null;index"`
+
+// 	ScopeType *string `gorm:"column:scope_type"` // e.g. "class_section"
+// 	ScopeID   *string `gorm:"column:scope_id;type:uuid"`
+
+// 	User       User       `gorm:"foreignKey:UserID"`
+// 	Permission Permission `gorm:"foreignKey:PermissionID"`
+// }
+
+// func (UserPermission) TableName() string { return "user_permissions" }

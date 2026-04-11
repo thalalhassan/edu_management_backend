@@ -1,4 +1,4 @@
-package seeder
+package seed
 
 import (
 	"fmt"
@@ -16,7 +16,7 @@ import (
 func SeedUsers(db *gorm.DB) error {
 	log.Println("[seeder] seeding users...")
 
-	password, err := crypto.Hash("Password@123")
+	password, err := crypto.Hash("Salsabeel")
 	if err != nil {
 		return fmt.Errorf("seeder.SeedUsers.Hash: %w", err)
 	}

@@ -5,8 +5,7 @@
 # Usage: ./deploy.sh <vm_host> <ssh_key_path> [options]
 #
 # Examples:
-#   ./deploy.sh 192.168.1.100 ~/.ssh/id_rsa
-#   ./deploy.sh 192.168.1.100 ~/.ssh/id_rsa --skip-build
+#   ./deploy.sh 192.168.1.100 ~/.ssh/id_rsa --build
 #   ./deploy.sh 192.168.1.100 ~/.ssh/id_rsa --version 2.1.0
 # ================================================================
 
@@ -40,7 +39,7 @@ SERVER_DOCKER_FILE="/Dockerfile"
 
 LOCAL_APP_PATH="./cmd/api"
 LOCAL_MIGRATION_PATH="./cmd/migrate"
-LOCAL_SEED_PATH="./cmd/seeder"
+LOCAL_SEED_PATH="./cmd/seed"
 
 ENV_FILE=".env.prod"
 ENV_CMD_FILE=".env.prod.cmd"
@@ -81,10 +80,9 @@ remote() {
 # ARGUMENT PARSING
 # ----------------------------------------------------------------
 if [[ $# -lt 2 ]]; then
-  echo -e "${BOLD}Usage:${RESET} $0 <vm_host> <ssh_key_path> [--skip-build] [--version <version>] [--seed]"
+  echo -e "${BOLD}Usage:${RESET} $0 <vm_host> <ssh_key_path> [--build]  [--seed]"
   echo ""
-  echo -e "  ${BOLD}--skip-build${RESET}         Skip Docker build — redeploy the current image"
-  echo -e "  ${BOLD}--version <ver>${RESET}      Override image version tag (default: ${IMAGE_VERSION})"
+  echo -e "  ${BOLD}--build${RESET}              Skip build and redeploy "
   echo -e "  ${BOLD}--seed${RESET}               Run database seeder after deployment"
   echo ""
   exit 1
@@ -94,7 +92,7 @@ VM_HOST=$1
 SSH_KEY=$2
 shift 2
 
-SKIP_BUILD=false
+RUN_BUILD=false
 RUN_SEED=false
 RUN_MIGRATION=false
 RUN_RESET=false # upload dockers and configs
@@ -102,7 +100,7 @@ ADD_API_DOC=false
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --skip-build)   SKIP_BUILD=true;        shift ;;
+    --build)   RUN_BUILD=true;        shift ;;
     --seed)         RUN_SEED=true;          shift ;;
     --migrate)         RUN_MIGRATION=true;          shift ;;
     --full-reset)         RUN_RESET=true;          shift ;;
@@ -135,7 +133,7 @@ echo -e "  Image:                     ${BOLD}${BUILD_PATH}${RESET}"
 echo -e "  Host:                      ${BOLD}${VM_HOST}${RESET}"
 echo -e "  User:                      ${BOLD}${VM_USER}${RESET}"
 echo -e "  Deploy path:               ${BOLD}${REMOTE_PATH}${RESET}"
-echo -e "  Skip build:                ${BOLD}${SKIP_BUILD}${RESET}"
+echo -e "  Skip build:                ${BOLD}${RUN_BUILD}${RESET}"
 echo -e "  Run seed:                  ${BOLD}${RUN_SEED}${RESET}"
 echo -e "  Run migration:             ${BOLD}${RUN_MIGRATION}${RESET}"
 echo -e "  Upload docs:               ${BOLD}${ADD_API_DOC}${RESET}"
@@ -144,15 +142,17 @@ echo -e "  Upload docker config:      ${BOLD}${RUN_RESET}${RESET}"
 # ----------------------------------------------------------------
 # BUILD
 # ----------------------------------------------------------------
-if [[ "${SKIP_BUILD}" == false ]]; then
+if [[ "${RUN_BUILD}" == true ]]; then
   step "Build"
   log "Building App ..."
-  CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ${BUILD_PATH} ${LOCAL_APP_PATH} || die "Build failed"
-  success "Image built: ${BUILD_PATH}"
+  CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o "${BUILD_PATH}" "${LOCAL_APP_PATH}" || die "Build failed"
+  success "Binary built: ${BUILD_PATH}"
 else
-  warn "Skipping build — using existing image ${BUILD_PATH}"
-  
-    die "Image ${BUILD_PATH} not found locally — cannot skip build"
+  warn "Skipping build — using existing binary ${BUILD_PATH}"
+
+  if [[ ! -f "${BUILD_PATH}" ]]; then
+    die "Binary ${BUILD_PATH} not found — cannot skip build"
+  fi
 fi
 
 
@@ -188,7 +188,9 @@ fi
 step "Transfer"
 log "Copying builds and related to ${VM_HOST}:${REMOTE_PATH}/ ..."
 
-scp -i "${SSH_KEY}" -o StrictHostKeyChecking=no "${BUILD_PATH}" "${VM_USER}@${VM_HOST}:${REMOTE_PATH}${SERVER_BUILD_PATH}" || die "SCP transfer failed"
+if [[ "${RUN_BUILD}" == true ]]; then
+  scp -i "${SSH_KEY}" -o StrictHostKeyChecking=no "${BUILD_PATH}" "${VM_USER}@${VM_HOST}:${REMOTE_PATH}${SERVER_BUILD_PATH}" || die "SCP transfer failed"
+fi
 
 if [[ "${RUN_MIGRATION}" == true ]]; then
   scp -i "${SSH_KEY}" -o StrictHostKeyChecking=no "${BUILD_PATH_MIGRATION}" "${VM_USER}@${VM_HOST}:${REMOTE_PATH}${SERVER_CMD_BUILD_PATH}" || die "SCP transfer failed"
@@ -199,7 +201,7 @@ if [[ "${RUN_SEED}" == true ]]; then
 fi
 
 if [[ "${ADD_API_DOC}" == true ]]; then
-scp -i "${SSH_KEY}" -o StrictHostKeyChecking=no "./${OPEN_API_FILE}" "${VM_USER}@${VM_HOST}:${REMOTE_PATH}/${OPEN_API_FILE}" || die "SCP transfer failed"
+  scp -i "${SSH_KEY}" -o StrictHostKeyChecking=no "./${OPEN_API_FILE}" "${VM_USER}@${VM_HOST}:${REMOTE_PATH}/${OPEN_API_FILE}" || die "SCP transfer failed"
 fi
 
 if [[ "${RUN_RESET}" == true ]]; then
@@ -214,6 +216,8 @@ success "Transfer complete"
 # ----------------------------------------------------------------
 # REMOTE DEPLOYMENT
 # ----------------------------------------------------------------
+if [[ "${RUN_SEED}" == true ]]; then
+
 step "Deploy"
 
 remote bash -euo pipefail << REMOTE
@@ -233,6 +237,8 @@ remote bash -euo pipefail << REMOTE
 REMOTE
 
 success "Containers started on ${VM_HOST}"
+
+fi
 
 # ----------------------------------------------------------------
 # SEED (optional)

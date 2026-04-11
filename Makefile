@@ -2,7 +2,7 @@
 BINARY_NAME=app
 MAIN_PATH=./cmd/api/main.go
 MIGRATION_PATH=./cmd/migrate/main.go
-SEEDER_PATH=./cmd/seeder/main.go
+SEEDER_PATH=./cmd/seed/main.go
 
 # Load environment variables for local DB migrations
 ifneq ("$(wildcard .env)","")
@@ -35,7 +35,7 @@ help:
 # 	@echo "  make migrate-status  - Show migration status"
 	@echo "  make seed            - Seed database"
 # 	@echo "  make seed-clear      - Clear and seed database"
-# 	@echo "  make seed-reset      - Reset database and seed"
+	@echo "  make seed-reset      - Reset database and seed"
 	@echo "  make swagger         - Generate swagger docs"
 	@echo "  make sqlc            - Generate sqlc go file"
 	@echo "  make deps            - Install golang dependencies"
@@ -96,7 +96,12 @@ seed:
 
 .PHONY: seed-clear
 seed-clear:
-	@go run ${SEEDER_PATH} -clear
+	@go run ${SEEDER_PATH} clear
+
+
+.PHONY: seed-reset
+seed-reset:
+	@go run ${SEEDER_PATH} reset
 
 .PHONY: db-reset
 db-reset: migrate-rollback migrate-up seed

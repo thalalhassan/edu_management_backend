@@ -49,4 +49,6 @@ const (
 	ApiTimetablePath = "/timetables"
 
 	ApiSubjectPath = "/subjects"
+
+	ApiSalariesPath = "/salaries"
 )

@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/thalalhassan/edu_management/internal/app"
-	"github.com/thalalhassan/edu_management/internal/database/seeder"
+	"github.com/thalalhassan/edu_management/internal/database/seed"
 )
 
 func main() {
@@ -18,8 +18,14 @@ func main() {
 
 	db := appInstance.DB
 
+	command := "" // default command
+
+	if len(os.Args) > 1 {
+		command = os.Args[1]
+	}
+
 	// Seed the database with initial data
-	if err := seeder.Run(db.Gorm); err != nil {
+	if err := seed.Seed(db.Gorm, command); err != nil {
 		log.Fatalf("Failed to seed database: %v", err)
 	}
 

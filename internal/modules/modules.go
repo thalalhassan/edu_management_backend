@@ -16,6 +16,7 @@ import (
 	"github.com/thalalhassan/edu_management/internal/modules/notice"
 	"github.com/thalalhassan/edu_management/internal/modules/parent"
 	"github.com/thalalhassan/edu_management/internal/modules/report"
+	"github.com/thalalhassan/edu_management/internal/modules/salary"
 	"github.com/thalalhassan/edu_management/internal/modules/staff"
 	"github.com/thalalhassan/edu_management/internal/modules/standard"
 	"github.com/thalalhassan/edu_management/internal/modules/student"
@@ -76,19 +77,22 @@ func RegisterModules(api *gin.RouterGroup, app *app.App) {
 	// Register report module routes
 	report.RegisterRouter(api, app)
 
-	// Attendance module
+	// Register Attendance module
 	attendance.RegisterRouter(api, app)
 
-	// Exam module
+	// Register Exam module
 	exam.RegisterRouter(api, app)
 
-	// subject module
+	// Register subject module
 	subject.RegisterRouter(api, app)
 
-	// teacher assignment module
+	// Register teacher assignment module
 	teacher_assignment.RegisterRouter(api, app)
 
-	// timetable module
+	// Register timetable module
 	timetable.RegisterRouter(api, app)
+
+	// Register salaries module
+	salary.RegisterRouter(api, app)
 
 }

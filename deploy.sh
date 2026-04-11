@@ -45,6 +45,8 @@ ENV_FILE=".env.prod"
 ENV_CMD_FILE=".env.prod.cmd"
 
 OPEN_API_FILE="docs/openapi.yaml"
+POSTMAN_API_FILE="docs/postman.json"
+
 
 # ----------------------------------------------------------------
 # COLORS
@@ -202,6 +204,7 @@ fi
 
 if [[ "${ADD_API_DOC}" == true ]]; then
   scp -i "${SSH_KEY}" -o StrictHostKeyChecking=no "./${OPEN_API_FILE}" "${VM_USER}@${VM_HOST}:${REMOTE_PATH}/${OPEN_API_FILE}" || die "SCP transfer failed"
+  scp -i "${SSH_KEY}" -o StrictHostKeyChecking=no "./${POSTMAN_API_FILE}" "${VM_USER}@${VM_HOST}:${REMOTE_PATH}/${POSTMAN_API_FILE}" || die "SCP transfer failed"
 fi
 
 if [[ "${RUN_RESET}" == true ]]; then

@@ -51,7 +51,7 @@ func StartServer(appInstance *app.App) *gin.Engine {
 		docs.SwaggerInfo.BasePath = CurApiVersion
 
 		api.StaticFile("/openapi/doc.yaml", "./docs/openapi.yaml")
-		api.StaticFile("/postman/doc.json", "./docs/postman_collection.json")
+		api.StaticFile("/postman/doc.json", "./docs/postman.json")
 
 		api.GET("/docs/*any", ginSwagger.WrapHandler(
 			swaggerFiles.Handler,

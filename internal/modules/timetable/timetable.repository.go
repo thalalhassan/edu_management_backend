@@ -114,7 +114,7 @@ func (r *repositoryImpl) Update(ctx context.Context, id string, t *TimeTable) er
 }
 
 func (r *repositoryImpl) Delete(ctx context.Context, id string) error {
-	return r.db.WithContext(ctx).Delete(&TimeTable{}, "id = ?", id).Error
+	return r.db.WithContext(ctx).Where("id = ?", id).Delete(&TimeTable{}).Error
 }
 
 // HasConflict checks if a class section already has a period that overlaps

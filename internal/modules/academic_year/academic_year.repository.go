@@ -78,7 +78,7 @@ func (r *repositoryImpl) Update(ctx context.Context, id string, a *AcademicYear)
 }
 
 func (r *repositoryImpl) Delete(ctx context.Context, id string) error {
-	return r.db.WithContext(ctx).Delete(&AcademicYear{}, "id = ?", id).Error
+	return r.db.WithContext(ctx).Where("id = ?", id).Delete(&AcademicYear{}).Error
 }
 
 // SetActive deactivates all academic years then marks the target one active.

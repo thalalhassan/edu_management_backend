@@ -128,7 +128,7 @@ func (r *repositoryImpl) UpdateAttendance(ctx context.Context, a *Attendance) er
 }
 
 func (r *repositoryImpl) DeleteAttendance(ctx context.Context, id string) error {
-	return r.db.WithContext(ctx).Delete(&database.Attendance{}, "id = ?", id).Error
+	return r.db.WithContext(ctx).Where("id = ?", id).Delete(&database.Attendance{}).Error
 }
 
 func (r *repositoryImpl) GetEnrollmentIDsByClassSection(ctx context.Context, classSectionID string) ([]string, error) {
@@ -241,5 +241,5 @@ func (r *repositoryImpl) UpdateTeacherAttendance(ctx context.Context, a *Teacher
 }
 
 func (r *repositoryImpl) DeleteTeacherAttendance(ctx context.Context, id string) error {
-	return r.db.WithContext(ctx).Delete(&database.TeacherAttendance{}, "id = ?", id).Error
+	return r.db.WithContext(ctx).Where("id = ?", id).Delete(&database.TeacherAttendance{}).Error
 }

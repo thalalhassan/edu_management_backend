@@ -86,5 +86,5 @@ func (r *repositoryImpl) UpdateStatus(ctx context.Context, id string, isActive b
 }
 
 func (r *repositoryImpl) Delete(ctx context.Context, id string) error {
-	return r.db.WithContext(ctx).Delete(&Teacher{}, "id = ?", id).Error
+	return r.db.WithContext(ctx).Where("id = ?", id).Delete(&Teacher{}).Error
 }

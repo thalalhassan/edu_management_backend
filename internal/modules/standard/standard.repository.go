@@ -70,7 +70,7 @@ func (r *repositoryImpl) Update(ctx context.Context, id string, s *Standard) err
 }
 
 func (r *repositoryImpl) Delete(ctx context.Context, id string) error {
-	return r.db.WithContext(ctx).Delete(&Standard{}, "id = ?", id).Error
+	return r.db.WithContext(ctx).Where("id = ?", id).Delete(&Standard{}).Error
 }
 
 func (r *repositoryImpl) AssignSubject(ctx context.Context, link *StandardSubject) error {

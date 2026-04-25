@@ -97,7 +97,7 @@ func (r *structureRepo) Update(ctx context.Context, id string, f *FeeStructure) 
 }
 
 func (r *structureRepo) Delete(ctx context.Context, id string) error {
-	return r.db.WithContext(ctx).Delete(&FeeStructure{}, "id = ?", id).Error
+	return r.db.WithContext(ctx).Where("id = ?", id).Delete(&FeeStructure{}).Error
 }
 
 func (r *structureRepo) IsDuplicate(ctx context.Context, academicYearID, standardID, component string) (bool, error) {
@@ -203,7 +203,7 @@ func (r *recordRepo) Update(ctx context.Context, id string, rec *FeeRecord) erro
 }
 
 func (r *recordRepo) Delete(ctx context.Context, id string) error {
-	return r.db.WithContext(ctx).Delete(&FeeRecord{}, "id = ?", id).Error
+	return r.db.WithContext(ctx).Where("id = ?", id).Delete(&FeeRecord{}).Error
 }
 
 // SumByEnrollment returns the total due and total paid for a student enrollment.

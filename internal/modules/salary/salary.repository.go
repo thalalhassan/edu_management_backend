@@ -97,7 +97,7 @@ func (r *structureRepo) Update(ctx context.Context, id string, s *SalaryStructur
 }
 
 func (r *structureRepo) Delete(ctx context.Context, id string) error {
-	return r.db.WithContext(ctx).Delete(&SalaryStructure{}, "id = ?", id).Error
+	return r.db.WithContext(ctx).Where("id = ?", id).Delete(&SalaryStructure{}).Error
 }
 
 // ──────────────────────────────────────────────────────────────
@@ -203,7 +203,7 @@ func (r *recordRepo) Update(ctx context.Context, id string, rec *SalaryRecord) e
 }
 
 func (r *recordRepo) Delete(ctx context.Context, id string) error {
-	return r.db.WithContext(ctx).Delete(&SalaryRecord{}, "id = ?", id).Error
+	return r.db.WithContext(ctx).Where("id = ?", id).Delete(&SalaryRecord{}).Error
 }
 
 func (r *recordRepo) IsDuplicate(ctx context.Context, teacherID string, month, year int) (bool, error) {

@@ -219,7 +219,7 @@ success "Transfer complete"
 # ----------------------------------------------------------------
 # REMOTE DEPLOYMENT
 # ----------------------------------------------------------------
-if [[ "${RUN_SEED}" == true ]]; then
+if [[ "${RUN_BUILD}" == true ]]; then
 
 step "Deploy"
 

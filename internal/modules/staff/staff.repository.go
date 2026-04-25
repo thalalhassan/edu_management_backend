@@ -52,5 +52,5 @@ func (r *RepositoryImpl) Update(ctx context.Context, id string, staff *Staff) er
 }
 
 func (r *RepositoryImpl) Delete(ctx context.Context, id string) error {
-	return r.db.WithContext(ctx).Delete(&Staff{}, "id = ?", id).Error
+	return r.db.WithContext(ctx).Where("id = ?", id).Delete(&Staff{}).Error
 }

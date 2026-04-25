@@ -107,7 +107,7 @@ func (r *repositoryImpl) UpdateExam(ctx context.Context, e *Exam) error {
 }
 
 func (r *repositoryImpl) DeleteExam(ctx context.Context, id string) error {
-	return r.db.WithContext(ctx).Delete(&database.Exam{}, "id = ?", id).Error
+	return r.db.WithContext(ctx).Where("id = ?", id).Delete(&database.Exam{}).Error
 }
 
 func (r *repositoryImpl) IsDuplicateExamName(ctx context.Context, academicYearID, name string) (bool, error) {
@@ -169,7 +169,7 @@ func (r *repositoryImpl) UpdateSchedule(ctx context.Context, s *ExamSchedule) er
 }
 
 func (r *repositoryImpl) DeleteSchedule(ctx context.Context, id string) error {
-	return r.db.WithContext(ctx).Delete(&database.ExamSchedule{}, "id = ?", id).Error
+	return r.db.WithContext(ctx).Where("id = ?", id).Delete(&database.ExamSchedule{}).Error
 }
 
 func (r *repositoryImpl) IsDuplicateSchedule(ctx context.Context, examID, classSectionID, subjectID string) (bool, error) {
@@ -233,7 +233,7 @@ func (r *repositoryImpl) UpdateResult(ctx context.Context, res *ExamResult) erro
 }
 
 func (r *repositoryImpl) DeleteResult(ctx context.Context, id string) error {
-	return r.db.WithContext(ctx).Delete(&database.ExamResult{}, "id = ?", id).Error
+	return r.db.WithContext(ctx).Where("id = ?", id).Delete(&database.ExamResult{}).Error
 }
 
 func (r *repositoryImpl) IsDuplicateResult(ctx context.Context, scheduleID, enrollmentID string) (bool, error) {

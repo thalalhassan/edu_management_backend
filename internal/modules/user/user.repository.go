@@ -103,7 +103,7 @@ func (r *repositoryImpl) UpdateUser(ctx context.Context, id string, user *User) 
 }
 
 func (r *repositoryImpl) DeleteUser(ctx context.Context, id string) error {
-	return r.db.WithContext(ctx).Delete(&database.User{}, "id = ?", id).Error
+	return r.db.WithContext(ctx).Where("id = ?", id).Delete(&database.User{}).Error
 }
 
 // ──────────────────────────────────────────────────────────────

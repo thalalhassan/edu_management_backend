@@ -79,7 +79,7 @@ func (r *repositoryImpl) Update(ctx context.Context, id string, s *Subject) erro
 }
 
 func (r *repositoryImpl) Delete(ctx context.Context, id string) error {
-	return r.db.WithContext(ctx).Delete(&Subject{}, "id = ?", id).Error
+	return r.db.WithContext(ctx).Where("id = ?", id).Delete(&Subject{}).Error
 }
 
 func (r *repositoryImpl) IsCodeTaken(ctx context.Context, code string) (bool, error) {

@@ -76,7 +76,7 @@ func (r *repositoryImpl) FindAll(ctx context.Context, q query_params.Query[Filte
 }
 
 func (r *repositoryImpl) Update(ctx context.Context, n *Notice) error {
-	return r.db.WithContext(ctx).Save(n).Error
+	return r.db.WithContext(ctx).Where("id = ?", n.ID).Save(n).Error
 }
 
 func (r *repositoryImpl) Delete(ctx context.Context, id string) error {

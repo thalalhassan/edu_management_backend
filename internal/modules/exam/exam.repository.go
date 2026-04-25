@@ -103,7 +103,7 @@ func (r *repositoryImpl) FindAllExams(ctx context.Context, q query_params.Query[
 }
 
 func (r *repositoryImpl) UpdateExam(ctx context.Context, e *Exam) error {
-	return r.db.WithContext(ctx).Save(e).Error
+	return r.db.WithContext(ctx).Where("id = ?", e.ID).Save(e).Error
 }
 
 func (r *repositoryImpl) DeleteExam(ctx context.Context, id string) error {
@@ -165,7 +165,7 @@ func (r *repositoryImpl) FindSchedulesByClassSection(ctx context.Context, classS
 }
 
 func (r *repositoryImpl) UpdateSchedule(ctx context.Context, s *ExamSchedule) error {
-	return r.db.WithContext(ctx).Save(s).Error
+	return r.db.WithContext(ctx).Where("id = ?", s.ID).Save(s).Error
 }
 
 func (r *repositoryImpl) DeleteSchedule(ctx context.Context, id string) error {
@@ -229,7 +229,7 @@ func (r *repositoryImpl) FindResultsByStudent(ctx context.Context, studentEnroll
 }
 
 func (r *repositoryImpl) UpdateResult(ctx context.Context, res *ExamResult) error {
-	return r.db.WithContext(ctx).Save(res).Error
+	return r.db.WithContext(ctx).Where("id = ?", res.ID).Save(res).Error
 }
 
 func (r *repositoryImpl) DeleteResult(ctx context.Context, id string) error {

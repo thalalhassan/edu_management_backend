@@ -124,7 +124,7 @@ func (r *repositoryImpl) FindByEnrollmentAndDate(ctx context.Context, enrollment
 }
 
 func (r *repositoryImpl) UpdateAttendance(ctx context.Context, a *Attendance) error {
-	return r.db.WithContext(ctx).Save(a).Error
+	return r.db.WithContext(ctx).Where("id = ?", a.ID).Save(a).Error
 }
 
 func (r *repositoryImpl) DeleteAttendance(ctx context.Context, id string) error {
@@ -237,7 +237,7 @@ func (r *repositoryImpl) FindTeacherAttendanceByDate(ctx context.Context, teache
 }
 
 func (r *repositoryImpl) UpdateTeacherAttendance(ctx context.Context, a *TeacherAttendance) error {
-	return r.db.WithContext(ctx).Save(a).Error
+	return r.db.WithContext(ctx).Where("id = ?", a.ID).Save(a).Error
 }
 
 func (r *repositoryImpl) DeleteTeacherAttendance(ctx context.Context, id string) error {

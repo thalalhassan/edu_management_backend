@@ -72,7 +72,7 @@ func (r *repositoryImpl) List(ctx context.Context, q query_params.Query[FilterPa
 }
 
 func (r *repositoryImpl) Update(ctx context.Context, m *database.TeacherAssignment) error {
-	return r.db.WithContext(ctx).Save(m).Error
+	return r.db.WithContext(ctx).Where("id = ?", m.ID).Save(m).Error
 }
 
 func (r *repositoryImpl) Delete(ctx context.Context, id string) error {

@@ -114,7 +114,7 @@ type RecordRepository interface {
 	Delete(ctx context.Context, id string) error
 
 	// IsDuplicate checks if a record already exists for teacher + month + year.
-	IsDuplicate(ctx context.Context, teacherID string, month, year int) (bool, error)
+	IsDuplicate(ctx context.Context, employeeID string, month, year int) (bool, error)
 
 	// GetMonthlySummary aggregates all records for a given month + year.
 	GetMonthlySummary(ctx context.Context, academicYearID string, month, year int) (*MonthlySummary, error)
@@ -206,11 +206,11 @@ func (r *recordRepo) Delete(ctx context.Context, id string) error {
 	return r.db.WithContext(ctx).Where("id = ?", id).Delete(&SalaryRecord{}).Error
 }
 
-func (r *recordRepo) IsDuplicate(ctx context.Context, teacherID string, month, year int) (bool, error) {
+func (r *recordRepo) IsDuplicate(ctx context.Context, employeeID string, month, year int) (bool, error) {
 	var count int64
 	err := r.db.WithContext(ctx).
 		Model(&database.SalaryRecord{}).
-		Where("teacher_id = ? AND month = ? AND year = ?", teacherID, month, year).
+		Where("employee_id = ? AND month = ? AND year = ?", employeeID, month, year).
 		Count(&count).Error
 	return count > 0, err
 }

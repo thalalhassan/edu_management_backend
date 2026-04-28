@@ -36,7 +36,7 @@ func (h *Handler) Routes(r *gin.RouterGroup) {
 
 		// Weekly schedule views — primary UI surfaces
 		tt.GET("/class/:class_section_id/schedule", h.getClassSchedule)
-		tt.GET("/teacher/:teacher_id/schedule", h.getTeacherSchedule)
+		tt.GET("/employee/:employee_id/schedule", h.getEmployeeSchedule)
 
 		tt.PUT("/:id", h.update)
 		tt.DELETE("/:id", h.delete)
@@ -100,16 +100,16 @@ func (h *Handler) getClassSchedule(c *gin.Context) {
 	response.Success(c, resp, "Class schedule retrieved successfully")
 }
 
-// getTeacherSchedule returns the full week schedule for a teacher
+// getEmployeeSchedule returns the full week schedule for an employee
 // across all their assigned class sections.
-func (h *Handler) getTeacherSchedule(c *gin.Context) {
-	teacherID := c.Param("teacher_id")
-	resp, err := h.service.GetTeacherSchedule(c.Request.Context(), teacherID)
+func (h *Handler) getEmployeeSchedule(c *gin.Context) {
+	employeeID := c.Param("employee_id")
+	resp, err := h.service.GetEmployeeSchedule(c.Request.Context(), employeeID)
 	if err != nil {
 		response.InternalError(c, err.Error())
 		return
 	}
-	response.Success(c, resp, "Teacher schedule retrieved successfully")
+	response.Success(c, resp, "Employee schedule retrieved successfully")
 }
 
 func (h *Handler) update(c *gin.Context) {

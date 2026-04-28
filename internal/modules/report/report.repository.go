@@ -49,8 +49,8 @@ type feeAggregate struct {
 }
 
 type teacherAttCount struct {
-	TeacherID  string
 	EmployeeID string
+	EmpID      string
 	FirstName  string
 	LastName   string
 	Status     database.AttendanceStatus
@@ -218,26 +218,26 @@ func (r *repositoryImpl) GetTeacherAttendanceCounts(ctx context.Context, teacher
 	var rows []teacherAttCount
 
 	query := r.db.WithContext(ctx).
-		Model(&database.TeacherAttendance{}).
+		Model(&database.EmployeeAttendance{}).
 		Select(`
-			teacher_attendance.teacher_id,
-			teacher.employee_id,
-			teacher.first_name,
-			teacher.last_name,
-			teacher_attendance.status,
+			employee_attendance.employee_id,
+			employee.employee_id as emp_id,
+			employee.first_name,
+			employee.last_name,
+			employee_attendance.status,
 			COUNT(*) as count
 		`).
-		Joins("JOIN teacher ON teacher.id = teacher_attendance.teacher_id").
-		Group("teacher_attendance.teacher_id, teacher.employee_id, teacher.first_name, teacher.last_name, teacher_attendance.status")
+		Joins("JOIN employee ON employee.id = employee_attendance.employee_id").
+		Group("employee_attendance.employee_id, employee.employee_id, employee.first_name, employee.last_name, employee_attendance.status")
 
 	if teacherID != nil {
-		query = query.Where("teacher_attendance.teacher_id = ?", *teacherID)
+		query = query.Where("employee_attendance.employee_id = ?", *teacherID)
 	}
 	if from != nil {
-		query = query.Where("teacher_attendance.date >= ?", from)
+		query = query.Where("employee_attendance.date >= ?", from)
 	}
 	if to != nil {
-		query = query.Where("teacher_attendance.date <= ?", to)
+		query = query.Where("employee_attendance.date <= ?", to)
 	}
 
 	err := query.Scan(&rows).Error

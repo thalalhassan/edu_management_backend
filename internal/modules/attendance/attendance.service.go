@@ -23,13 +23,13 @@ type Service interface {
 	UpdateAttendance(ctx context.Context, id string, req UpdateStudentAttendanceRequest) (*AttendanceResponse, error)
 	DeleteAttendance(ctx context.Context, id string) error
 
-	// Teacher attendance
-	MarkTeacherAttendance(ctx context.Context, req MarkTeacherAttendanceRequest) (*TeacherAttendanceResponse, error)
-	BulkMarkTeacherAttendance(ctx context.Context, req BulkMarkTeacherRequest) ([]*TeacherAttendanceResponse, error)
-	GetTeacherAttendanceByID(ctx context.Context, id string) (*TeacherAttendanceResponse, error)
-	ListTeacherAttendance(ctx context.Context, q query_params.Query[TeacherFilterParams]) ([]*TeacherAttendanceResponse, int64, error)
-	UpdateTeacherAttendance(ctx context.Context, id string, req UpdateTeacherAttendanceRequest) (*TeacherAttendanceResponse, error)
-	DeleteTeacherAttendance(ctx context.Context, id string) error
+	// Employee attendance
+	MarkEmployeeAttendance(ctx context.Context, req MarkEmployeeAttendanceRequest) (*EmployeeAttendanceResponse, error)
+	BulkMarkEmployeeAttendance(ctx context.Context, req BulkMarkEmployeeRequest) ([]*EmployeeAttendanceResponse, error)
+	GetEmployeeAttendanceByID(ctx context.Context, id string) (*EmployeeAttendanceResponse, error)
+	ListEmployeeAttendance(ctx context.Context, q query_params.Query[EmployeeFilterParams]) ([]*EmployeeAttendanceResponse, int64, error)
+	UpdateEmployeeAttendance(ctx context.Context, id string, req UpdateEmployeeAttendanceRequest) (*EmployeeAttendanceResponse, error)
+	DeleteEmployeeAttendance(ctx context.Context, id string) error
 }
 
 // ─── service struct ───────────────────────────────────────────────────────────
@@ -61,7 +61,7 @@ func (s *service) MarkAttendance(ctx context.Context, req MarkStudentAttendanceR
 		Date:                req.Date,
 		Status:              req.Status,
 		Remark:              req.Remark,
-		RecordedByTeacherID: req.RecordedByTeacherID,
+		RecordedByID:        req.RecordedByID,
 	}
 	if err := s.repo.CreateAttendance(ctx, a); err != nil {
 		return nil, fmt.Errorf("attendance.Service.MarkAttendance: %w", err)
@@ -87,7 +87,7 @@ func (s *service) BulkMarkAttendance(ctx context.Context, req BulkMarkRequest) (
 			Date:                req.Date,
 			Status:              row.Status,
 			Remark:              row.Remark,
-			RecordedByTeacherID: req.RecordedByTeacherID,
+			RecordedByID:        req.RecordedByID,
 		})
 	}
 
@@ -182,86 +182,86 @@ func (s *service) DeleteAttendance(ctx context.Context, id string) error {
 	return nil
 }
 
-// ─── Teacher Attendance ───────────────────────────────────────────────────────
+// ─── Employee Attendance ───────────────────────────────────────────────────────
 
-func (s *service) MarkTeacherAttendance(ctx context.Context, req MarkTeacherAttendanceRequest) (*TeacherAttendanceResponse, error) {
-	existing, err := s.repo.FindTeacherAttendanceByDate(ctx, req.TeacherID, req.Date)
+func (s *service) MarkEmployeeAttendance(ctx context.Context, req MarkEmployeeAttendanceRequest) (*EmployeeAttendanceResponse, error) {
+	existing, err := s.repo.FindEmployeeAttendanceByDate(ctx, req.EmployeeID, req.Date)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, fmt.Errorf("attendance.Service.MarkTeacherAttendance.FindExisting: %w", err)
+		return nil, fmt.Errorf("attendance.Service.MarkEmployeeAttendance.FindExisting: %w", err)
 	}
 	if existing != nil {
-		return nil, fmt.Errorf("attendance.Service.MarkTeacherAttendance: attendance already marked for teacher %s on %s — use PUT to update", req.TeacherID, req.Date.Format("2006-01-02"))
+		return nil, fmt.Errorf("attendance.Service.MarkEmployeeAttendance: attendance already marked for employee %s on %s — use PUT to update", req.EmployeeID, req.Date.Format("2006-01-02"))
 	}
 	if !isValidStatus(req.Status) {
-		return nil, fmt.Errorf("attendance.Service.MarkTeacherAttendance: invalid status %q", req.Status)
+		return nil, fmt.Errorf("attendance.Service.MarkEmployeeAttendance: invalid status %q", req.Status)
 	}
 
-	a := &TeacherAttendance{
-		TeacherID: req.TeacherID,
-		Date:      req.Date,
-		Status:    req.Status,
-		Remark:    req.Remark,
+	a := &EmployeeAttendance{
+		EmployeeID: req.EmployeeID,
+		Date:       req.Date,
+		Status:     req.Status,
+		Remark:     req.Remark,
 	}
-	if err := s.repo.CreateTeacherAttendance(ctx, a); err != nil {
-		return nil, fmt.Errorf("attendance.Service.MarkTeacherAttendance: %w", err)
+	if err := s.repo.CreateEmployeeAttendance(ctx, a); err != nil {
+		return nil, fmt.Errorf("attendance.Service.MarkEmployeeAttendance: %w", err)
 	}
-	return ToTeacherAttendanceResponse(a), nil
+	return ToEmployeeAttendanceResponse(a), nil
 }
 
-func (s *service) BulkMarkTeacherAttendance(ctx context.Context, req BulkMarkTeacherRequest) ([]*TeacherAttendanceResponse, error) {
-	records := make([]*TeacherAttendance, 0, len(req.Records))
+func (s *service) BulkMarkEmployeeAttendance(ctx context.Context, req BulkMarkEmployeeRequest) ([]*EmployeeAttendanceResponse, error) {
+	records := make([]*EmployeeAttendance, 0, len(req.Records))
 	for i, row := range req.Records {
 		if !isValidStatus(row.Status) {
-			return nil, fmt.Errorf("attendance.Service.BulkMarkTeacherAttendance: invalid status %q at index %d", row.Status, i)
+			return nil, fmt.Errorf("attendance.Service.BulkMarkEmployeeAttendance: invalid status %q at index %d", row.Status, i)
 		}
-		existing, err := s.repo.FindTeacherAttendanceByDate(ctx, row.TeacherID, req.Date)
+		existing, err := s.repo.FindEmployeeAttendanceByDate(ctx, row.EmployeeID, req.Date)
 		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, fmt.Errorf("attendance.Service.BulkMarkTeacherAttendance.FindExisting[%d]: %w", i, err)
+			return nil, fmt.Errorf("attendance.Service.BulkMarkEmployeeAttendance.FindExisting[%d]: %w", i, err)
 		}
 		if existing != nil {
-			return nil, fmt.Errorf("attendance.Service.BulkMarkTeacherAttendance: attendance already marked for teacher %s", row.TeacherID)
+			return nil, fmt.Errorf("attendance.Service.BulkMarkEmployeeAttendance: attendance already marked for employee %s", row.EmployeeID)
 		}
-		records = append(records, &TeacherAttendance{
-			TeacherID: row.TeacherID,
-			Date:      req.Date,
-			Status:    row.Status,
-			Remark:    row.Remark,
+		records = append(records, &EmployeeAttendance{
+			EmployeeID: row.EmployeeID,
+			Date:       req.Date,
+			Status:     row.Status,
+			Remark:     row.Remark,
 		})
 	}
 
-	if err := s.repo.BulkCreateTeacherAttendance(ctx, records); err != nil {
-		return nil, fmt.Errorf("attendance.Service.BulkMarkTeacherAttendance: %w", err)
+	if err := s.repo.BulkCreateEmployeeAttendance(ctx, records); err != nil {
+		return nil, fmt.Errorf("attendance.Service.BulkMarkEmployeeAttendance: %w", err)
 	}
 
-	responses := make([]*TeacherAttendanceResponse, len(records))
+	responses := make([]*EmployeeAttendanceResponse, len(records))
 	for i, a := range records {
-		responses[i] = ToTeacherAttendanceResponse(a)
+		responses[i] = ToEmployeeAttendanceResponse(a)
 	}
 	return responses, nil
 }
 
-func (s *service) GetTeacherAttendanceByID(ctx context.Context, id string) (*TeacherAttendanceResponse, error) {
-	a, err := s.repo.GetTeacherAttendanceByID(ctx, id)
+func (s *service) GetEmployeeAttendanceByID(ctx context.Context, id string) (*EmployeeAttendanceResponse, error) {
+	a, err := s.repo.GetEmployeeAttendanceByID(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("attendance.Service.GetTeacherAttendanceByID: %w", err)
+		return nil, fmt.Errorf("attendance.Service.GetEmployeeAttendanceByID: %w", err)
 	}
-	return ToTeacherAttendanceResponse(a), nil
+	return ToEmployeeAttendanceResponse(a), nil
 }
 
-func (s *service) ListTeacherAttendance(ctx context.Context, q query_params.Query[TeacherFilterParams]) ([]*TeacherAttendanceResponse, int64, error) {
-	records, total, err := s.repo.FindTeacherAttendance(ctx, q)
+func (s *service) ListEmployeeAttendance(ctx context.Context, q query_params.Query[EmployeeFilterParams]) ([]*EmployeeAttendanceResponse, int64, error) {
+	records, total, err := s.repo.FindEmployeeAttendance(ctx, q)
 	if err != nil {
-		return nil, 0, fmt.Errorf("attendance.Service.ListTeacherAttendance: %w", err)
+		return nil, 0, fmt.Errorf("attendance.Service.ListEmployeeAttendance: %w", err)
 	}
-	responses := make([]*TeacherAttendanceResponse, len(records))
+	responses := make([]*EmployeeAttendanceResponse, len(records))
 	for i, a := range records {
-		responses[i] = ToTeacherAttendanceResponse(a)
+		responses[i] = ToEmployeeAttendanceResponse(a)
 	}
 	return responses, total, nil
 }
 
-func (s *service) UpdateTeacherAttendance(ctx context.Context, id string, req UpdateTeacherAttendanceRequest) (*TeacherAttendanceResponse, error) {
-	a, err := s.repo.GetTeacherAttendanceByID(ctx, id)
+func (s *service) UpdateEmployeeAttendance(ctx context.Context, id string, req UpdateEmployeeAttendanceRequest) (*EmployeeAttendanceResponse, error) {
+	a, err := s.repo.GetEmployeeAttendanceByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("attendance.Service.UpdateTeacherAttendance.GetByID: %w", err)
 	}
@@ -270,18 +270,18 @@ func (s *service) UpdateTeacherAttendance(ctx context.Context, id string, req Up
 	}
 	a.Status = req.Status
 	a.Remark = req.Remark
-	if err := s.repo.UpdateTeacherAttendance(ctx, a); err != nil {
-		return nil, fmt.Errorf("attendance.Service.UpdateTeacherAttendance: %w", err)
+	if err := s.repo.UpdateEmployeeAttendance(ctx, a); err != nil {
+		return nil, fmt.Errorf("attendance.Service.UpdateEmployeeAttendance: %w", err)
 	}
-	return ToTeacherAttendanceResponse(a), nil
+	return ToEmployeeAttendanceResponse(a), nil
 }
 
-func (s *service) DeleteTeacherAttendance(ctx context.Context, id string) error {
-	if _, err := s.repo.GetTeacherAttendanceByID(ctx, id); err != nil {
-		return fmt.Errorf("attendance.Service.DeleteTeacherAttendance.GetByID: %w", err)
+func (s *service) DeleteEmployeeAttendance(ctx context.Context, id string) error {
+	if _, err := s.repo.GetEmployeeAttendanceByID(ctx, id); err != nil {
+		return fmt.Errorf("attendance.Service.DeleteEmployeeAttendance.GetByID: %w", err)
 	}
-	if err := s.repo.DeleteTeacherAttendance(ctx, id); err != nil {
-		return fmt.Errorf("attendance.Service.DeleteTeacherAttendance: %w", err)
+	if err := s.repo.DeleteEmployeeAttendance(ctx, id); err != nil {
+		return fmt.Errorf("attendance.Service.DeleteEmployeeAttendance: %w", err)
 	}
 	return nil
 }

@@ -34,10 +34,10 @@ type StructureFilterParams struct {
 }
 
 type RecordFilterParams struct {
-	TeacherID      *string      `form:"teacher_id"`
-	AcademicYearID *string      `form:"academic_year_id"`
-	Month          *int         `form:"month"`
-	Year           *int         `form:"year"`
+	TeacherID      *string       `form:"teacher_id"`
+	AcademicYearID *string       `form:"academic_year_id"`
+	Month          *int          `form:"month"`
+	Year           *int          `form:"year"`
 	Status         *SalaryStatus `form:"status"`
 }
 
@@ -46,7 +46,7 @@ type RecordFilterParams struct {
 // ──────────────────────────────────────────────────────────────
 
 type CreateStructureRequest struct {
-	TeacherID      string          `json:"teacher_id"      binding:"required,uuid"`
+	EmployeeID     string          `json:"employee_id"     binding:"required,uuid"`
 	BasicSalary    decimal.Decimal `json:"basic_salary"    binding:"required"`
 	HRA            decimal.Decimal `json:"hra"`
 	DA             decimal.Decimal `json:"da"`
@@ -112,17 +112,17 @@ type SalaryRecordResponse struct {
 // MonthlySummary is a rolled-up view of all salary records for a month.
 // Used in the dashboard payroll section.
 type MonthlySummary struct {
-	Month              int             `json:"month"`
-	Year               int             `json:"year"`
-	AcademicYear       string          `json:"academic_year"`
-	TotalTeachers      int             `json:"total_teachers"`
-	PaidCount          int             `json:"paid_count"`
-	PendingCount       int             `json:"pending_count"`
-	TotalGross         decimal.Decimal `json:"total_gross"`
-	TotalDeductions    decimal.Decimal `json:"total_deductions"`
-	TotalNet           decimal.Decimal `json:"total_net"`
-	TotalPaid          decimal.Decimal `json:"total_paid"`
-	TotalPending       decimal.Decimal `json:"total_pending"`
+	Month           int             `json:"month"`
+	Year            int             `json:"year"`
+	AcademicYear    string          `json:"academic_year"`
+	TotalTeachers   int             `json:"total_teachers"`
+	PaidCount       int             `json:"paid_count"`
+	PendingCount    int             `json:"pending_count"`
+	TotalGross      decimal.Decimal `json:"total_gross"`
+	TotalDeductions decimal.Decimal `json:"total_deductions"`
+	TotalNet        decimal.Decimal `json:"total_net"`
+	TotalPaid       decimal.Decimal `json:"total_paid"`
+	TotalPending    decimal.Decimal `json:"total_pending"`
 }
 
 // ──────────────────────────────────────────────────────────────

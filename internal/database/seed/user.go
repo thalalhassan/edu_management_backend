@@ -3,6 +3,7 @@ package seed
 import (
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/thalalhassan/edu_management/internal/database"
@@ -23,12 +24,14 @@ func SeedUsers(db *gorm.DB) error {
 
 	// ── Profiles ──────────────────────────────────────────────
 
-	teachers := []database.Teacher{
+	employees := []database.Employee{
 		{
-			EmployeeID:     "EMP001",
+			EmployeeCode:   "EMP001",
 			FirstName:      "Rajesh",
 			LastName:       "Kumar",
 			Gender:         database.GenderMale,
+			Category:       database.EmployeeCategoryTeacher,
+			Designation:    "Mathematics Teacher",
 			Phone:          ptr("9876543210"),
 			Qualification:  ptr("M.Sc Mathematics"),
 			Specialization: ptr("Mathematics"),
@@ -36,10 +39,12 @@ func SeedUsers(db *gorm.DB) error {
 			IsActive:       true,
 		},
 		{
-			EmployeeID:     "EMP002",
+			EmployeeCode:   "EMP002",
 			FirstName:      "Priya",
 			LastName:       "Nair",
 			Gender:         database.GenderFemale,
+			Category:       database.EmployeeCategoryTeacher,
+			Designation:    "English Teacher",
 			Phone:          ptr("9876543211"),
 			Qualification:  ptr("M.A English"),
 			Specialization: ptr("English Literature"),
@@ -57,7 +62,6 @@ func SeedUsers(db *gorm.DB) error {
 			Gender:        database.GenderMale,
 			Status:        database.StudentStatusActive,
 			Phone:         ptr("9123456789"),
-			BloodGroup:    ptr("O+"),
 			AdmissionDate: date("2024-06-01"),
 		},
 		{
@@ -68,7 +72,6 @@ func SeedUsers(db *gorm.DB) error {
 			Gender:        database.GenderFemale,
 			Status:        database.StudentStatusActive,
 			Phone:         ptr("9123456790"),
-			BloodGroup:    ptr("A+"),
 			AdmissionDate: date("2024-06-01"),
 		},
 	}
@@ -90,16 +93,17 @@ func SeedUsers(db *gorm.DB) error {
 		},
 	}
 
-	staff := []database.Staff{
+	staff := []database.Employee{
 		{
-			EmployeeID:  "STF001",
-			FirstName:   "Mohan",
-			LastName:    "Das",
-			Gender:      database.GenderMale,
-			Designation: "Accountant",
-			Phone:       ptr("9000000010"),
-			JoiningDate: date("2020-01-10"),
-			IsActive:    true,
+			EmployeeCode: "STF001",
+			FirstName:    "Mohan",
+			LastName:     "Das",
+			Gender:       database.GenderMale,
+			Category:     database.EmployeeCategoryStaff,
+			Designation:  "Accountant",
+			Phone:        ptr("9000000010"),
+			JoiningDate:  date("2020-01-10"),
+			IsActive:     true,
 		},
 	}
 
@@ -107,21 +111,21 @@ func SeedUsers(db *gorm.DB) error {
 
 	type userSeed struct {
 		email   string
-		role    database.UserRole
-		profile any // *Teacher | *Student | *Parent | *Staff | nil
+		role    database.SystemRole
+		profile any // *Employee | *Student | *Parent | nil
 	}
 
 	seeds := []userSeed{
-		{email: "superadmin@school.com", role: database.UserRoleSuperAdmin, profile: nil},
-		{email: "admin@school.com", role: database.UserRoleAdmin, profile: nil},
-		{email: "principal@school.com", role: database.UserRolePrincipal, profile: nil},
-		{email: "rajesh.kumar@school.com", role: database.UserRoleTeacher, profile: &teachers[0]},
-		{email: "priya.nair@school.com", role: database.UserRoleTeacher, profile: &teachers[1]},
-		{email: "arjun.sharma@school.com", role: database.UserRoleStudent, profile: &students[0]},
-		{email: "meera.pillai@school.com", role: database.UserRoleStudent, profile: &students[1]},
-		{email: "suresh.sharma@school.com", role: database.UserRoleParent, profile: &parents[0]},
-		{email: "latha.pillai@school.com", role: database.UserRoleParent, profile: &parents[1]},
-		{email: "mohan.das@school.com", role: database.UserRoleStaff, profile: &staff[0]},
+		{email: "superadmin@school.com", role: database.SystemRoleSuperAdmin, profile: nil},
+		{email: "admin@school.com", role: database.SystemRoleAdmin, profile: nil},
+		{email: "principal@school.com", role: database.SystemRolePrincipal, profile: nil},
+		{email: "rajesh.kumar@school.com", role: database.SystemRoleTeacher, profile: &employees[0]},
+		{email: "priya.nair@school.com", role: database.SystemRoleTeacher, profile: &employees[1]},
+		{email: "arjun.sharma@school.com", role: database.SystemRoleStudent, profile: &students[0]},
+		{email: "meera.pillai@school.com", role: database.SystemRoleStudent, profile: &students[1]},
+		{email: "suresh.sharma@school.com", role: database.SystemRoleParent, profile: &parents[0]},
+		{email: "latha.pillai@school.com", role: database.SystemRoleParent, profile: &parents[1]},
+		{email: "mohan.das@school.com", role: database.SystemRoleStaff, profile: &staff[0]},
 	}
 
 	for _, s := range seeds {
@@ -136,19 +140,30 @@ func SeedUsers(db *gorm.DB) error {
 		}
 
 		if err := db.Transaction(func(tx *gorm.DB) error {
+			// Create or get role
+			roleSlug := string(s.role)
+			role := &database.Role{
+				Slug:     roleSlug,
+				Name:     strings.Title(strings.ReplaceAll(roleSlug, "_", " ")),
+				IsSystem: true,
+			}
+			if err := tx.FirstOrCreate(role, database.Role{Slug: roleSlug}).Error; err != nil {
+				return err
+			}
+
 			u := &database.User{
 				Email:        s.email,
 				PasswordHash: password,
-				Role:         s.role,
+				RoleID:       role.ID,
 				IsActive:     true,
 			}
 
 			switch p := s.profile.(type) {
-			case *database.Teacher:
+			case *database.Employee:
 				if err := tx.Create(p).Error; err != nil {
-					return fmt.Errorf("create teacher (%s): %w", s.email, err)
+					return fmt.Errorf("create employee (%s): %w", s.email, err)
 				}
-				u.TeacherID = &p.ID
+				u.EmployeeID = &p.ID
 
 			case *database.Student:
 				if err := tx.Create(p).Error; err != nil {
@@ -162,13 +177,6 @@ func SeedUsers(db *gorm.DB) error {
 					return fmt.Errorf("create parent (%s): %w", s.email, err)
 				}
 				u.ParentID = &p.ID
-
-			case *database.Staff:
-				p.Email = &s.email
-				if err := tx.Create(p).Error; err != nil {
-					return fmt.Errorf("create staff (%s): %w", s.email, err)
-				}
-				u.StaffID = &p.ID
 			}
 
 			if err := tx.Create(u).Error; err != nil {

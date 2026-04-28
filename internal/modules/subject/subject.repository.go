@@ -58,9 +58,6 @@ func (r *repositoryImpl) FindAll(ctx context.Context, q query_params.Query[Filte
 		like := "%" + *f.Search + "%"
 		query = query.Where("name ILIKE ? OR code ILIKE ?", like, like)
 	}
-	if f.IsElective != nil {
-		query = query.Where("is_elective = ?", *f.IsElective)
-	}
 
 	if err := query.Count(&total).Error; err != nil {
 		return nil, 0, err

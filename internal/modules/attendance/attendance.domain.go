@@ -8,7 +8,7 @@ import (
 
 // Type aliases
 type Attendance = database.Attendance
-type TeacherAttendance = database.TeacherAttendance
+type EmployeeAttendance = database.EmployeeAttendance
 type AttendanceStatus = database.AttendanceStatus
 
 // ─── Student Attendance Requests ─────────────────────────────────────────────
@@ -19,15 +19,15 @@ type MarkStudentAttendanceRequest struct {
 	Date                time.Time        `json:"date"                  binding:"required"`
 	Status              AttendanceStatus `json:"status"                binding:"required"`
 	Remark              *string          `json:"remark,omitempty"`
-	RecordedByTeacherID *string          `json:"recorded_by_teacher_id,omitempty"`
+	RecordedByID        *string          `json:"recorded_by_id,omitempty"`
 }
 
 // BulkMarkRequest marks attendance for all students in a class section on a given date.
 type BulkMarkRequest struct {
-	ClassSectionID      string                 `json:"class_section_id"       binding:"required,uuid"`
-	Date                time.Time              `json:"date"                   binding:"required"`
-	RecordedByTeacherID *string                `json:"recorded_by_teacher_id,omitempty"`
-	Records             []StudentAttendanceRow `json:"records"                binding:"required,min=1,dive"`
+	ClassSectionID string                 `json:"class_section_id" binding:"required,uuid"`
+	Date           time.Time              `json:"date"             binding:"required"`
+	RecordedByID   *string                `json:"recorded_by_id,omitempty"`
+	Records        []StudentAttendanceRow `json:"records"         binding:"required,min=1,dive"`
 }
 
 type StudentAttendanceRow struct {
@@ -43,25 +43,25 @@ type UpdateStudentAttendanceRequest struct {
 
 // ─── Teacher Attendance Requests ─────────────────────────────────────────────
 
-type MarkTeacherAttendanceRequest struct {
-	TeacherID string           `json:"teacher_id" binding:"required,uuid"`
-	Date      time.Time        `json:"date"       binding:"required"`
-	Status    AttendanceStatus `json:"status"     binding:"required"`
-	Remark    *string          `json:"remark,omitempty"`
+type MarkEmployeeAttendanceRequest struct {
+	EmployeeID string           `json:"employee_id" binding:"required,uuid"`
+	Date       time.Time        `json:"date"        binding:"required"`
+	Status     AttendanceStatus `json:"status"      binding:"required"`
+	Remark     *string          `json:"remark,omitempty"`
 }
 
-type BulkMarkTeacherRequest struct {
-	Date    time.Time              `json:"date"    binding:"required"`
-	Records []TeacherAttendanceRow `json:"records" binding:"required,min=1,dive"`
+type BulkMarkEmployeeRequest struct {
+	Date    time.Time               `json:"date"    binding:"required"`
+	Records []EmployeeAttendanceRow `json:"records" binding:"required,min=1,dive"`
 }
 
-type TeacherAttendanceRow struct {
-	TeacherID string           `json:"teacher_id" binding:"required,uuid"`
-	Status    AttendanceStatus `json:"status"     binding:"required"`
-	Remark    *string          `json:"remark,omitempty"`
+type EmployeeAttendanceRow struct {
+	EmployeeID string           `json:"employee_id" binding:"required,uuid"`
+	Status     AttendanceStatus `json:"status"      binding:"required"`
+	Remark     *string          `json:"remark,omitempty"`
 }
 
-type UpdateTeacherAttendanceRequest struct {
+type UpdateEmployeeAttendanceRequest struct {
 	Status AttendanceStatus `json:"status"           binding:"required"`
 	Remark *string          `json:"remark,omitempty"`
 }
@@ -74,32 +74,32 @@ type AttendanceResponse struct {
 	Date                time.Time        `json:"date"`
 	Status              AttendanceStatus `json:"status"`
 	Remark              *string          `json:"remark,omitempty"`
-	RecordedByTeacherID *string          `json:"recorded_by_teacher_id,omitempty"`
+	RecordedByID        *string          `json:"recorded_by_id,omitempty"`
 	CreatedAt           time.Time        `json:"created_at"`
 	UpdatedAt           time.Time        `json:"updated_at"`
 }
 
-type TeacherAttendanceResponse struct {
-	ID        string           `json:"id"`
-	TeacherID string           `json:"teacher_id"`
-	Date      time.Time        `json:"date"`
-	Status    AttendanceStatus `json:"status"`
-	Remark    *string          `json:"remark,omitempty"`
-	CreatedAt time.Time        `json:"created_at"`
-	UpdatedAt time.Time        `json:"updated_at"`
+type EmployeeAttendanceResponse struct {
+	ID         string           `json:"id"`
+	EmployeeID string           `json:"employee_id"`
+	Date       time.Time        `json:"date"`
+	Status     AttendanceStatus `json:"status"`
+	Remark     *string          `json:"remark,omitempty"`
+	CreatedAt  time.Time        `json:"created_at"`
+	UpdatedAt  time.Time        `json:"updated_at"`
 }
 
 // ClassAttendanceSummary gives daily class-level overview.
 type ClassAttendanceSummary struct {
-	Date           time.Time              `json:"date"`
-	ClassSectionID string                 `json:"class_section_id"`
-	TotalStudents  int                    `json:"total_students"`
-	Present        int                    `json:"present"`
-	Absent         int                    `json:"absent"`
-	HalfDay        int                    `json:"half_day"`
-	Late           int                    `json:"late"`
-	OnLeave        int                    `json:"on_leave"`
-	Records        []*AttendanceResponse  `json:"records"`
+	Date           time.Time             `json:"date"`
+	ClassSectionID string                `json:"class_section_id"`
+	TotalStudents  int                   `json:"total_students"`
+	Present        int                   `json:"present"`
+	Absent         int                   `json:"absent"`
+	HalfDay        int                   `json:"half_day"`
+	Late           int                   `json:"late"`
+	OnLeave        int                   `json:"on_leave"`
+	Records        []*AttendanceResponse `json:"records"`
 }
 
 // ─── Filter params ────────────────────────────────────────────────────────────
@@ -112,11 +112,11 @@ type StudentFilterParams struct {
 	Status              *string    `form:"status"`
 }
 
-type TeacherFilterParams struct {
-	TeacherID *string    `form:"teacher_id"`
-	DateFrom  *time.Time `form:"date_from"`
-	DateTo    *time.Time `form:"date_to"`
-	Status    *string    `form:"status"`
+type EmployeeFilterParams struct {
+	EmployeeID *string    `form:"employee_id"`
+	DateFrom   *time.Time `form:"date_from"`
+	DateTo     *time.Time `form:"date_to"`
+	Status     *string    `form:"status"`
 }
 
 var allowedStudentSortFields = map[string]bool{
@@ -125,7 +125,7 @@ var allowedStudentSortFields = map[string]bool{
 	"created_at": true,
 }
 
-var allowedTeacherSortFields = map[string]bool{
+var allowedEmployeeSortFields = map[string]bool{
 	"date":       true,
 	"status":     true,
 	"created_at": true,
@@ -140,20 +140,20 @@ func ToAttendanceResponse(a *Attendance) *AttendanceResponse {
 		Date:                a.Date,
 		Status:              a.Status,
 		Remark:              a.Remark,
-		RecordedByTeacherID: a.RecordedByTeacherID,
+		RecordedByID:        a.RecordedByID,
 		CreatedAt:           a.CreatedAt,
 		UpdatedAt:           a.UpdatedAt,
 	}
 }
 
-func ToTeacherAttendanceResponse(a *TeacherAttendance) *TeacherAttendanceResponse {
-	return &TeacherAttendanceResponse{
-		ID:        a.ID,
-		TeacherID: a.TeacherID,
-		Date:      a.Date,
-		Status:    a.Status,
-		Remark:    a.Remark,
-		CreatedAt: a.CreatedAt,
-		UpdatedAt: a.UpdatedAt,
+func ToEmployeeAttendanceResponse(a *EmployeeAttendance) *EmployeeAttendanceResponse {
+	return &EmployeeAttendanceResponse{
+		ID:         a.ID,
+		EmployeeID: a.EmployeeID,
+		Date:       a.Date,
+		Status:     a.Status,
+		Remark:     a.Remark,
+		CreatedAt:  a.CreatedAt,
+		UpdatedAt:  a.UpdatedAt,
 	}
 }

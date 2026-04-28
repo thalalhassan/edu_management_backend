@@ -7,17 +7,17 @@ import (
 )
 
 // Type aliases
-type TeacherLeave = database.TeacherLeave
+type EmployeeLeave = database.EmployeeLeave
 type LeaveStatus = database.LeaveStatus
 
 // ─── Requests ────────────────────────────────────────────────────────────────
 
-// ApplyRequest is submitted by a teacher (or on their behalf) to create a leave request.
+// ApplyRequest is submitted by an employee (or on their behalf) to create a leave request.
 type ApplyRequest struct {
-	TeacherID string    `json:"teacher_id" binding:"required,uuid"`
-	FromDate  time.Time `json:"from_date"  binding:"required"`
-	ToDate    time.Time `json:"to_date"    binding:"required"`
-	Reason    string    `json:"reason"     binding:"required"`
+	EmployeeID string    `json:"employee_id" binding:"required,uuid"`
+	FromDate   time.Time `json:"from_date"   binding:"required"`
+	ToDate     time.Time `json:"to_date"     binding:"required"`
+	Reason     string    `json:"reason"      binding:"required"`
 }
 
 // UpdateRequest allows a teacher to edit their own PENDING leave request.
@@ -38,7 +38,7 @@ type ReviewRequest struct {
 
 type LeaveResponse struct {
 	ID         string      `json:"id"`
-	TeacherID  string      `json:"teacher_id"`
+	EmployeeID string      `json:"employee_id"`
 	FromDate   time.Time   `json:"from_date"`
 	ToDate     time.Time   `json:"to_date"`
 	Reason     string      `json:"reason"`
@@ -55,10 +55,10 @@ type LeaveResponse struct {
 // ─── Filter params ────────────────────────────────────────────────────────────
 
 type FilterParams struct {
-	TeacherID  *string     `form:"teacher_id"`
+	EmployeeID *string      `form:"employee_id"`
 	Status     *LeaveStatus `form:"status"`
-	DateFrom   *time.Time  `form:"date_from"`
-	DateTo     *time.Time  `form:"date_to"`
+	DateFrom   *time.Time   `form:"date_from"`
+	DateTo     *time.Time   `form:"date_to"`
 }
 
 var allowedSortFields = map[string]bool{
@@ -70,14 +70,14 @@ var allowedSortFields = map[string]bool{
 
 // ─── Mapper ──────────────────────────────────────────────────────────────────
 
-func ToLeaveResponse(l *TeacherLeave) *LeaveResponse {
+func ToLeaveResponse(l *EmployeeLeave) *LeaveResponse {
 	duration := int(l.ToDate.Sub(l.FromDate).Hours()/24) + 1
 	if duration < 1 {
 		duration = 1
 	}
 	return &LeaveResponse{
 		ID:           l.ID,
-		TeacherID:    l.TeacherID,
+		EmployeeID:   l.EmployeeID,
 		FromDate:     l.FromDate,
 		ToDate:       l.ToDate,
 		Reason:       l.Reason,

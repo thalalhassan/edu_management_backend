@@ -14,13 +14,13 @@ type Repository interface {
 	GetByID(ctx context.Context, id string) (*TimeTable, error)
 	FindAll(ctx context.Context, q query_params.Query[FilterParams]) ([]*TimeTable, int64, error)
 	FindByClassSection(ctx context.Context, classSectionID string) ([]*TimeTable, error)
-	FindByTeacher(ctx context.Context, teacherID string) ([]*TimeTable, error)
+	FindByEmployee(ctx context.Context, employeeID string) ([]*TimeTable, error)
 	Update(ctx context.Context, id string, t *TimeTable) error
 	Delete(ctx context.Context, id string) error
 
 	// Conflict detection
 	HasConflict(ctx context.Context, classSectionID string, dayOfWeek int, start, end time.Time, excludeID string) (bool, error)
-	HasTeacherConflict(ctx context.Context, teacherID string, dayOfWeek int, start, end time.Time, excludeID string) (bool, error)
+	HasTeacherConflict(ctx context.Context, employeeID string, dayOfWeek int, start, end time.Time, excludeID string) (bool, error)
 }
 
 type repositoryImpl struct {
@@ -98,12 +98,14 @@ func (r *repositoryImpl) FindByClassSection(ctx context.Context, classSectionID 
 }
 
 // FindByTeacher returns the full week schedule for a teacher across all their class sections.
-func (r *repositoryImpl) FindByTeacher(ctx context.Context, teacherID string) ([]*TimeTable, error) {
+func (r *repositoryImpl) FindByEmployee(ctx context.Context, employeeID string) ([]*TimeTable, error) {
 	var entries []*TimeTable
 	err := r.db.WithContext(ctx).
 		Preload("Subject").
 		Preload("ClassSection.Standard").
-		Where("teacher_id = ?", teacherID).
+		Preload("Employee").
+		Preload("Room").
+		Where("employee_id = ?", employeeID).
 		Order("day_of_week ASC, start_time ASC").
 		Find(&entries).Error
 	return entries, err
@@ -135,12 +137,12 @@ func (r *repositoryImpl) HasConflict(ctx context.Context, classSectionID string,
 
 // HasTeacherConflict checks if the teacher is already assigned to another
 // class at the same time on the same day.
-func (r *repositoryImpl) HasTeacherConflict(ctx context.Context, teacherID string, dayOfWeek int, start, end time.Time, excludeID string) (bool, error) {
+func (r *repositoryImpl) HasTeacherConflict(ctx context.Context, employeeID string, dayOfWeek int, start, end time.Time, excludeID string) (bool, error) {
 	var count int64
 	query := r.db.WithContext(ctx).
 		Model(&database.TimeTable{}).
-		Where("teacher_id = ? AND day_of_week = ? AND start_time < ? AND end_time > ?",
-			teacherID, dayOfWeek, end, start)
+		Where("employee_id = ? AND day_of_week = ? AND start_time < ? AND end_time > ?",
+			employeeID, dayOfWeek, end, start)
 	if excludeID != "" {
 		query = query.Where("id != ?", excludeID)
 	}

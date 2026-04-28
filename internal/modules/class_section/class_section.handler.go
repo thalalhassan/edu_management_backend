@@ -36,10 +36,10 @@ func (h *Handler) Routes(r *gin.RouterGroup) {
 
 		// Scoped lists
 		cs.GET("/standard/:standard_id", h.listByStandard)
-		cs.GET("/teacher/:teacher_id", h.listByTeacher)
+		cs.GET("/employee/:employee_id", h.listByEmployee)
 
 		cs.PUT("/:id", h.update)
-		cs.PATCH("/:id/teacher", h.assignTeacher)
+		cs.PATCH("/:id/employee", h.assignEmployee)
 		cs.DELETE("/:id", h.delete)
 	}
 }
@@ -102,8 +102,8 @@ func (h *Handler) listByStandard(c *gin.Context) {
 	response.Success(c, resp, "Class sections listed successfully")
 }
 
-func (h *Handler) listByTeacher(c *gin.Context) {
-	teacherID := c.Param("teacher_id")
+func (h *Handler) listByEmployee(c *gin.Context) {
+	employeeID := c.Param("employee_id")
 
 	academicYearID, err := middleware.GetAcademicYearIDFromContext(c)
 	if err != nil {
@@ -111,7 +111,7 @@ func (h *Handler) listByTeacher(c *gin.Context) {
 		return
 	}
 
-	resp, err := h.service.ListByTeacher(c.Request.Context(), teacherID, academicYearID)
+	resp, err := h.service.ListByEmployee(c.Request.Context(), employeeID, academicYearID)
 	if err != nil {
 		response.InternalError(c, err.Error())
 		return
@@ -134,19 +134,19 @@ func (h *Handler) update(c *gin.Context) {
 	response.Success(c, resp, "Class section updated successfully")
 }
 
-func (h *Handler) assignTeacher(c *gin.Context) {
+func (h *Handler) assignEmployee(c *gin.Context) {
 	id := c.Param("id")
-	var req AssignTeacherRequest
+	var req AssignEmployeeRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(c, err.Error())
 		return
 	}
-	resp, err := h.service.AssignTeacher(c.Request.Context(), id, req)
+	resp, err := h.service.AssignEmployee(c.Request.Context(), id, req)
 	if err != nil {
 		response.BadRequest(c, err.Error())
 		return
 	}
-	response.Success(c, resp, "Class teacher updated successfully")
+	response.Success(c, resp, "Class employee updated successfully")
 }
 
 func (h *Handler) delete(c *gin.Context) {

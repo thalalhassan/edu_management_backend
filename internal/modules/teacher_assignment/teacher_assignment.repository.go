@@ -48,8 +48,8 @@ func (r *repositoryImpl) List(ctx context.Context, q query_params.Query[FilterPa
 	if q.Filter.ClassSectionID != nil {
 		db = db.Where("class_section_id = ?", *q.Filter.ClassSectionID)
 	}
-	if q.Filter.TeacherID != nil {
-		db = db.Where("teacher_id = ?", *q.Filter.TeacherID)
+	if q.Filter.EmployeeID != nil {
+		db = db.Where("employee_id = ?", *q.Filter.EmployeeID)
 	}
 	if q.Filter.SubjectID != nil {
 		db = db.Where("subject_id = ?", *q.Filter.SubjectID)

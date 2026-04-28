@@ -13,7 +13,7 @@ type Service interface {
 	GetByID(ctx context.Context, id string) (*TimeTableResponse, error)
 	List(ctx context.Context, q query_params.Query[FilterParams]) ([]*TimeTableResponse, int64, error)
 	GetClassSchedule(ctx context.Context, classSectionID string) ([]DaySchedule, error)
-	GetTeacherSchedule(ctx context.Context, teacherID string) ([]DaySchedule, error)
+	GetEmployeeSchedule(ctx context.Context, employeeID string) ([]DaySchedule, error)
 	Update(ctx context.Context, id string, req UpdateRequest) (*TimeTableResponse, error)
 	Delete(ctx context.Context, id string) error
 }
@@ -42,7 +42,7 @@ func (s *service) Create(ctx context.Context, req CreateRequest) (*TimeTableResp
 	}
 
 	// Guard: teacher time conflict across all their classes
-	teacherConflict, err := s.repo.HasTeacherConflict(ctx, req.TeacherID, req.DayOfWeek, req.StartTime, req.EndTime, "")
+	teacherConflict, err := s.repo.HasTeacherConflict(ctx, req.EmployeeID, req.DayOfWeek, req.StartTime, req.EndTime, "")
 	if err != nil {
 		return nil, fmt.Errorf("timetable.Service.Create.HasTeacherConflict: %w", err)
 	}
@@ -53,11 +53,11 @@ func (s *service) Create(ctx context.Context, req CreateRequest) (*TimeTableResp
 	t := &TimeTable{
 		ClassSectionID: req.ClassSectionID,
 		SubjectID:      req.SubjectID,
-		TeacherID:      req.TeacherID,
+		EmployeeID:     req.EmployeeID,
 		DayOfWeek:      req.DayOfWeek,
 		StartTime:      req.StartTime,
 		EndTime:        req.EndTime,
-		RoomNumber:     req.RoomNumber,
+		RoomID:         req.RoomID,
 	}
 	if err := s.repo.Create(ctx, t); err != nil {
 		return nil, fmt.Errorf("timetable.Service.Create: %w", err)
@@ -104,12 +104,12 @@ func (s *service) GetClassSchedule(ctx context.Context, classSectionID string) (
 	return GroupByDay(periods), nil
 }
 
-// GetTeacherSchedule returns the weekly schedule for a teacher
+// GetEmployeeSchedule returns the weekly schedule for an employee
 // across all their class sections — grouped by day.
-func (s *service) GetTeacherSchedule(ctx context.Context, teacherID string) ([]DaySchedule, error) {
-	entries, err := s.repo.FindByTeacher(ctx, teacherID)
+func (s *service) GetEmployeeSchedule(ctx context.Context, employeeID string) ([]DaySchedule, error) {
+	entries, err := s.repo.FindByEmployee(ctx, employeeID)
 	if err != nil {
-		return nil, fmt.Errorf("timetable.Service.GetTeacherSchedule: %w", err)
+		return nil, fmt.Errorf("timetable.Service.GetEmployeeSchedule: %w", err)
 	}
 	periods := make([]PeriodEntry, len(entries))
 	for i, t := range entries {
@@ -128,8 +128,8 @@ func (s *service) Update(ctx context.Context, id string, req UpdateRequest) (*Ti
 	if req.SubjectID != nil {
 		t.SubjectID = *req.SubjectID
 	}
-	if req.TeacherID != nil {
-		t.TeacherID = *req.TeacherID
+	if req.EmployeeID != nil {
+		t.EmployeeID = *req.EmployeeID
 	}
 	if req.DayOfWeek != nil {
 		t.DayOfWeek = *req.DayOfWeek
@@ -140,8 +140,8 @@ func (s *service) Update(ctx context.Context, id string, req UpdateRequest) (*Ti
 	if req.EndTime != nil {
 		t.EndTime = *req.EndTime
 	}
-	if req.RoomNumber != nil {
-		t.RoomNumber = req.RoomNumber
+	if req.RoomID != nil {
+		t.RoomID = req.RoomID
 	}
 
 	if !t.EndTime.After(t.StartTime) {
@@ -157,7 +157,7 @@ func (s *service) Update(ctx context.Context, id string, req UpdateRequest) (*Ti
 		return nil, fmt.Errorf("timetable.Service.Update: class section already has an overlapping period on %s", DayNames[t.DayOfWeek])
 	}
 
-	teacherConflict, err := s.repo.HasTeacherConflict(ctx, t.TeacherID, t.DayOfWeek, t.StartTime, t.EndTime, id)
+	teacherConflict, err := s.repo.HasTeacherConflict(ctx, t.EmployeeID, t.DayOfWeek, t.StartTime, t.EndTime, id)
 	if err != nil {
 		return nil, fmt.Errorf("timetable.Service.Update.HasTeacherConflict: %w", err)
 	}

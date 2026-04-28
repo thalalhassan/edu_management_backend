@@ -12,7 +12,7 @@ import (
 type Repository interface {
 	// Institution overview
 	CountStudentsByStatus(ctx context.Context) (active, total int, err error)
-	CountTeachersByStatus(ctx context.Context) (active, total int, err error)
+	CountEmployeesByStatus(ctx context.Context) (active, total int, err error)
 	CountSubjects(ctx context.Context) (int, error)
 	CountClassSections(ctx context.Context, academicYearID string) (int, error)
 
@@ -59,14 +59,15 @@ func (r *repositoryImpl) CountStudentsByStatus(ctx context.Context) (int, int, e
 	return active, total, nil
 }
 
-func (r *repositoryImpl) CountTeachersByStatus(ctx context.Context) (int, int, error) {
+func (r *repositoryImpl) CountEmployeesByStatus(ctx context.Context) (int, int, error) {
 	type result struct {
 		IsActive bool
 		Count    int
 	}
 	var rows []result
 	err := r.db.WithContext(ctx).
-		Model(&database.Teacher{}).
+		Model(&database.Employee{}).
+		Where("category = ?", database.EmployeeCategoryTeacher).
 		Select("is_active, COUNT(*) as count").
 		Group("is_active").
 		Scan(&rows).Error

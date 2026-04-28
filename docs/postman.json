@@ -966,7 +966,7 @@
             "url": "{{base_url}}{{api_version}}/departments/",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Primary School\",\n  \"code\": \"PRI\",\n  \"description\": \"Grades 1 to 5\",\n  \"head_teacher_id\": null\n}"
+              "raw": "{\n  \"name\": \"Primary School\",\n  \"code\": \"PRI\",\n  \"description\": \"Grades 1 to 5\",\n  \"head_employee_id\": null\n}"
             }
           }
         },
@@ -1072,7 +1072,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"head_teacher_id\": \"TEACHER_ID_HERE\"\n}"
+              "raw": "{\n  \"head_employee_id\": \"EMPLOYEE_ID_HERE\"\n}"
             }
           }
         },
@@ -1105,7 +1105,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"head_teacher_id\": null\n}"
+              "raw": "{\n  \"head_employee_id\": null\n}"
             }
           }
         },
@@ -1398,7 +1398,7 @@
             "url": "{{base_url}}{{api_version}}/class-sections/",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"academic_year_id\": \"ACADEMIC_YEAR_ID_HERE\",\n  \"standard_id\": \"STANDARD_ID_HERE\",\n  \"section_name\": \"A\",\n  \"class_teacher_id\": null,\n  \"room_number\": \"101\",\n  \"max_strength\": 40\n}"
+              "raw": "{\n  \"academic_year_id\": \"ACADEMIC_YEAR_ID_HERE\",\n  \"standard_id\": \"STANDARD_ID_HERE\",\n  \"section_name\": \"A\",\n  \"class_employee_id\": null,\n  \"room_id\": \"ROOM_ID_HERE\",\n  \"max_strength\": 40\n}"
             }
           }
         },
@@ -1535,7 +1535,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"section_name\": \"B\",\n  \"room_number\": \"102\",\n  \"max_strength\": 45\n}"
+              "raw": "{\n  \"section_name\": \"B\",\n  \"room_id\": \"ROOM_ID_HERE\",\n  \"max_strength\": 45\n}"
             }
           }
         },
@@ -1568,7 +1568,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"class_teacher_id\": \"TEACHER_ID_HERE\"\n}"
+              "raw": "{\n  \"class_employee_id\": \"EMPLOYEE_ID_HERE\"\n}"
             }
           }
         },
@@ -1601,7 +1601,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"class_teacher_id\": null\n}"
+              "raw": "{\n  \"class_employee_id\": null\n}"
             }
           }
         },
@@ -2058,7 +2058,7 @@
             "url": "{{base_url}}{{api_version}}/timetables/",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"class_section_id\": \"CLASS_SECTION_ID_HERE\",\n  \"subject_id\": \"SUBJECT_ID_HERE\",\n  \"teacher_id\": \"TEACHER_ID_HERE\",\n  \"day_of_week\": 1,\n  \"start_time\": \"2024-01-01T08:00:00Z\",\n  \"end_time\": \"2024-01-01T09:00:00Z\",\n  \"room_number\": \"101\"\n}"
+              "raw": "{\n  \"class_section_id\": \"CLASS_SECTION_ID_HERE\",\n  \"subject_id\": \"SUBJECT_ID_HERE\",\n  \"employee_id\": \"EMPLOYEE_ID_HERE\",\n  \"day_of_week\": 1,\n  \"start_time\": \"2024-01-01T08:00:00Z\",\n  \"end_time\": \"2024-01-01T09:00:00Z\",\n  \"room_id\": \"ROOM_ID_HERE\"\n}"
             },
             "description": "day_of_week: 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat"
           }
@@ -2333,7 +2333,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"teacher_id\": \"TEACHER_ID_HERE\",\n  \"day_of_week\": 2,\n  \"start_time\": \"2024-01-01T09:00:00Z\",\n  \"end_time\": \"2024-01-01T10:00:00Z\",\n  \"room_number\": \"102\"\n}"
+              "raw": "{\n  \"employee_id\": \"EMPLOYEE_ID_HERE\",\n  \"day_of_week\": 2,\n  \"start_time\": \"2024-01-01T09:00:00Z\",\n  \"end_time\": \"2024-01-01T10:00:00Z\",\n  \"room_id\": \"ROOM_ID_HERE\"\n}"
             }
           }
         },
@@ -2556,7 +2556,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"class_section_id\": \"{{class_section_id}}\",\n  \"subject_id\": \"{{subject_id}}\",\n  \"exam_date\": \"2025-09-17T00:00:00Z\",\n  \"start_time\": \"2025-09-17T09:00:00Z\",\n  \"end_time\": \"2025-09-17T11:00:00Z\",\n  \"max_marks\": \"100.00\",\n  \"passing_marks\": \"35.00\",\n  \"room_number\": \"Room 101\"\n}"
+              "raw": "{\n  \"class_section_id\": \"{{class_section_id}}\",\n  \"subject_id\": \"{{subject_id}}\",\n  \"exam_date\": \"2025-09-17T00:00:00Z\",\n  \"start_time\": \"2025-09-17T09:00:00Z\",\n  \"end_time\": \"2025-09-17T11:00:00Z\",\n  \"max_marks\": \"100.00\",\n  \"passing_marks\": \"35.00\",\n  \"room_id\": \"ROOM_ID_HERE\"\n}"
             }
           }
         },
@@ -2612,7 +2612,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"room_number\": \"Room 205\",\n  \"start_time\": \"2025-09-17T10:00:00Z\",\n  \"end_time\": \"2025-09-17T12:00:00Z\"\n}"
+              "raw": "{\n  \"room_id\": \"ROOM_ID_HERE\",\n  \"start_time\": \"2025-09-17T10:00:00Z\",\n  \"end_time\": \"2025-09-17T12:00:00Z\"\n}"
             }
           }
         },
@@ -4725,7 +4725,204 @@
       ]
     },
     {
-      "name": "👨‍👩‍👧‍👦 Parent",
+      "name": "� Announcements",
+      "item": [
+        {
+          "name": "📢 Create Announcement (Draft)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const body = pm.response.json();",
+                  "  pm.collectionVariables.set('announcement_id', body.data.id);",
+                  "  pm.test('announcement_id saved', () => pm.expect(body.data.id).to.be.a('string'));",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/announcements/",
+              "host": ["{{base_url}}{{api_version}}"],
+              "path": ["announcements", ""]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"School Assembly Tomorrow\",\n  \"body\": \"All students must attend the school assembly at 9 AM in the main hall.\",\n  \"audience\": \"ALL\",\n  \"expires_at\": \"2024-12-31T23:59:59Z\",\n  \"attachment_url\": null\n}"
+            }
+          }
+        },
+        {
+          "name": "📋 List Announcements",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}{{api_version}}/announcements/?page=1&limit=10",
+              "host": ["{{base_url}}{{api_version}}"],
+              "path": ["announcements", ""],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "🔍 Get Announcement by ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": "{{base_url}}{{api_version}}/announcements/{{announcement_id}}"
+          }
+        },
+        {
+          "name": "✏️ Update Announcement (Draft only)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}{{api_version}}/announcements/{{announcement_id}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated School Assembly\",\n  \"body\": \"Assembly time changed to 10 AM.\"\n}"
+            }
+          }
+        },
+        {
+          "name": "📤 Publish Announcement",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}{{api_version}}/announcements/{{announcement_id}}/publish",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"is_published\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "🔙 Unpublish Announcement",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}{{api_version}}/announcements/{{announcement_id}}/publish",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"is_published\": false\n}"
+            }
+          }
+        },
+        {
+          "name": "🗑️ Delete Announcement",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "url": "{{base_url}}{{api_version}}/announcements/{{announcement_id}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "�👨‍👩‍👧‍👦 Parent",
       "item": [
         {
           "name": "List Parents",

@@ -44,16 +44,16 @@ func (h *Handler) Routes(r *gin.RouterGroup) {
 		att.GET("/class/:class_section_id/summary", h.getClassAttendanceSummary)
 	}
 
-	// ── Teacher Attendance ────────────────────────────────────────────────────
-	ta := r.Group(constants.ApiTeacherAttendancePath)
+	// ── Employee Attendance ────────────────────────────────────────────────────
+	ta := r.Group(constants.ApiEmployeeAttendancePath)
 	ta.Use(middleware.AuthCheckMiddleware(&h.config.JWT))
 	{
-		ta.POST("/", h.markTeacherAttendance)
-		ta.POST("/bulk", h.bulkMarkTeacherAttendance)
-		ta.GET("/", h.listTeacherAttendance)
-		ta.GET("/:id", h.getTeacherAttendance)
-		ta.PUT("/:id", h.updateTeacherAttendance)
-		ta.DELETE("/:id", h.deleteTeacherAttendance)
+		ta.POST("/", h.markEmployeeAttendance)
+		ta.POST("/bulk", h.bulkMarkEmployeeAttendance)
+		ta.GET("/", h.listEmployeeAttendance)
+		ta.GET("/:id", h.getEmployeeAttendance)
+		ta.PUT("/:id", h.updateEmployeeAttendance)
+		ta.DELETE("/:id", h.deleteEmployeeAttendance)
 	}
 }
 
@@ -159,76 +159,76 @@ func (h *Handler) deleteAttendance(c *gin.Context) {
 	response.Success[any](c, nil, "Attendance record deleted successfully")
 }
 
-// ─── Teacher Attendance handlers ──────────────────────────────────────────────
+// ─── Employee Attendance handlers ──────────────────────────────────────────────
 
-func (h *Handler) markTeacherAttendance(c *gin.Context) {
-	var req MarkTeacherAttendanceRequest
+func (h *Handler) markEmployeeAttendance(c *gin.Context) {
+	var req MarkEmployeeAttendanceRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(c, err.Error())
 		return
 	}
-	resp, err := h.service.MarkTeacherAttendance(c.Request.Context(), req)
+	resp, err := h.service.MarkEmployeeAttendance(c.Request.Context(), req)
 	if err != nil {
 		response.BadRequest(c, err.Error())
 		return
 	}
-	response.Created(c, resp, "Teacher attendance marked successfully")
+	response.Created(c, resp, "Employee attendance marked successfully")
 }
 
-func (h *Handler) bulkMarkTeacherAttendance(c *gin.Context) {
-	var req BulkMarkTeacherRequest
+func (h *Handler) bulkMarkEmployeeAttendance(c *gin.Context) {
+	var req BulkMarkEmployeeRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(c, err.Error())
 		return
 	}
-	resp, err := h.service.BulkMarkTeacherAttendance(c.Request.Context(), req)
+	resp, err := h.service.BulkMarkEmployeeAttendance(c.Request.Context(), req)
 	if err != nil {
 		response.BadRequest(c, err.Error())
 		return
 	}
-	response.Created(c, resp, "Teacher attendance marked in bulk successfully")
+	response.Created(c, resp, "Employee attendance marked in bulk successfully")
 }
 
-func (h *Handler) getTeacherAttendance(c *gin.Context) {
+func (h *Handler) getEmployeeAttendance(c *gin.Context) {
 	id := c.Param("id")
-	resp, err := h.service.GetTeacherAttendanceByID(c.Request.Context(), id)
+	resp, err := h.service.GetEmployeeAttendanceByID(c.Request.Context(), id)
 	if err != nil {
 		response.NotFound(c, err.Error())
 		return
 	}
-	response.Success(c, resp, "Teacher attendance record retrieved successfully")
+	response.Success(c, resp, "Employee attendance record retrieved successfully")
 }
 
-func (h *Handler) listTeacherAttendance(c *gin.Context) {
-	var f TeacherFilterParams
+func (h *Handler) listEmployeeAttendance(c *gin.Context) {
+	var f EmployeeFilterParams
 	if err := c.ShouldBindQuery(&f); err != nil {
 		response.BadRequest(c, err.Error())
 		return
 	}
 
-	q := query_params.Query[TeacherFilterParams]{
+	q := query_params.Query[EmployeeFilterParams]{
 		Pagination: pagination.NewFromRequest(c),
-		Sort:       query_params.NewSortFromRequest(c, allowedTeacherSortFields, "date"),
+		Sort:       query_params.NewSortFromRequest(c, allowedEmployeeSortFields, "date"),
 		Filter:     f,
 	}
 
-	records, total, err := h.service.ListTeacherAttendance(c.Request.Context(), q)
+	records, total, err := h.service.ListEmployeeAttendance(c.Request.Context(), q)
 	if err != nil {
 		response.InternalError(c, err.Error())
 		return
 	}
 	meta := pagination.NewMeta(total, q.Pagination)
-	response.SuccessPaginated(c, records, meta, "Teacher attendance listed successfully")
+	response.SuccessPaginated(c, records, meta, "Employee attendance listed successfully")
 }
 
-func (h *Handler) updateTeacherAttendance(c *gin.Context) {
+func (h *Handler) updateEmployeeAttendance(c *gin.Context) {
 	id := c.Param("id")
-	var req UpdateTeacherAttendanceRequest
+	var req UpdateEmployeeAttendanceRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(c, err.Error())
 		return
 	}
-	resp, err := h.service.UpdateTeacherAttendance(c.Request.Context(), id, req)
+	resp, err := h.service.UpdateEmployeeAttendance(c.Request.Context(), id, req)
 	if err != nil {
 		response.BadRequest(c, err.Error())
 		return
@@ -236,11 +236,11 @@ func (h *Handler) updateTeacherAttendance(c *gin.Context) {
 	response.Success(c, resp, "Teacher attendance updated successfully")
 }
 
-func (h *Handler) deleteTeacherAttendance(c *gin.Context) {
+func (h *Handler) deleteEmployeeAttendance(c *gin.Context) {
 	id := c.Param("id")
-	if err := h.service.DeleteTeacherAttendance(c.Request.Context(), id); err != nil {
+	if err := h.service.DeleteEmployeeAttendance(c.Request.Context(), id); err != nil {
 		response.BadRequest(c, err.Error())
 		return
 	}
-	response.Success[any](c, nil, "Teacher attendance record deleted successfully")
+	response.Success[any](c, nil, "Employee attendance record deleted successfully")
 }

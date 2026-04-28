@@ -70,10 +70,22 @@ func (s *ResetAndBootstrapSeeder) Run(ctx context.Context, db *gorm.DB) error {
 			return fmt.Errorf("seeder.SeedUsers.Hash: %w", err)
 		}
 
+		// Create super admin role first
+		superAdminRole := &database.Role{
+			Slug:        "super_admin",
+			Name:        "Super Admin",
+			Description: "Full system access",
+			IsSystem:    true,
+			Priority:    100,
+		}
+		if err := tx.FirstOrCreate(superAdminRole, database.Role{Slug: "super_admin"}).Error; err != nil {
+			return err
+		}
+
 		superAdmin := &database.User{
 			Email:        "superadmin@school.com",
 			PasswordHash: passwordHash,
-			Role:         database.UserRoleSuperAdmin,
+			RoleID:       superAdminRole.ID,
 			IsActive:     true,
 		}
 

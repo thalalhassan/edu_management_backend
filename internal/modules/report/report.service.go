@@ -61,18 +61,18 @@ func (s *service) GetReportCard(ctx context.Context, req ReportCardRequest) (*Re
 			examMap[eid] = &ExamReportSection{
 				ExamID:   eid,
 				ExamName: r.ExamSchedule.Exam.Name,
-				ExamType: r.ExamSchedule.Exam.ExamType,
+				ExamType: string(r.ExamSchedule.Exam.ExamType),
 			}
 			examOrder = append(examOrder, eid)
 		}
 
-		pct := safeDiv(r.MarksObtained, r.ExamSchedule.MaxMarks)
+		pct := safeDiv(*r.MarksObtained, r.ExamSchedule.MaxMarks)
 		sub := SubjectResult{
 			SubjectCode:   r.ExamSchedule.Subject.Code,
 			SubjectName:   r.ExamSchedule.Subject.Name,
 			MaxMarks:      r.ExamSchedule.MaxMarks,
 			PassingMarks:  r.ExamSchedule.PassingMarks,
-			MarksObtained: r.MarksObtained,
+			MarksObtained: *r.MarksObtained,
 			Percentage:    pct,
 			Grade:         gradeFromPercentage(pct),
 			Status:        string(r.Status),
@@ -267,10 +267,10 @@ func (s *service) GetClassPerformanceReport(ctx context.Context, req ClassPerfor
 			acc.absentCount++
 		case database.ExamResultStatusPass, database.ExamResultStatusGrace:
 			acc.passCount++
-			acc.marks = append(acc.marks, r.MarksObtained)
+			acc.marks = append(acc.marks, *r.MarksObtained)
 		case database.ExamResultStatusFail:
 			acc.failCount++
-			acc.marks = append(acc.marks, r.MarksObtained)
+			acc.marks = append(acc.marks, *r.MarksObtained)
 		}
 
 		// Accumulate student totals
@@ -282,7 +282,7 @@ func (s *service) GetClassPerformanceReport(ctx context.Context, req ClassPerfor
 				admissionNo: st.AdmissionNo,
 			}
 		}
-		studentTotals[eid].total = studentTotals[eid].total.Add(r.MarksObtained)
+		studentTotals[eid].total = studentTotals[eid].total.Add(*r.MarksObtained)
 		studentTotals[eid].maxTotal = studentTotals[eid].maxTotal.Add(r.ExamSchedule.MaxMarks)
 	}
 
@@ -472,15 +472,15 @@ func (s *service) GetTeacherAttendanceSummary(ctx context.Context, req TeacherAt
 	order := []string{}
 
 	for _, row := range rows {
-		if _, ok := accMap[row.TeacherID]; !ok {
-			accMap[row.TeacherID] = &acc{
+		if _, ok := accMap[row.EmployeeID]; !ok {
+			accMap[row.EmployeeID] = &acc{
 				employeeID: row.EmployeeID,
 				name:       row.FirstName + " " + row.LastName,
 				counts:     make(map[database.AttendanceStatus]int),
 			}
-			order = append(order, row.TeacherID)
+			order = append(order, row.EmployeeID)
 		}
-		accMap[row.TeacherID].counts[row.Status] = row.Count
+		accMap[row.EmployeeID].counts[row.Status] = row.Count
 	}
 
 	summaries := make([]TeacherAttendanceSummary, 0, len(order))

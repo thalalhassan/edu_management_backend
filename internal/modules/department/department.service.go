@@ -31,11 +31,11 @@ func (s *service) Create(ctx context.Context, req CreateRequest) (*DepartmentRes
 	}
 
 	d := &Department{
-		Name:          req.Name,
-		Code:          req.Code,
-		Description:   req.Description,
-		HeadTeacherID: req.HeadTeacherID,
-		IsActive:      true,
+		Name:           req.Name,
+		Code:           req.Code,
+		Description:    req.Description,
+		HeadEmployeeID: req.HeadEmployeeID,
+		IsActive:       true,
 	}
 	if err := s.repo.Create(ctx, d); err != nil {
 		return nil, fmt.Errorf("department.Service.Create: %w", err)
@@ -89,8 +89,8 @@ func (s *service) Update(ctx context.Context, id string, req UpdateRequest) (*De
 	if req.Description != nil {
 		d.Description = req.Description
 	}
-	if req.HeadTeacherID != nil {
-		d.HeadTeacherID = req.HeadTeacherID
+	if req.HeadEmployeeID != nil {
+		d.HeadEmployeeID = req.HeadEmployeeID
 	}
 	if req.IsActive != nil {
 		d.IsActive = *req.IsActive
@@ -102,14 +102,14 @@ func (s *service) Update(ctx context.Context, id string, req UpdateRequest) (*De
 	return ToDepartmentResponse(d), nil
 }
 
-// AssignHead sets or removes the head teacher of a department.
+// AssignHead sets or removes the head employee of a department.
 // Passing nil in the request removes the current head.
 func (s *service) AssignHead(ctx context.Context, id string, req AssignHeadRequest) (*DepartmentResponse, error) {
 	d, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("department.Service.AssignHead.GetByID: %w", err)
 	}
-	d.HeadTeacherID = req.HeadTeacherID
+	d.HeadEmployeeID = req.HeadEmployeeID
 	if err := s.repo.Update(ctx, id, d); err != nil {
 		return nil, fmt.Errorf("department.Service.AssignHead.Save: %w", err)
 	}

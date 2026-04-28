@@ -127,9 +127,9 @@ func (s *service) AssignSubject(ctx context.Context, standardID string, req Assi
 	}
 
 	link := &database.StandardSubject{
-		StandardID: standardID,
-		SubjectID:  req.SubjectID,
-		IsCore:     req.IsCore,
+		StandardID:  standardID,
+		SubjectID:   req.SubjectID,
+		SubjectType: database.SubjectTypeCore,
 	}
 	if err := s.repo.AssignSubject(ctx, link); err != nil {
 		return fmt.Errorf("standard.Service.AssignSubject: %w", err)

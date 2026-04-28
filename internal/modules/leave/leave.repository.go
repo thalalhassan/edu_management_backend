@@ -12,16 +12,16 @@ import (
 // ─── Repository interface ─────────────────────────────────────────────────────
 
 type Repository interface {
-	Create(ctx context.Context, l *TeacherLeave) error
-	GetByID(ctx context.Context, id string) (*TeacherLeave, error)
-	FindAll(ctx context.Context, q query_params.Query[FilterParams]) ([]*TeacherLeave, int64, error)
-	Update(ctx context.Context, l *TeacherLeave) error
+	Create(ctx context.Context, l *EmployeeLeave) error
+	GetByID(ctx context.Context, id string) (*EmployeeLeave, error)
+	FindAll(ctx context.Context, q query_params.Query[FilterParams]) ([]*EmployeeLeave, int64, error)
+	Update(ctx context.Context, l *EmployeeLeave) error
 	Delete(ctx context.Context, id string) error
 
-	// HasOverlap checks whether the teacher already has a non-withdrawn leave
+	// HasOverlap checks whether the employee already has a non-withdrawn leave
 	// request whose date range overlaps with [fromDate, toDate].
 	// excludeID is used during updates to skip the record being edited.
-	HasOverlap(ctx context.Context, teacherID string, fromDate, toDate time.Time, excludeID string) (bool, error)
+	HasOverlap(ctx context.Context, employeeID string, fromDate, toDate time.Time, excludeID string) (bool, error)
 }
 
 // ─── repositoryImpl ───────────────────────────────────────────────────────────
@@ -34,27 +34,28 @@ func NewRepository(db *gorm.DB) Repository {
 	return &repositoryImpl{db: db}
 }
 
-func (r *repositoryImpl) Create(ctx context.Context, l *TeacherLeave) error {
+func (r *repositoryImpl) Create(ctx context.Context, l *EmployeeLeave) error {
 	return r.db.WithContext(ctx).Create(l).Error
 }
 
-func (r *repositoryImpl) GetByID(ctx context.Context, id string) (*TeacherLeave, error) {
-	var l TeacherLeave
+func (r *repositoryImpl) GetByID(ctx context.Context, id string) (*EmployeeLeave, error) {
+	var l EmployeeLeave
 	if err := r.db.WithContext(ctx).
-		Model(&database.TeacherLeave{}).
+		Preload("Employee").
+		Model(&database.EmployeeLeave{}).
 		First(&l, "id = ?", id).Error; err != nil {
 		return nil, err
 	}
 	return &l, nil
 }
 
-func (r *repositoryImpl) FindAll(ctx context.Context, q query_params.Query[FilterParams]) ([]*TeacherLeave, int64, error) {
-	var leaves []*TeacherLeave
-	query := r.db.WithContext(ctx).Model(&database.TeacherLeave{})
+func (r *repositoryImpl) FindAll(ctx context.Context, q query_params.Query[FilterParams]) ([]*EmployeeLeave, int64, error) {
+	var leaves []*EmployeeLeave
+	query := r.db.WithContext(ctx).Model(&database.EmployeeLeave{})
 
 	f := q.Filter
-	if f.TeacherID != nil {
-		query = query.Where("teacher_id = ?", *f.TeacherID)
+	if f.EmployeeID != nil {
+		query = query.Where("employee_id = ?", *f.EmployeeID)
 	}
 	if f.Status != nil {
 		query = query.Where("status = ?", *f.Status)
@@ -80,12 +81,12 @@ func (r *repositoryImpl) FindAll(ctx context.Context, q query_params.Query[Filte
 	return leaves, total, err
 }
 
-func (r *repositoryImpl) Update(ctx context.Context, l *TeacherLeave) error {
+func (r *repositoryImpl) Update(ctx context.Context, l *EmployeeLeave) error {
 	return r.db.WithContext(ctx).Where("id = ?", l.ID).Save(l).Error
 }
 
 func (r *repositoryImpl) Delete(ctx context.Context, id string) error {
-	return r.db.WithContext(ctx).Where("id = ?", id).Delete(&database.TeacherLeave{}).Error
+	return r.db.WithContext(ctx).Where("id = ?", id).Delete(&database.EmployeeLeave{}).Error
 }
 
 // HasOverlap uses the half-open interval check:
@@ -93,11 +94,11 @@ func (r *repositoryImpl) Delete(ctx context.Context, id string) error {
 //	existing.from_date < requested.to_date AND existing.to_date > requested.from_date
 //
 // Only non-WITHDRAWN leaves are considered — a withdrawn leave frees the dates.
-func (r *repositoryImpl) HasOverlap(ctx context.Context, teacherID string, fromDate, toDate time.Time, excludeID string) (bool, error) {
+func (r *repositoryImpl) HasOverlap(ctx context.Context, employeeID string, fromDate, toDate time.Time, excludeID string) (bool, error) {
 	var count int64
 	query := r.db.WithContext(ctx).
-		Model(&database.TeacherLeave{}).
-		Where("teacher_id = ?", teacherID).
+		Model(&database.EmployeeLeave{}).
+		Where("employee_id = ?", employeeID).
 		Where("status != ?", database.LeaveStatusRejected).
 		Where("from_date < ? AND to_date > ?",
 			toDate.Format("2006-01-02"),

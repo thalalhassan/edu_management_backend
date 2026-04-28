@@ -222,7 +222,7 @@ func (s *service) CreateSchedule(ctx context.Context, examID string, req CreateS
 		EndTime:        req.EndTime,
 		MaxMarks:       req.MaxMarks,
 		PassingMarks:   req.PassingMarks,
-		RoomNumber:     req.RoomNumber,
+		RoomID:         req.RoomID,
 	}
 	if err := s.repo.CreateSchedule(ctx, sch); err != nil {
 		return nil, fmt.Errorf("exam.Service.CreateSchedule: %w", err)
@@ -295,8 +295,8 @@ func (s *service) UpdateSchedule(ctx context.Context, id string, req UpdateSched
 	if req.PassingMarks != nil {
 		sch.PassingMarks = *req.PassingMarks
 	}
-	if req.RoomNumber != nil {
-		sch.RoomNumber = req.RoomNumber
+	if req.RoomID != nil {
+		sch.RoomID = req.RoomID
 	}
 
 	if sch.PassingMarks.GreaterThan(sch.MaxMarks) {
@@ -370,7 +370,7 @@ func (s *service) BulkCreateResults(ctx context.Context, scheduleID string, req 
 
 	results := make([]*ExamResult, 0, len(req.Results))
 	for i, r := range req.Results {
-		if r.MarksObtained.GreaterThan(maxMarks) {
+		if (*r.MarksObtained).GreaterThan(maxMarks) {
 			return nil, fmt.Errorf("exam.Service.BulkCreateResults: marks_obtained at index %d exceeds max_marks", i)
 		}
 
@@ -383,7 +383,7 @@ func (s *service) BulkCreateResults(ctx context.Context, scheduleID string, req 
 		}
 
 		status := database.ExamResultStatusPass
-		if r.MarksObtained.LessThan(passingMarks) {
+		if (*r.MarksObtained).LessThan(passingMarks) {
 			status = database.ExamResultStatusFail
 		}
 		results = append(results, &ExamResult{
@@ -450,12 +450,12 @@ func (s *service) UpdateResult(ctx context.Context, id string, req UpdateResultR
 		if err != nil {
 			return nil, fmt.Errorf("exam.Service.UpdateResult.GetScheduleMarks: %w", err)
 		}
-		if req.MarksObtained.GreaterThan(maxMarks) {
+		if (*req.MarksObtained).GreaterThan(maxMarks) {
 			return nil, fmt.Errorf("exam.Service.UpdateResult: marks_obtained exceeds max_marks (%s)", maxMarks)
 		}
-		res.MarksObtained = *req.MarksObtained
+		res.MarksObtained = req.MarksObtained
 		// Recompute status
-		if res.MarksObtained.LessThan(passingMarks) {
+		if (*res.MarksObtained).LessThan(passingMarks) {
 			res.Status = database.ExamResultStatusFail
 		} else {
 			res.Status = database.ExamResultStatusPass

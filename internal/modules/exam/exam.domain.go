@@ -16,20 +16,20 @@ type ExamResultStatus = database.ExamResultStatus
 // ─── Exam Requests ─────────────────────────────────────────────────────────
 
 type CreateExamRequest struct {
-	AcademicYearID string    `json:"academic_year_id" binding:"required,uuid"`
-	Name           string    `json:"name"             binding:"required"`
-	Description    *string   `json:"description,omitempty"`
-	ExamType       string    `json:"exam_type"        binding:"required"` // UNIT_TEST | MIDTERM | FINAL | INTERNAL
-	StartDate      time.Time `json:"start_date"       binding:"required"`
-	EndDate        time.Time `json:"end_date"         binding:"required"`
+	AcademicYearID string            `json:"academic_year_id" binding:"required,uuid"`
+	Name           string            `json:"name"             binding:"required"`
+	Description    *string           `json:"description,omitempty"`
+	ExamType       database.ExamType `json:"exam_type"        binding:"required"` // UNIT_TEST | MIDTERM | FINAL | INTERNAL
+	StartDate      time.Time         `json:"start_date"       binding:"required"`
+	EndDate        time.Time         `json:"end_date"         binding:"required"`
 }
 
 type UpdateExamRequest struct {
-	Name        *string    `json:"name,omitempty"`
-	Description *string    `json:"description,omitempty"`
-	ExamType    *string    `json:"exam_type,omitempty"`
-	StartDate   *time.Time `json:"start_date,omitempty"`
-	EndDate     *time.Time `json:"end_date,omitempty"`
+	Name        *string            `json:"name,omitempty"`
+	Description *string            `json:"description,omitempty"`
+	ExamType    *database.ExamType `json:"exam_type,omitempty"`
+	StartDate   *time.Time         `json:"start_date,omitempty"`
+	EndDate     *time.Time         `json:"end_date,omitempty"`
 }
 
 type PublishExamRequest struct {
@@ -46,7 +46,7 @@ type CreateScheduleRequest struct {
 	EndTime        *time.Time      `json:"end_time,omitempty"`
 	MaxMarks       decimal.Decimal `json:"max_marks"        binding:"required"`
 	PassingMarks   decimal.Decimal `json:"passing_marks"    binding:"required"`
-	RoomNumber     *string         `json:"room_number,omitempty"`
+	RoomID         *string         `json:"room_id,omitempty"`
 }
 
 type UpdateScheduleRequest struct {
@@ -55,16 +55,16 @@ type UpdateScheduleRequest struct {
 	EndTime      *time.Time       `json:"end_time,omitempty"`
 	MaxMarks     *decimal.Decimal `json:"max_marks,omitempty"`
 	PassingMarks *decimal.Decimal `json:"passing_marks,omitempty"`
-	RoomNumber   *string          `json:"room_number,omitempty"`
+	RoomID       *string          `json:"room_id,omitempty"`
 }
 
 // ─── ExamResult Requests ────────────────────────────────────────────────────
 
 type CreateResultRequest struct {
-	StudentEnrollmentID string          `json:"student_enrollment_id" binding:"required,uuid"`
-	MarksObtained       decimal.Decimal `json:"marks_obtained"        binding:"required"`
-	Grade               *string         `json:"grade,omitempty"`
-	Remarks             *string         `json:"remarks,omitempty"`
+	StudentEnrollmentID string           `json:"student_enrollment_id" binding:"required,uuid"`
+	MarksObtained       *decimal.Decimal `json:"marks_obtained"        binding:"required"`
+	Grade               *string          `json:"grade,omitempty"`
+	Remarks             *string          `json:"remarks,omitempty"`
 }
 
 // BulkCreateResultRequest allows creating results for all students in a schedule at once.
@@ -81,16 +81,16 @@ type UpdateResultRequest struct {
 // ─── Response shapes ────────────────────────────────────────────────────────
 
 type ExamResponse struct {
-	ID             string     `json:"id"`
-	AcademicYearID string     `json:"academic_year_id"`
-	Name           string     `json:"name"`
-	Description    *string    `json:"description,omitempty"`
-	ExamType       string     `json:"exam_type"`
-	StartDate      time.Time  `json:"start_date"`
-	EndDate        time.Time  `json:"end_date"`
-	IsPublished    bool       `json:"is_published"`
-	CreatedAt      time.Time  `json:"created_at"`
-	UpdatedAt      time.Time  `json:"updated_at"`
+	ID             string            `json:"id"`
+	AcademicYearID string            `json:"academic_year_id"`
+	Name           string            `json:"name"`
+	Description    *string           `json:"description,omitempty"`
+	ExamType       database.ExamType `json:"exam_type"`
+	StartDate      time.Time         `json:"start_date"`
+	EndDate        time.Time         `json:"end_date"`
+	IsPublished    bool              `json:"is_published"`
+	CreatedAt      time.Time         `json:"created_at"`
+	UpdatedAt      time.Time         `json:"updated_at"`
 }
 
 type ExamScheduleResponse struct {
@@ -103,7 +103,7 @@ type ExamScheduleResponse struct {
 	EndTime        *time.Time      `json:"end_time,omitempty"`
 	MaxMarks       decimal.Decimal `json:"max_marks"`
 	PassingMarks   decimal.Decimal `json:"passing_marks"`
-	RoomNumber     *string         `json:"room_number,omitempty"`
+	RoomID         *string         `json:"room_id,omitempty"`
 	CreatedAt      time.Time       `json:"created_at"`
 }
 
@@ -111,7 +111,7 @@ type ExamResultResponse struct {
 	ID                  string           `json:"id"`
 	ExamScheduleID      string           `json:"exam_schedule_id"`
 	StudentEnrollmentID string           `json:"student_enrollment_id"`
-	MarksObtained       decimal.Decimal  `json:"marks_obtained"`
+	MarksObtained       *decimal.Decimal `json:"marks_obtained"`
 	Grade               *string          `json:"grade,omitempty"`
 	Status              ExamResultStatus `json:"status"`
 	Remarks             *string          `json:"remarks,omitempty"`
@@ -163,7 +163,7 @@ func ToScheduleResponse(s *ExamSchedule) *ExamScheduleResponse {
 		EndTime:        s.EndTime,
 		MaxMarks:       s.MaxMarks,
 		PassingMarks:   s.PassingMarks,
-		RoomNumber:     s.RoomNumber,
+		RoomID:         s.RoomID,
 		CreatedAt:      s.CreatedAt,
 	}
 }

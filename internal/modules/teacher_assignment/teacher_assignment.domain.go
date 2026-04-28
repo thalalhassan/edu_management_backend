@@ -7,7 +7,7 @@ import "time"
 // ==========================================
 type FilterParams struct {
 	ClassSectionID *string `form:"class_section_id"`
-	TeacherID      *string `form:"teacher_id"`
+	EmployeeID     *string `form:"employee_id"`
 	SubjectID      *string `form:"subject_id"`
 }
 
@@ -16,12 +16,12 @@ type FilterParams struct {
 // ==========================================
 type CreateRequest struct {
 	ClassSectionID string `json:"class_section_id" binding:"required,uuid"`
-	TeacherID      string `json:"teacher_id" binding:"required,uuid"`
+	EmployeeID     string `json:"employee_id"     binding:"required,uuid"`
 	SubjectID      string `json:"subject_id" binding:"required,uuid"`
 }
 
 type UpdateRequest struct {
-	TeacherID *string `json:"teacher_id,omitempty" binding:"omitempty,uuid"`
+	EmployeeID *string `json:"employee_id,omitempty" binding:"omitempty,uuid"`
 }
 
 // ==========================================
@@ -30,7 +30,7 @@ type UpdateRequest struct {
 type Response struct {
 	ID             string    `json:"id"`
 	ClassSectionID string    `json:"class_section_id"`
-	TeacherID      string    `json:"teacher_id"`
+	EmployeeID     string    `json:"employee_id"`
 	SubjectID      string    `json:"subject_id"`
 	CreatedAt      time.Time `json:"created_at"`
 }

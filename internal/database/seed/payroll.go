@@ -13,13 +13,13 @@ type PayrollSeeder struct{}
 func (s *PayrollSeeder) Name() string { return "payroll" }
 
 func (s *PayrollSeeder) Run(ctx context.Context, db *gorm.DB) error {
-	var t database.Teacher
-	db.First(&t)
+	var emp database.Employee
+	db.First(&emp)
 
 	ps := database.SalaryStructure{
-		TeacherID:   t.ID,
+		EmployeeID:  emp.ID,
 		BasicSalary: decimal.NewFromInt(50000),
 	}
-	db.FirstOrCreate(&ps, database.SalaryStructure{TeacherID: t.ID})
+	db.FirstOrCreate(&ps, database.SalaryStructure{EmployeeID: emp.ID})
 	return nil
 }

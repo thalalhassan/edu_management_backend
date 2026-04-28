@@ -15,9 +15,8 @@ import (
 type Service interface {
 	// Registration — each creates a profile + user atomically
 	RegisterStudent(ctx context.Context, req CreateStudentUserRequest) (*UserResponse, error)
-	RegisterTeacher(ctx context.Context, req CreateTeacherUserRequest) (*UserResponse, error)
+	RegisterEmployee(ctx context.Context, req CreateEmployeeUserRequest) (*UserResponse, error)
 	RegisterParent(ctx context.Context, req CreateParentUserRequest) (*UserResponse, error)
-	RegisterStaff(ctx context.Context, req CreateStaffUserRequest) (*UserResponse, error)
 	RegisterAdmin(ctx context.Context, req CreateAdminUserRequest) (*UserResponse, error)
 
 	// User management
@@ -79,7 +78,6 @@ func (s *service) RegisterStudent(ctx context.Context, req CreateStudentUserRequ
 		Status:        status,
 		Phone:         req.Phone,
 		Address:       req.Address,
-		BloodGroup:    req.BloodGroup,
 		PhotoURL:      req.PhotoURL,
 		AdmissionDate: admissionDate,
 	}
@@ -88,10 +86,17 @@ func (s *service) RegisterStudent(ctx context.Context, req CreateStudentUserRequ
 		return nil, fmt.Errorf("user.Service.RegisterStudent.CreateStudent: %w", err)
 	}
 
+	// Get or create role
+	role := &database.Role{}
+	if err := tx.FirstOrCreate(role, database.Role{Slug: string(database.SystemRoleStudent)}).Error; err != nil {
+		tx.Rollback()
+		return nil, fmt.Errorf("user.Service.RegisterStudent.GetRole: %w", err)
+	}
+
 	u := &User{
 		Email:        req.Email,
 		PasswordHash: hash,
-		Role:         database.UserRoleStudent,
+		RoleID:       role.ID,
 		IsActive:     true,
 		StudentID:    &student.ID,
 	}
@@ -104,25 +109,27 @@ func (s *service) RegisterStudent(ctx context.Context, req CreateStudentUserRequ
 	}
 
 	u.Student = student
+	u.Role = *role
 	return ToUserResponse(u), nil
 }
 
-func (s *service) RegisterTeacher(ctx context.Context, req CreateTeacherUserRequest) (*UserResponse, error) {
+func (s *service) RegisterEmployee(ctx context.Context, req CreateEmployeeUserRequest) (*UserResponse, error) {
 	hash, err := crypto.Hash(req.Password)
 	if err != nil {
-		return nil, fmt.Errorf("user.Service.RegisterTeacher.Hash: %w", err)
+		return nil, fmt.Errorf("user.Service.RegisterEmployee.Hash: %w", err)
 	}
 
 	tx := s.repo.DB().WithContext(ctx).Begin()
 	if tx.Error != nil {
-		return nil, fmt.Errorf("user.Service.RegisterTeacher.Begin: %w", tx.Error)
+		return nil, fmt.Errorf("user.Service.RegisterEmployee.Begin: %w", tx.Error)
 	}
 
-	teacher := &Teacher{
-		EmployeeID:     req.EmployeeID,
+	employee := &Employee{
+		EmployeeCode:   req.EmployeeID,
 		FirstName:      req.FirstName,
 		LastName:       req.LastName,
 		Gender:         req.Gender,
+		Category:       req.Category,
 		DOB:            req.DOB,
 		Phone:          req.Phone,
 		Address:        req.Address,
@@ -132,28 +139,40 @@ func (s *service) RegisterTeacher(ctx context.Context, req CreateTeacherUserRequ
 		IsActive:       true,
 		PhotoURL:       req.PhotoURL,
 	}
-	if err := s.repo.CreateTeacher(ctx, tx, teacher); err != nil {
+	if err := s.repo.CreateEmployee(ctx, tx, employee); err != nil {
 		tx.Rollback()
-		return nil, fmt.Errorf("user.Service.RegisterTeacher.CreateTeacher: %w", err)
+		return nil, fmt.Errorf("user.Service.RegisterEmployee.CreateEmployee: %w", err)
+	}
+
+	// Get or create role
+	roleSlug := string(database.SystemRoleTeacher)
+	if req.Category == database.EmployeeCategoryStaff {
+		roleSlug = string(database.SystemRoleStaff)
+	}
+	role := &database.Role{}
+	if err := tx.FirstOrCreate(role, database.Role{Slug: roleSlug}).Error; err != nil {
+		tx.Rollback()
+		return nil, fmt.Errorf("user.Service.RegisterEmployee.GetRole: %w", err)
 	}
 
 	email := req.Email
 	u := &User{
 		Email:        email,
 		PasswordHash: hash,
-		Role:         database.UserRoleTeacher,
+		RoleID:       role.ID,
 		IsActive:     true,
-		TeacherID:    &teacher.ID,
+		EmployeeID:   &employee.ID,
 	}
 	if err := tx.Create(u).Error; err != nil {
 		tx.Rollback()
-		return nil, fmt.Errorf("user.Service.RegisterTeacher.CreateUser: %w", err)
+		return nil, fmt.Errorf("user.Service.RegisterEmployee.CreateUser: %w", err)
 	}
 	if err := tx.Commit().Error; err != nil {
-		return nil, fmt.Errorf("user.Service.RegisterTeacher.Commit: %w", err)
+		return nil, fmt.Errorf("user.Service.RegisterEmployee.Commit: %w", err)
 	}
 
-	u.Teacher = teacher
+	u.Employee = employee
+	u.Role = *role
 	return ToUserResponse(u), nil
 }
 
@@ -196,10 +215,17 @@ func (s *service) RegisterParent(ctx context.Context, req CreateParentUserReques
 		}
 	}
 
+	// Get or create role
+	role := &database.Role{}
+	if err := tx.FirstOrCreate(role, database.Role{Slug: string(database.SystemRoleParent)}).Error; err != nil {
+		tx.Rollback()
+		return nil, fmt.Errorf("user.Service.RegisterParent.GetRole: %w", err)
+	}
+
 	u := &User{
 		Email:        req.Email,
 		PasswordHash: hash,
-		Role:         database.UserRoleParent,
+		RoleID:       role.ID,
 		IsActive:     true,
 		ParentID:     &parent.ID,
 	}
@@ -212,51 +238,7 @@ func (s *service) RegisterParent(ctx context.Context, req CreateParentUserReques
 	}
 
 	u.Parent = parent
-	return ToUserResponse(u), nil
-}
-
-func (s *service) RegisterStaff(ctx context.Context, req CreateStaffUserRequest) (*UserResponse, error) {
-	hash, err := crypto.Hash(req.Password)
-	if err != nil {
-		return nil, fmt.Errorf("user.Service.RegisterStaff.Hash: %w", err)
-	}
-
-	tx := s.repo.DB().WithContext(ctx).Begin()
-	if tx.Error != nil {
-		return nil, fmt.Errorf("user.Service.RegisterStaff.Begin: %w", tx.Error)
-	}
-
-	staff := &Staff{
-		EmployeeID:  req.EmployeeID,
-		FirstName:   req.FirstName,
-		LastName:    req.LastName,
-		Gender:      req.Gender,
-		Designation: req.Designation,
-		Phone:       req.Phone,
-		JoiningDate: req.JoiningDate,
-		IsActive:    true,
-	}
-	if err := s.repo.CreateStaff(ctx, tx, staff); err != nil {
-		tx.Rollback()
-		return nil, fmt.Errorf("user.Service.RegisterStaff.CreateStaff: %w", err)
-	}
-
-	u := &User{
-		Email:        req.Email,
-		PasswordHash: hash,
-		Role:         database.UserRoleStaff,
-		IsActive:     true,
-		StaffID:      &staff.ID,
-	}
-	if err := tx.Create(u).Error; err != nil {
-		tx.Rollback()
-		return nil, fmt.Errorf("user.Service.RegisterStaff.CreateUser: %w", err)
-	}
-	if err := tx.Commit().Error; err != nil {
-		return nil, fmt.Errorf("user.Service.RegisterStaff.Commit: %w", err)
-	}
-
-	u.Staff = staff
+	u.Role = *role
 	return ToUserResponse(u), nil
 }
 
@@ -266,16 +248,25 @@ func (s *service) RegisterAdmin(ctx context.Context, req CreateAdminUserRequest)
 		return nil, fmt.Errorf("user.Service.RegisterAdmin.Hash: %w", err)
 	}
 
+	// Get or create role
+	roleSlug := string(req.Role)
+	role := &database.Role{}
+	if err := s.repo.DB().FirstOrCreate(role, database.Role{Slug: roleSlug}).Error; err != nil {
+		return nil, fmt.Errorf("user.Service.RegisterAdmin.GetRole: %w", err)
+	}
+
 	// Admins have no profile record — just a User row.
 	u := &User{
 		Email:        req.Email,
 		PasswordHash: hash,
-		Role:         req.Role,
+		RoleID:       role.ID,
 		IsActive:     true,
 	}
 	if err := s.repo.CreateUser(ctx, u); err != nil {
 		return nil, fmt.Errorf("user.Service.RegisterAdmin.CreateUser: %w", err)
 	}
+
+	u.Role = *role
 	return ToUserResponse(u), nil
 }
 
@@ -312,7 +303,13 @@ func (s *service) Update(ctx context.Context, id string, req UpdateUserRequest) 
 		u.IsActive = *req.IsActive
 	}
 	if req.Role != nil {
-		u.Role = *req.Role
+		// Find role by slug
+		role := &database.Role{}
+		if err := s.repo.DB().Where("slug = ?", string(*req.Role)).First(role).Error; err != nil {
+			return nil, fmt.Errorf("user.Service.Update.FindRole: %w", err)
+		}
+		u.RoleID = role.ID
+		u.Role = *role
 	}
 	if err := s.repo.UpdateUser(ctx, id, u); err != nil {
 		return nil, fmt.Errorf("user.Service.Update.Save: %w", err)

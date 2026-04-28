@@ -49,20 +49,20 @@ func (s *service) Apply(ctx context.Context, req ApplyRequest) (*LeaveResponse, 
 		return nil, fmt.Errorf("leave.Service.Apply: %w", err)
 	}
 
-	hasOverlap, err := s.repo.HasOverlap(ctx, req.TeacherID, req.FromDate, req.ToDate, "")
+	hasOverlap, err := s.repo.HasOverlap(ctx, req.EmployeeID, req.FromDate, req.ToDate, "")
 	if err != nil {
 		return nil, fmt.Errorf("leave.Service.Apply.HasOverlap: %w", err)
 	}
 	if hasOverlap {
-		return nil, errors.New("leave.Service.Apply: an overlapping leave request already exists for this teacher in the requested date range")
+		return nil, errors.New("leave.Service.Apply: an overlapping leave request already exists for this employee in the requested date range")
 	}
 
-	l := &TeacherLeave{
-		TeacherID: req.TeacherID,
-		FromDate:  req.FromDate,
-		ToDate:    req.ToDate,
-		Reason:    req.Reason,
-		Status:    database.LeaveStatusPending,
+	l := &EmployeeLeave{
+		EmployeeID: req.EmployeeID,
+		FromDate:   req.FromDate,
+		ToDate:     req.ToDate,
+		Reason:     req.Reason,
+		Status:     database.LeaveStatusPending,
 	}
 	if err := s.repo.Create(ctx, l); err != nil {
 		return nil, fmt.Errorf("leave.Service.Apply: %w", err)
@@ -120,7 +120,7 @@ func (s *service) Update(ctx context.Context, id string, req UpdateRequest) (*Le
 	}
 
 	// Re-check overlap excluding the current record
-	hasOverlap, err := s.repo.HasOverlap(ctx, l.TeacherID, l.FromDate, l.ToDate, id)
+	hasOverlap, err := s.repo.HasOverlap(ctx, l.EmployeeID, l.FromDate, l.ToDate, id)
 	if err != nil {
 		return nil, fmt.Errorf("leave.Service.Update.HasOverlap: %w", err)
 	}

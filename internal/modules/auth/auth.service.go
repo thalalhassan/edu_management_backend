@@ -47,7 +47,7 @@ func (s *service) Login(ctx context.Context, req LoginRequest) (*LoginResponse, 
 		return nil, errors.New("user.Service.Login: invalid credentials")
 	}
 
-	accessToken, err := jwt.GenerateAccessToken(string(u.ID), string(u.Role), string(u.Email), s.jwtConfig.Secret, s.jwtConfig.Expiration)
+	accessToken, err := jwt.GenerateAccessToken(string(u.ID), u.Role.Slug, string(u.Email), s.jwtConfig.Secret, s.jwtConfig.Expiration)
 	if err != nil {
 		return nil, fmt.Errorf("user.Service.Login.GenerateAccessToken: %w", err)
 	}
@@ -73,7 +73,7 @@ func (s *service) Login(ctx context.Context, req LoginRequest) (*LoginResponse, 
 	return &LoginResponse{
 		AccessToken:  accessToken,
 		RefreshToken: rawRefresh,
-		User:         UserAuthInfo{ID: u.ID, Email: u.Email, Role: u.Role},
+		User:         UserAuthInfo{ID: u.ID, Email: u.Email, Role: u.Role.Slug},
 	}, nil
 }
 
@@ -96,7 +96,7 @@ func (s *service) RefreshToken(ctx context.Context, req RefreshRequest) (*Refres
 		return nil, fmt.Errorf("user.Service.RefreshToken.Revoke: %w", err)
 	}
 
-	accessToken, err := jwt.GenerateAccessToken(string(u.ID), string(u.Role), string(u.Email), s.jwtConfig.Secret, s.jwtConfig.Expiration)
+	accessToken, err := jwt.GenerateAccessToken(string(u.ID), u.Role.Slug, string(u.Email), s.jwtConfig.Secret, s.jwtConfig.Expiration)
 	if err != nil {
 		return nil, fmt.Errorf("user.Service.RefreshToken.GenerateAccessToken: %w", err)
 	}

@@ -19,9 +19,8 @@ type Repository interface {
 
 	// Profile creation — each runs inside the same tx as CreateUser
 	CreateStudent(ctx context.Context, tx *gorm.DB, student *Student) error
-	CreateTeacher(ctx context.Context, tx *gorm.DB, teacher *Teacher) error
+	CreateEmployee(ctx context.Context, tx *gorm.DB, employee *Employee) error
 	CreateParent(ctx context.Context, tx *gorm.DB, parent *Parent) error
-	CreateStaff(ctx context.Context, tx *gorm.DB, staff *Staff) error
 
 	// Transaction helper — exposes the raw *gorm.DB for atomic service calls
 	DB() *gorm.DB
@@ -48,10 +47,10 @@ func (r *repositoryImpl) CreateUser(ctx context.Context, user *User) error {
 func (r *repositoryImpl) GetUserByID(ctx context.Context, id string) (*User, error) {
 	var u User
 	err := r.db.WithContext(ctx).
-		Preload("Teacher").
+		Preload("Employee").
 		Preload("Student").
 		Preload("Parent").
-		Preload("Staff").
+		Preload("Role").
 		First(&u, "id = ?", id).Error
 	if err != nil {
 		return nil, err
@@ -62,10 +61,10 @@ func (r *repositoryImpl) GetUserByID(ctx context.Context, id string) (*User, err
 func (r *repositoryImpl) GetUserByEmail(ctx context.Context, email string) (*User, error) {
 	var u User
 	err := r.db.WithContext(ctx).
-		Preload("Teacher").
+		Preload("Employee").
 		Preload("Student").
 		Preload("Parent").
-		Preload("Staff").
+		Preload("Role").
 		First(&u, "email = ?", email).Error
 	if err != nil {
 		return nil, err
@@ -84,10 +83,10 @@ func (r *repositoryImpl) FindAllUsers(ctx context.Context, p pagination.Params) 
 	}
 
 	err := query.
-		Preload("Teacher").
+		Preload("Employee").
 		Preload("Student").
 		Preload("Parent").
-		Preload("Staff").
+		Preload("Role").
 		Offset((p.Page - 1) * p.Limit).
 		Limit(p.Limit).
 		Find(&users).Error
@@ -115,14 +114,10 @@ func (r *repositoryImpl) CreateStudent(ctx context.Context, tx *gorm.DB, student
 	return tx.WithContext(ctx).Create(student).Error
 }
 
-func (r *repositoryImpl) CreateTeacher(ctx context.Context, tx *gorm.DB, teacher *Teacher) error {
-	return tx.WithContext(ctx).Create(teacher).Error
+func (r *repositoryImpl) CreateEmployee(ctx context.Context, tx *gorm.DB, employee *Employee) error {
+	return tx.WithContext(ctx).Create(employee).Error
 }
 
 func (r *repositoryImpl) CreateParent(ctx context.Context, tx *gorm.DB, parent *Parent) error {
 	return tx.WithContext(ctx).Create(parent).Error
-}
-
-func (r *repositoryImpl) CreateStaff(ctx context.Context, tx *gorm.DB, staff *Staff) error {
-	return tx.WithContext(ctx).Create(staff).Error
 }

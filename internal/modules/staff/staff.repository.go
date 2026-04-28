@@ -20,7 +20,7 @@ type RepositoryImpl struct {
 }
 
 func NewRepository(db *gorm.DB) Repository {
-	return &RepositoryImpl{db: db.Model(&database.Staff{})}
+	return &RepositoryImpl{db: db.Model(&database.Employee{})}
 }
 
 func (r *RepositoryImpl) GetByID(ctx context.Context, id string) (*Staff, error) {

@@ -35,7 +35,7 @@ func (s *service) Create(ctx context.Context, req CreateRequest) (*Response, err
 
 	m := &database.TeacherAssignment{
 		ClassSectionID: req.ClassSectionID,
-		TeacherID:      req.TeacherID,
+		EmployeeID:     req.EmployeeID,
 		SubjectID:      req.SubjectID,
 	}
 
@@ -74,8 +74,8 @@ func (s *service) Update(ctx context.Context, id string, req UpdateRequest) (*Re
 		return nil, fmt.Errorf("teacherassignment.Service.Update: %w", err)
 	}
 
-	if req.TeacherID != nil {
-		m.TeacherID = *req.TeacherID
+	if req.EmployeeID != nil {
+		m.EmployeeID = *req.EmployeeID
 	}
 
 	if err := s.repo.Update(ctx, m); err != nil {
@@ -97,7 +97,7 @@ func mapToResponse(m *database.TeacherAssignment) *Response {
 	return &Response{
 		ID:             m.ID,
 		ClassSectionID: m.ClassSectionID,
-		TeacherID:      m.TeacherID,
+		EmployeeID:     m.EmployeeID,
 		SubjectID:      m.SubjectID,
 		CreatedAt:      m.CreatedAt,
 	}

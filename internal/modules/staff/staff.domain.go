@@ -6,7 +6,7 @@ import (
 	"github.com/thalalhassan/edu_management/internal/database"
 )
 
-type Staff = database.Staff
+type Staff = database.Employee
 
 // ==========================================
 // FILTER

@@ -33,12 +33,12 @@ var AllowedRecordSortFields = map[string]bool{
 type StructureFilterParams struct {
 	AcademicYearID *string `form:"academic_year_id"`
 	StandardID     *string `form:"standard_id"`
-	FeeComponent   *string `form:"fee_component"`
+	FeeComponentID *string `form:"fee_component_id"`
 }
 
 type RecordFilterParams struct {
 	StudentEnrollmentID *string    `form:"student_enrollment_id"`
-	FeeComponent        *string    `form:"fee_component"`
+	FeeComponentID      *string    `form:"fee_component_id"`
 	Status              *FeeStatus `form:"status"`
 	DueDateFrom         *time.Time `form:"due_date_from"`
 	DueDateTo           *time.Time `form:"due_date_to"`
@@ -51,29 +51,29 @@ type RecordFilterParams struct {
 type CreateStructureRequest struct {
 	AcademicYearID string          `json:"academic_year_id" binding:"required,uuid"`
 	StandardID     string          `json:"standard_id"      binding:"required,uuid"`
-	FeeComponent   string          `json:"fee_component"    binding:"required"`
+	FeeComponentID string          `json:"fee_component_id" binding:"required,uuid"`
 	Amount         decimal.Decimal `json:"amount"           binding:"required"`
 	DueDate        *time.Time      `json:"due_date,omitempty"`
 }
 
 type UpdateStructureRequest struct {
-	FeeComponent *string          `json:"fee_component,omitempty"`
-	Amount       *decimal.Decimal `json:"amount,omitempty"`
-	DueDate      *time.Time       `json:"due_date,omitempty"`
+	FeeComponentID *string          `json:"fee_component_id,omitempty"`
+	Amount         *decimal.Decimal `json:"amount,omitempty"`
+	DueDate        *time.Time       `json:"due_date,omitempty"`
 }
 
 // BulkCreateStructureRequest creates all fee components for a standard
 // in one call — the typical setup flow at the start of an academic year.
 type BulkCreateStructureRequest struct {
-	AcademicYearID string                    `json:"academic_year_id" binding:"required,uuid"`
-	StandardID     string                    `json:"standard_id"      binding:"required,uuid"`
-	Components     []FeeComponentInput       `json:"components"       binding:"required,min=1"`
+	AcademicYearID string              `json:"academic_year_id" binding:"required,uuid"`
+	StandardID     string              `json:"standard_id"      binding:"required,uuid"`
+	Components     []FeeComponentInput `json:"components"       binding:"required,min=1"`
 }
 
 type FeeComponentInput struct {
-	FeeComponent string          `json:"fee_component" binding:"required"`
-	Amount       decimal.Decimal `json:"amount"        binding:"required"`
-	DueDate      *time.Time      `json:"due_date,omitempty"`
+	FeeComponentID string          `json:"fee_component_id" binding:"required,uuid"`
+	Amount         decimal.Decimal `json:"amount"           binding:"required"`
+	DueDate        *time.Time      `json:"due_date,omitempty"`
 }
 
 // ──────────────────────────────────────────────────────────────
@@ -82,7 +82,7 @@ type FeeComponentInput struct {
 
 type CreateRecordRequest struct {
 	StudentEnrollmentID string          `json:"student_enrollment_id" binding:"required,uuid"`
-	FeeComponent        string          `json:"fee_component"         binding:"required"`
+	FeeComponentID      string          `json:"fee_component_id"      binding:"required,uuid"`
 	AmountDue           decimal.Decimal `json:"amount_due"            binding:"required"`
 	DueDate             time.Time       `json:"due_date"              binding:"required"`
 	Remarks             *string         `json:"remarks,omitempty"`
@@ -124,13 +124,13 @@ type FeeRecordResponse struct {
 // StudentFeeSummary gives a rolled-up view of all fee records
 // for a student enrollment — used in the student fee dashboard.
 type StudentFeeSummary struct {
-	StudentEnrollmentID string          `json:"student_enrollment_id"`
-	StudentName         string          `json:"student_name"`
-	AdmissionNo         string          `json:"admission_no"`
-	ClassSection        string          `json:"class_section"`
-	TotalDue            decimal.Decimal `json:"total_due"`
-	TotalPaid           decimal.Decimal `json:"total_paid"`
-	TotalBalance        decimal.Decimal `json:"total_balance"`
+	StudentEnrollmentID string              `json:"student_enrollment_id"`
+	StudentName         string              `json:"student_name"`
+	AdmissionNo         string              `json:"admission_no"`
+	ClassSection        string              `json:"class_section"`
+	TotalDue            decimal.Decimal     `json:"total_due"`
+	TotalPaid           decimal.Decimal     `json:"total_paid"`
+	TotalBalance        decimal.Decimal     `json:"total_balance"`
 	Records             []FeeRecordResponse `json:"records"`
 }
 

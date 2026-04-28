@@ -45,9 +45,8 @@ func (h *Handler) Routes(r *gin.RouterGroup) {
 	reg.Use(middleware.IsAdmin())
 	{
 		reg.POST("/student", h.registerStudent)
-		reg.POST("/teacher", h.registerTeacher)
+		reg.POST("/employee", h.registerEmployee)
 		reg.POST("/parent", h.registerParent)
-		reg.POST("/staff", h.registerStaff)
 		reg.POST("/admin", h.registerAdmin)
 	}
 }
@@ -70,18 +69,18 @@ func (h *Handler) registerStudent(c *gin.Context) {
 	response.Created(c, resp, "Student registered successfully")
 }
 
-func (h *Handler) registerTeacher(c *gin.Context) {
-	var req CreateTeacherUserRequest
+func (h *Handler) registerEmployee(c *gin.Context) {
+	var req CreateEmployeeUserRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(c, err.Error())
 		return
 	}
-	resp, err := h.service.RegisterTeacher(c.Request.Context(), req)
+	resp, err := h.service.RegisterEmployee(c.Request.Context(), req)
 	if err != nil {
 		response.InternalError(c, err.Error())
 		return
 	}
-	response.Created(c, resp, "Teacher registered successfully")
+	response.Created(c, resp, "Employee registered successfully")
 }
 
 func (h *Handler) registerParent(c *gin.Context) {
@@ -96,20 +95,6 @@ func (h *Handler) registerParent(c *gin.Context) {
 		return
 	}
 	response.Created(c, resp, "Parent registered successfully")
-}
-
-func (h *Handler) registerStaff(c *gin.Context) {
-	var req CreateStaffUserRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, err.Error())
-		return
-	}
-	resp, err := h.service.RegisterStaff(c.Request.Context(), req)
-	if err != nil {
-		response.InternalError(c, err.Error())
-		return
-	}
-	response.Created(c, resp, "Staff registered successfully")
 }
 
 func (h *Handler) registerAdmin(c *gin.Context) {

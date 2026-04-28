@@ -18,7 +18,7 @@ type Config struct {
 type CorsConfig struct {
 	AllowOrigins     []string      `env:"ALLOW_ORIGINS" envDefault:"*"`
 	AllowMethods     []string      `env:"ALLOW_METHODS" envDefault:"GET,POST,PUT,PATCH,DELETE,OPTIONS"`
-	AllowHeaders     []string      `env:"ALLOW_HEADERS" envDefault:"Origin,Content-Type,Authorization"`
+	AllowHeaders     []string      `env:"ALLOW_HEADERS" envDefault:"Origin,Content-Type,Authorization,X-Academic-Year-ID"`
 	ExposeHeaders    []string      `env:"EXPOSE_HEADERS" envDefault:"Content-Length"`
 	AllowCredentials bool          `env:"ALLOW_CREDENTIALS" envDefault:"true"`
 	MaxAge           time.Duration `env:"MAX_AGE" envDefault:"12h"`

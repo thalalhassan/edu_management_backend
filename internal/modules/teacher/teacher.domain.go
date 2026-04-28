@@ -6,7 +6,7 @@ import (
 	"github.com/thalalhassan/edu_management/internal/database"
 )
 
-type Teacher = database.Teacher
+type Teacher = database.Employee
 
 type Gender = database.Gender
 

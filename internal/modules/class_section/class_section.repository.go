@@ -12,7 +12,7 @@ type Repository interface {
 	GetByID(ctx context.Context, id string) (*ClassSection, error)
 	FindByAcademicYear(ctx context.Context, academicYearID string) ([]*ClassSection, error)
 	FindByStandard(ctx context.Context, standardID, academicYearID string) ([]*ClassSection, error)
-	FindByTeacher(ctx context.Context, teacherID, academicYearID string) ([]*ClassSection, error)
+	FindByEmployee(ctx context.Context, employeeID, academicYearID string) ([]*ClassSection, error)
 	Update(ctx context.Context, id string, cs *ClassSection) error
 	Delete(ctx context.Context, id string) error
 	CountEnrolled(ctx context.Context, classSectionID string) (int64, error)
@@ -68,13 +68,13 @@ func (r *repositoryImpl) FindByStandard(ctx context.Context, standardID, academi
 	return sections, err
 }
 
-// FindByTeacher returns all sections a teacher is the class teacher of in an academic year.
-func (r *repositoryImpl) FindByTeacher(ctx context.Context, teacherID, academicYearID string) ([]*ClassSection, error) {
+// FindByEmployee returns all sections an employee is the class employee of in an academic year.
+func (r *repositoryImpl) FindByEmployee(ctx context.Context, employeeID, academicYearID string) ([]*ClassSection, error) {
 	var sections []*ClassSection
 	err := r.db.WithContext(ctx).
 		Preload("Standard.Department").
 		Preload("AcademicYear").
-		Where("class_teacher_id = ? AND academic_year_id = ?", teacherID, academicYearID).
+		Where("class_employee_id = ? AND academic_year_id = ?", employeeID, academicYearID).
 		Find(&sections).Error
 	return sections, err
 }

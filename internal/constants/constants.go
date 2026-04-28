@@ -36,11 +36,12 @@ const (
 	ApiFeePath   = "/fees"   // or split into /payments, /fee-structures
 	ApiLeavePath = "/leaves" // or /leave-requests
 
-	ApiNoticePath = "/notices"
-	ApiReportPath = "/reports"
+	ApiNoticePath       = "/notices"
+	ApiAnnouncementPath = "/announcements"
+	ApiReportPath       = "/reports"
 
-	ApiAttendancePath        = "/attendance"
-	ApiTeacherAttendancePath = "/teacher-attendance"
+	ApiAttendancePath         = "/attendance"
+	ApiEmployeeAttendancePath = "/employee-attendance"
 
 	ApiExamPath         = "/exams"
 	ApiScheduleExamPath = "/exam-schedule"

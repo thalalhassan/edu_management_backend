@@ -11,9 +11,9 @@ type Service interface {
 	GetByID(ctx context.Context, id string) (*ClassSectionResponse, error)
 	ListByAcademicYear(ctx context.Context, academicYearID string) ([]*ClassSectionSummary, error)
 	ListByStandard(ctx context.Context, standardID, academicYearID string) ([]*ClassSectionSummary, error)
-	ListByTeacher(ctx context.Context, teacherID, academicYearID string) ([]*ClassSectionSummary, error)
+	ListByEmployee(ctx context.Context, employeeID, academicYearID string) ([]*ClassSectionSummary, error)
 	Update(ctx context.Context, id string, req UpdateRequest) (*ClassSectionResponse, error)
-	AssignTeacher(ctx context.Context, id string, req AssignTeacherRequest) (*ClassSectionResponse, error)
+	AssignEmployee(ctx context.Context, id string, req AssignEmployeeRequest) (*ClassSectionResponse, error)
 	Delete(ctx context.Context, id string) error
 }
 
@@ -41,12 +41,12 @@ func (s *service) Create(ctx context.Context, req CreateRequest) (*ClassSectionR
 	}
 
 	cs := &ClassSection{
-		AcademicYearID: req.AcademicYearID,
-		StandardID:     req.StandardID,
-		SectionName:    req.SectionName,
-		ClassTeacherID: req.ClassTeacherID,
-		RoomNumber:     req.RoomNumber,
-		MaxStrength:    maxStrength,
+		AcademicYearID:  req.AcademicYearID,
+		StandardID:      req.StandardID,
+		SectionName:     req.SectionName,
+		ClassEmployeeID: req.ClassEmployeeID,
+		RoomID:          req.RoomID,
+		MaxStrength:     maxStrength,
 	}
 	if err := s.repo.Create(ctx, cs); err != nil {
 		return nil, fmt.Errorf("classsection.Service.Create: %w", err)
@@ -83,10 +83,10 @@ func (s *service) ListByStandard(ctx context.Context, standardID, academicYearID
 	return s.toSummaries(ctx, sections)
 }
 
-func (s *service) ListByTeacher(ctx context.Context, teacherID, academicYearID string) ([]*ClassSectionSummary, error) {
-	sections, err := s.repo.FindByTeacher(ctx, teacherID, academicYearID)
+func (s *service) ListByEmployee(ctx context.Context, employeeID, academicYearID string) ([]*ClassSectionSummary, error) {
+	sections, err := s.repo.FindByEmployee(ctx, employeeID, academicYearID)
 	if err != nil {
-		return nil, fmt.Errorf("classsection.Service.ListByTeacher: %w", err)
+		return nil, fmt.Errorf("classsection.Service.ListByEmployee: %w", err)
 	}
 	return s.toSummaries(ctx, sections)
 }
@@ -108,11 +108,11 @@ func (s *service) Update(ctx context.Context, id string, req UpdateRequest) (*Cl
 		}
 		cs.SectionName = *req.SectionName
 	}
-	if req.ClassTeacherID != nil {
-		cs.ClassTeacherID = req.ClassTeacherID
+	if req.ClassEmployeeID != nil {
+		cs.ClassEmployeeID = req.ClassEmployeeID
 	}
-	if req.RoomNumber != nil {
-		cs.RoomNumber = req.RoomNumber
+	if req.RoomID != nil {
+		cs.RoomID = req.RoomID
 	}
 	if req.MaxStrength != nil {
 		// Guard: cannot set max strength below current enrollment
@@ -132,18 +132,18 @@ func (s *service) Update(ctx context.Context, id string, req UpdateRequest) (*Cl
 	return ToClassSectionResponse(cs), nil
 }
 
-func (s *service) AssignTeacher(ctx context.Context, id string, req AssignTeacherRequest) (*ClassSectionResponse, error) {
+func (s *service) AssignEmployee(ctx context.Context, id string, req AssignEmployeeRequest) (*ClassSectionResponse, error) {
 	cs, err := s.repo.GetByID(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("classsection.Service.AssignTeacher.GetByID: %w", err)
+		return nil, fmt.Errorf("classsection.Service.AssignEmployee.GetByID: %w", err)
 	}
-	cs.ClassTeacherID = req.ClassTeacherID
+	cs.ClassEmployeeID = req.ClassEmployeeID
 	if err := s.repo.Update(ctx, id, cs); err != nil {
-		return nil, fmt.Errorf("classsection.Service.AssignTeacher.Save: %w", err)
+		return nil, fmt.Errorf("classsection.Service.AssignEmployee.Save: %w", err)
 	}
 	updated, err := s.repo.GetByID(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("classsection.Service.AssignTeacher.Reload: %w", err)
+		return nil, fmt.Errorf("classsection.Service.AssignEmployee.Reload: %w", err)
 	}
 	return ToClassSectionResponse(updated), nil
 }

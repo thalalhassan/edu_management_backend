@@ -61,9 +61,9 @@ func (s *service) buildInstitutionOverview(ctx context.Context, academicYearID s
 		return InstitutionOverview{}, fmt.Errorf("CountStudentsByStatus: %w", err)
 	}
 
-	activeTeachers, totalTeachers, err := s.repo.CountTeachersByStatus(ctx)
+	activeTeachers, totalTeachers, err := s.repo.CountEmployeesByStatus(ctx)
 	if err != nil {
-		return InstitutionOverview{}, fmt.Errorf("CountTeachersByStatus: %w", err)
+		return InstitutionOverview{}, fmt.Errorf("CountEmployeesByStatus: %w", err)
 	}
 
 	totalSubjects, err := s.repo.CountSubjects(ctx)

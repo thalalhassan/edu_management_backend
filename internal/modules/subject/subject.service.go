@@ -37,7 +37,6 @@ func (s *service) Create(ctx context.Context, req CreateRequest) (*SubjectRespon
 		Code:        req.Code,
 		Name:        req.Name,
 		Description: req.Description,
-		IsElective:  req.IsElective,
 	}
 	if err := s.repo.Create(ctx, sub); err != nil {
 		return nil, fmt.Errorf("subject.Service.Create: %w", err)
@@ -87,9 +86,6 @@ func (s *service) Update(ctx context.Context, id string, req UpdateRequest) (*Su
 	}
 	if req.Description != nil {
 		sub.Description = req.Description
-	}
-	if req.IsElective != nil {
-		sub.IsElective = *req.IsElective
 	}
 
 	if err := s.repo.Update(ctx, id, sub); err != nil {

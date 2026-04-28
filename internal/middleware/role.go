@@ -7,7 +7,7 @@ import (
 )
 
 // RoleCheckMiddleware verifies that the user has the required role
-func RoleCheckMiddleware(requiredRoles ...database.UserRole) gin.HandlerFunc {
+func RoleCheckMiddleware(requiredRoles ...database.SystemRole) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		role, err := GetRoleFromContext(c)
 		if err != nil {
@@ -35,10 +35,10 @@ func RoleCheckMiddleware(requiredRoles ...database.UserRole) gin.HandlerFunc {
 
 // IsAdmin is a convenience middleware to check if user is admin
 func IsAdmin() gin.HandlerFunc {
-	return RoleCheckMiddleware(database.UserRoleAdmin, database.UserRoleSuperAdmin)
+	return RoleCheckMiddleware(database.SystemRoleAdmin, database.SystemRoleSuperAdmin)
 }
 
 // Allowed is a convenience middleware to check if user has any of the allowed roles
-func IsAllowed(allowedRoles ...database.UserRole) gin.HandlerFunc {
+func IsAllowed(allowedRoles ...database.SystemRole) gin.HandlerFunc {
 	return RoleCheckMiddleware(allowedRoles...)
 }

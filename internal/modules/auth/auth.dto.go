@@ -1,15 +1,11 @@
 package auth
 
-import (
-	"github.com/thalalhassan/edu_management/internal/database"
-)
-
 // @Description Information about authenticated user
 // @Name UserAuthInfo
 type UserAuthInfo struct {
-	ID    string            `json:"id"`
-	Email string            `json:"email"`
-	Role  database.UserRole `json:"role"`
+	ID    string `json:"id"`
+	Email string `json:"email"`
+	Role  string `json:"role"`
 }
 
 // ──────────────────────────────────────────────────────────────

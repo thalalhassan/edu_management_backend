@@ -47,20 +47,20 @@ type FilterParams struct {
 type CreateRequest struct {
 	ClassSectionID string    `json:"class_section_id" binding:"required,uuid"`
 	SubjectID      string    `json:"subject_id"       binding:"required,uuid"`
-	TeacherID      string    `json:"teacher_id"       binding:"required,uuid"`
+	EmployeeID     string    `json:"employee_id"      binding:"required,uuid"`
 	DayOfWeek      int       `json:"day_of_week"      binding:"required,min=0,max=6"`
 	StartTime      time.Time `json:"start_time"       binding:"required"`
 	EndTime        time.Time `json:"end_time"         binding:"required"`
-	RoomNumber     *string   `json:"room_number,omitempty"`
+	RoomID         *string   `json:"room_id,omitempty"`
 }
 
 type UpdateRequest struct {
 	SubjectID  *string    `json:"subject_id,omitempty"  binding:"omitempty,uuid"`
-	TeacherID  *string    `json:"teacher_id,omitempty"  binding:"omitempty,uuid"`
+	EmployeeID *string    `json:"employee_id,omitempty" binding:"omitempty,uuid"`
 	DayOfWeek  *int       `json:"day_of_week,omitempty" binding:"omitempty,min=0,max=6"`
 	StartTime  *time.Time `json:"start_time,omitempty"`
 	EndTime    *time.Time `json:"end_time,omitempty"`
-	RoomNumber *string    `json:"room_number,omitempty"`
+	RoomID     *string    `json:"room_id,omitempty"`
 }
 
 // TimeTableResponse is the full response with nested relations.
@@ -71,16 +71,16 @@ type TimeTableResponse struct {
 
 // PeriodEntry is a lightweight row used in the class/teacher schedule view.
 type PeriodEntry struct {
-	ID             string    `json:"id"`
-	DayOfWeek      int       `json:"day_of_week"`
-	DayName        string    `json:"day_name"`
-	StartTime      time.Time `json:"start_time"`
-	EndTime        time.Time `json:"end_time"`
-	SubjectCode    string    `json:"subject_code"`
-	SubjectName    string    `json:"subject_name"`
-	TeacherName    string    `json:"teacher_name"`
-	ClassSection   string    `json:"class_section"`   // "Grade 6 - A"
-	RoomNumber     *string   `json:"room_number,omitempty"`
+	ID           string    `json:"id"`
+	DayOfWeek    int       `json:"day_of_week"`
+	DayName      string    `json:"day_name"`
+	StartTime    time.Time `json:"start_time"`
+	EndTime      time.Time `json:"end_time"`
+	SubjectCode  string    `json:"subject_code"`
+	SubjectName  string    `json:"subject_name"`
+	TeacherName  string    `json:"teacher_name"`
+	ClassSection string    `json:"class_section"` // "Grade 6 - A"
+	RoomNumber   *string   `json:"room_number,omitempty"`
 }
 
 // DaySchedule groups periods by day — used in the weekly schedule view.
@@ -99,16 +99,18 @@ func ToTimeTableResponse(t *TimeTable) *TimeTableResponse {
 
 func ToPeriodEntry(t *TimeTable) PeriodEntry {
 	entry := PeriodEntry{
-		ID:          t.ID,
-		DayOfWeek:   t.DayOfWeek,
-		DayName:     DayNames[t.DayOfWeek],
-		StartTime:   t.StartTime,
-		EndTime:     t.EndTime,
-		RoomNumber:  t.RoomNumber,
+		ID:        t.ID,
+		DayOfWeek: t.DayOfWeek,
+		DayName:   DayNames[t.DayOfWeek],
+		StartTime: t.StartTime,
+		EndTime:   t.EndTime,
+	}
+	if t.Room != nil {
+		entry.RoomNumber = &t.Room.RoomNumber
 	}
 	entry.SubjectCode = t.Subject.Code
 	entry.SubjectName = t.Subject.Name
-	entry.TeacherName = t.Teacher.FirstName + " " + t.Teacher.LastName
+	entry.TeacherName = t.Employee.FirstName + " " + t.Employee.LastName
 	entry.ClassSection = t.ClassSection.Standard.Name + " - " + t.ClassSection.SectionName
 	return entry
 }

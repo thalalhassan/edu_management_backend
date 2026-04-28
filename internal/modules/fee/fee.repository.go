@@ -21,7 +21,7 @@ type StructureRepository interface {
 	FindByStandardAndYear(ctx context.Context, standardID, academicYearID string) ([]*FeeStructure, error)
 	Update(ctx context.Context, id string, f *FeeStructure) error
 	Delete(ctx context.Context, id string) error
-	IsDuplicate(ctx context.Context, academicYearID, standardID, component string) (bool, error)
+	IsDuplicate(ctx context.Context, academicYearID, standardID, feeComponentID string) (bool, error)
 }
 
 type structureRepo struct {
@@ -65,8 +65,8 @@ func (r *structureRepo) FindAll(ctx context.Context, q query_params.Query[Struct
 	if f.StandardID != nil {
 		query = query.Where("standard_id = ?", *f.StandardID)
 	}
-	if f.FeeComponent != nil {
-		query = query.Where("fee_component ILIKE ?", "%"+*f.FeeComponent+"%")
+	if f.FeeComponentID != nil {
+		query = query.Where("fee_component_id = ?", *f.FeeComponentID)
 	}
 
 	if err := query.Count(&total).Error; err != nil {
@@ -100,12 +100,12 @@ func (r *structureRepo) Delete(ctx context.Context, id string) error {
 	return r.db.WithContext(ctx).Where("id = ?", id).Delete(&FeeStructure{}).Error
 }
 
-func (r *structureRepo) IsDuplicate(ctx context.Context, academicYearID, standardID, component string) (bool, error) {
+func (r *structureRepo) IsDuplicate(ctx context.Context, academicYearID, standardID, feeComponentID string) (bool, error) {
 	var count int64
 	err := r.db.WithContext(ctx).
 		Model(&database.FeeStructure{}).
-		Where("academic_year_id = ? AND standard_id = ? AND fee_component = ?",
-			academicYearID, standardID, component).
+		Where("academic_year_id = ? AND standard_id = ? AND fee_component_id = ?",
+			academicYearID, standardID, feeComponentID).
 		Count(&count).Error
 	return count > 0, err
 }
@@ -163,8 +163,8 @@ func (r *recordRepo) FindAll(ctx context.Context, q query_params.Query[RecordFil
 	if f.StudentEnrollmentID != nil {
 		query = query.Where("student_enrollment_id = ?", *f.StudentEnrollmentID)
 	}
-	if f.FeeComponent != nil {
-		query = query.Where("fee_component ILIKE ?", "%"+*f.FeeComponent+"%")
+	if f.FeeComponentID != nil {
+		query = query.Where("fee_component_id = ?", *f.FeeComponentID)
 	}
 	if f.Status != nil {
 		query = query.Where("status = ?", *f.Status)

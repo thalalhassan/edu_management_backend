@@ -34,18 +34,18 @@ func NewStructureService(repo StructureRepository) StructureService {
 }
 
 func (s *structureService) Create(ctx context.Context, req CreateStructureRequest) (*FeeStructureResponse, error) {
-	isDup, err := s.repo.IsDuplicate(ctx, req.AcademicYearID, req.StandardID, req.FeeComponent)
+	isDup, err := s.repo.IsDuplicate(ctx, req.AcademicYearID, req.StandardID, req.FeeComponentID)
 	if err != nil {
 		return nil, fmt.Errorf("fee.StructureService.Create.IsDuplicate: %w", err)
 	}
 	if isDup {
-		return nil, fmt.Errorf("fee.StructureService.Create: fee component %q already exists for this standard and academic year", req.FeeComponent)
+		return nil, fmt.Errorf("fee.StructureService.Create: fee component already exists for this standard and academic year")
 	}
 
 	f := &FeeStructure{
 		AcademicYearID: req.AcademicYearID,
 		StandardID:     req.StandardID,
-		FeeComponent:   req.FeeComponent,
+		FeeComponentID: req.FeeComponentID,
 		Amount:         req.Amount,
 		DueDate:        req.DueDate,
 	}
@@ -65,17 +65,17 @@ func (s *structureService) BulkCreate(ctx context.Context, req BulkCreateStructu
 	// Check for duplicates within the batch itself
 	seen := make(map[string]bool)
 	for _, c := range req.Components {
-		if seen[c.FeeComponent] {
-			return nil, fmt.Errorf("fee.StructureService.BulkCreate: duplicate component %q in request", c.FeeComponent)
+		if seen[c.FeeComponentID] {
+			return nil, fmt.Errorf("fee.StructureService.BulkCreate: duplicate component in request")
 		}
-		seen[c.FeeComponent] = true
+		seen[c.FeeComponentID] = true
 
-		isDup, err := s.repo.IsDuplicate(ctx, req.AcademicYearID, req.StandardID, c.FeeComponent)
+		isDup, err := s.repo.IsDuplicate(ctx, req.AcademicYearID, req.StandardID, c.FeeComponentID)
 		if err != nil {
 			return nil, fmt.Errorf("fee.StructureService.BulkCreate.IsDuplicate: %w", err)
 		}
 		if isDup {
-			return nil, fmt.Errorf("fee.StructureService.BulkCreate: component %q already exists for this standard and year", c.FeeComponent)
+			return nil, fmt.Errorf("fee.StructureService.BulkCreate: component already exists for this standard and year")
 		}
 	}
 
@@ -84,7 +84,7 @@ func (s *structureService) BulkCreate(ctx context.Context, req BulkCreateStructu
 		structs[i] = &FeeStructure{
 			AcademicYearID: req.AcademicYearID,
 			StandardID:     req.StandardID,
-			FeeComponent:   c.FeeComponent,
+			FeeComponentID: c.FeeComponentID,
 			Amount:         c.Amount,
 			DueDate:        c.DueDate,
 		}
@@ -137,16 +137,16 @@ func (s *structureService) Update(ctx context.Context, id string, req UpdateStru
 	if err != nil {
 		return nil, fmt.Errorf("fee.StructureService.Update.GetByID: %w", err)
 	}
-	if req.FeeComponent != nil {
-		// Guard: new component name must not clash
-		isDup, err := s.repo.IsDuplicate(ctx, f.AcademicYearID, f.StandardID, *req.FeeComponent)
+	if req.FeeComponentID != nil {
+		// Guard: new component ID must not clash
+		isDup, err := s.repo.IsDuplicate(ctx, f.AcademicYearID, f.StandardID, *req.FeeComponentID)
 		if err != nil {
 			return nil, fmt.Errorf("fee.StructureService.Update.IsDuplicate: %w", err)
 		}
-		if isDup && *req.FeeComponent != f.FeeComponent {
-			return nil, fmt.Errorf("fee.StructureService.Update: component %q already exists", *req.FeeComponent)
+		if isDup && *req.FeeComponentID != f.FeeComponentID {
+			return nil, fmt.Errorf("fee.StructureService.Update: component already exists")
 		}
-		f.FeeComponent = *req.FeeComponent
+		f.FeeComponentID = *req.FeeComponentID
 	}
 	if req.Amount != nil {
 		f.Amount = *req.Amount
@@ -197,7 +197,7 @@ func NewRecordService(repo RecordRepository, structRepo StructureRepository) Rec
 func (s *recordService) Create(ctx context.Context, req CreateRecordRequest) (*FeeRecordResponse, error) {
 	rec := &FeeRecord{
 		StudentEnrollmentID: req.StudentEnrollmentID,
-		FeeComponent:        req.FeeComponent,
+		FeeComponentID:      req.FeeComponentID,
 		AmountDue:           req.AmountDue,
 		DueDate:             req.DueDate,
 		Status:              database.FeeStatusPending,
@@ -257,7 +257,7 @@ func (s *recordService) BulkGenerate(ctx context.Context, req BulkGenerateReques
 			}
 			records = append(records, &FeeRecord{
 				StudentEnrollmentID: enrollment.ID,
-				FeeComponent:        structure.FeeComponent,
+				FeeComponentID:      structure.FeeComponentID,
 				AmountDue:           structure.Amount,
 				DueDate:             dueDate,
 				Status:              database.FeeStatusPending,

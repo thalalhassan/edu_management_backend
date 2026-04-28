@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/thalalhassan/edu_management/internal/app"
 	"github.com/thalalhassan/edu_management/internal/modules/academic_year"
+	"github.com/thalalhassan/edu_management/internal/modules/announcement"
 	"github.com/thalalhassan/edu_management/internal/modules/attendance"
 	"github.com/thalalhassan/edu_management/internal/modules/auth"
 	"github.com/thalalhassan/edu_management/internal/modules/class_section"
@@ -73,6 +74,9 @@ func RegisterModules(api *gin.RouterGroup, app *app.App) {
 
 	// Register notice module routes
 	notice.RegisterRouter(api, app)
+
+	// Register announcement module routes
+	announcement.RegisterRouter(api, app)
 
 	// Register report module routes
 	report.RegisterRouter(api, app)

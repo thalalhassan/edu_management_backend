@@ -26,14 +26,14 @@ type Repository interface {
 	GetEnrollmentIDsByClassSection(ctx context.Context, classSectionID string) ([]string, error)
 	CountByClassSectionAndDate(ctx context.Context, classSectionID string, date time.Time) (present, absent, halfDay, late, leave int64, err error)
 
-	// Teacher Attendance
-	CreateTeacherAttendance(ctx context.Context, a *TeacherAttendance) error
-	BulkCreateTeacherAttendance(ctx context.Context, records []*TeacherAttendance) error
-	GetTeacherAttendanceByID(ctx context.Context, id string) (*TeacherAttendance, error)
-	FindTeacherAttendance(ctx context.Context, q query_params.Query[TeacherFilterParams]) ([]*TeacherAttendance, int64, error)
-	FindTeacherAttendanceByDate(ctx context.Context, teacherID string, date time.Time) (*TeacherAttendance, error)
-	UpdateTeacherAttendance(ctx context.Context, a *TeacherAttendance) error
-	DeleteTeacherAttendance(ctx context.Context, id string) error
+	// Employee Attendance
+	CreateEmployeeAttendance(ctx context.Context, a *EmployeeAttendance) error
+	BulkCreateEmployeeAttendance(ctx context.Context, records []*EmployeeAttendance) error
+	GetEmployeeAttendanceByID(ctx context.Context, id string) (*EmployeeAttendance, error)
+	FindEmployeeAttendance(ctx context.Context, q query_params.Query[EmployeeFilterParams]) ([]*EmployeeAttendance, int64, error)
+	FindEmployeeAttendanceByDate(ctx context.Context, employeeID string, date time.Time) (*EmployeeAttendance, error)
+	UpdateEmployeeAttendance(ctx context.Context, a *EmployeeAttendance) error
+	DeleteEmployeeAttendance(ctx context.Context, id string) error
 }
 
 // ─── repositoryImpl ───────────────────────────────────────────────────────────
@@ -174,33 +174,33 @@ func (r *repositoryImpl) CountByClassSectionAndDate(ctx context.Context, classSe
 	return
 }
 
-// ─── Teacher Attendance ───────────────────────────────────────────────────────
+// ─── Employee Attendance ───────────────────────────────────────────────────────
 
-func (r *repositoryImpl) CreateTeacherAttendance(ctx context.Context, a *TeacherAttendance) error {
+func (r *repositoryImpl) CreateEmployeeAttendance(ctx context.Context, a *EmployeeAttendance) error {
 	return r.db.WithContext(ctx).Create(a).Error
 }
 
-func (r *repositoryImpl) BulkCreateTeacherAttendance(ctx context.Context, records []*TeacherAttendance) error {
+func (r *repositoryImpl) BulkCreateEmployeeAttendance(ctx context.Context, records []*EmployeeAttendance) error {
 	return r.db.WithContext(ctx).CreateInBatches(records, 100).Error
 }
 
-func (r *repositoryImpl) GetTeacherAttendanceByID(ctx context.Context, id string) (*TeacherAttendance, error) {
-	var a TeacherAttendance
+func (r *repositoryImpl) GetEmployeeAttendanceByID(ctx context.Context, id string) (*EmployeeAttendance, error) {
+	var a EmployeeAttendance
 	if err := r.db.WithContext(ctx).
-		Model(&database.TeacherAttendance{}).
+		Model(&database.EmployeeAttendance{}).
 		First(&a, "id = ?", id).Error; err != nil {
 		return nil, err
 	}
 	return &a, nil
 }
 
-func (r *repositoryImpl) FindTeacherAttendance(ctx context.Context, q query_params.Query[TeacherFilterParams]) ([]*TeacherAttendance, int64, error) {
-	var records []*TeacherAttendance
-	query := r.db.WithContext(ctx).Model(&database.TeacherAttendance{})
+func (r *repositoryImpl) FindEmployeeAttendance(ctx context.Context, q query_params.Query[EmployeeFilterParams]) ([]*EmployeeAttendance, int64, error) {
+	var records []*EmployeeAttendance
+	query := r.db.WithContext(ctx).Model(&database.EmployeeAttendance{})
 
 	f := q.Filter
-	if f.TeacherID != nil {
-		query = query.Where("teacher_id = ?", *f.TeacherID)
+	if f.EmployeeID != nil {
+		query = query.Where("employee_id = ?", *f.EmployeeID)
 	}
 	if f.DateFrom != nil {
 		query = query.Where("date >= ?", f.DateFrom.Format("2006-01-02"))
@@ -224,11 +224,11 @@ func (r *repositoryImpl) FindTeacherAttendance(ctx context.Context, q query_para
 	return records, total, err
 }
 
-func (r *repositoryImpl) FindTeacherAttendanceByDate(ctx context.Context, teacherID string, date time.Time) (*TeacherAttendance, error) {
-	var a TeacherAttendance
+func (r *repositoryImpl) FindEmployeeAttendanceByDate(ctx context.Context, employeeID string, date time.Time) (*EmployeeAttendance, error) {
+	var a EmployeeAttendance
 	err := r.db.WithContext(ctx).
-		Model(&database.TeacherAttendance{}).
-		Where("teacher_id = ? AND date = ?", teacherID, date.Format("2006-01-02")).
+		Model(&database.EmployeeAttendance{}).
+		Where("employee_id = ? AND date = ?", employeeID, date.Format("2006-01-02")).
 		First(&a).Error
 	if err != nil {
 		return nil, err
@@ -236,10 +236,10 @@ func (r *repositoryImpl) FindTeacherAttendanceByDate(ctx context.Context, teache
 	return &a, nil
 }
 
-func (r *repositoryImpl) UpdateTeacherAttendance(ctx context.Context, a *TeacherAttendance) error {
+func (r *repositoryImpl) UpdateEmployeeAttendance(ctx context.Context, a *EmployeeAttendance) error {
 	return r.db.WithContext(ctx).Where("id = ?", a.ID).Save(a).Error
 }
 
-func (r *repositoryImpl) DeleteTeacherAttendance(ctx context.Context, id string) error {
-	return r.db.WithContext(ctx).Where("id = ?", id).Delete(&database.TeacherAttendance{}).Error
+func (r *repositoryImpl) DeleteEmployeeAttendance(ctx context.Context, id string) error {
+	return r.db.WithContext(ctx).Where("id = ?", id).Delete(&database.EmployeeAttendance{}).Error
 }

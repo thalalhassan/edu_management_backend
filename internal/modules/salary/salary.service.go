@@ -34,7 +34,7 @@ func NewStructureService(repo StructureRepository) StructureService {
 
 func (s *structureService) Create(ctx context.Context, req CreateStructureRequest) (*SalaryStructureResponse, error) {
 	str := &SalaryStructure{
-		TeacherID:      req.TeacherID,
+		EmployeeID:     req.EmployeeID,
 		BasicSalary:    req.BasicSalary,
 		HRA:            req.HRA,
 		DA:             req.DA,
@@ -171,7 +171,7 @@ func NewRecordService(repo RecordRepository, structRepo StructureRepository) Rec
 // optionally prorates based on attendance, then inserts all records atomically.
 func (s *recordService) BulkGenerate(ctx context.Context, req BulkGenerateRequest, db *gorm.DB) ([]*SalaryRecordResponse, error) {
 	// Fetch all active teachers
-	var teachers []database.Teacher
+	var teachers []database.Employee
 	if err := db.WithContext(ctx).Where("is_active = true").Find(&teachers).Error; err != nil {
 		return nil, fmt.Errorf("salary.RecordService.BulkGenerate.FetchTeachers: %w", err)
 	}
@@ -184,7 +184,7 @@ func (s *recordService) BulkGenerate(ctx context.Context, req BulkGenerateReques
 		// Skip if record already exists for this teacher+month+year
 		isDup, err := s.repo.IsDuplicate(ctx, t.ID, req.Month, req.Year)
 		if err != nil {
-			return nil, fmt.Errorf("salary.RecordService.BulkGenerate.IsDuplicate(%s): %w", t.EmployeeID, err)
+			return nil, fmt.Errorf("salary.RecordService.BulkGenerate.IsDuplicate(%s): %w", t.ID, err)
 		}
 		if isDup {
 			continue
@@ -207,11 +207,11 @@ func (s *recordService) BulkGenerate(ctx context.Context, req BulkGenerateReques
 				PresentDays int
 			}
 			db.WithContext(ctx).
-				Model(&database.TeacherAttendance{}).
+				Model(&database.EmployeeAttendance{}).
 				Select(`COUNT(*) as working_days,
 					SUM(CASE WHEN status = 'PRESENT' OR status = 'LATE' THEN 1
 					         WHEN status = 'HALF_DAY' THEN 0 ELSE 0 END) as present_days`).
-				Where("teacher_id = ? AND EXTRACT(MONTH FROM date) = ? AND EXTRACT(YEAR FROM date) = ?",
+				Where("employee_id = ? AND EXTRACT(MONTH FROM date) = ? AND EXTRACT(YEAR FROM date) = ?",
 					t.ID, req.Month, req.Year).
 				Scan(&att)
 			workingDays = att.WorkingDays
@@ -222,7 +222,7 @@ func (s *recordService) BulkGenerate(ctx context.Context, req BulkGenerateReques
 		}
 
 		records = append(records, &SalaryRecord{
-			TeacherID:      t.ID,
+			EmployeeID:     t.ID,
 			AcademicYearID: req.AcademicYearID,
 			Month:          req.Month,
 			Year:           req.Year,

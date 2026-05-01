@@ -1,6 +1,9 @@
 .whiteboard
 .DS_Store
 
+api
+app
+
 # Binaries for programs and plugins
 *.exe
 *.exe~

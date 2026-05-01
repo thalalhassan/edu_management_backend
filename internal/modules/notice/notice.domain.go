@@ -3,6 +3,7 @@ package notice
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/thalalhassan/edu_management/internal/database"
 )
 
@@ -15,13 +16,13 @@ type NoticeAudience = database.NoticeAudience
 // CreateRequest creates a notice in draft state (is_published = false).
 // Use PATCH /:id/publish to make it visible to the target audience.
 type CreateRequest struct {
-	Title          string         `json:"title"            binding:"required"`
-	Content        string         `json:"content"          binding:"required"`
-	Audience       NoticeAudience `json:"audience"         binding:"required"`
-	ExpiresAt      *time.Time     `json:"expires_at,omitempty"`
+	Title     string         `json:"title"            binding:"required"`
+	Content   string         `json:"content"          binding:"required"`
+	Audience  NoticeAudience `json:"audience"         binding:"required"`
+	ExpiresAt *time.Time     `json:"expires_at,omitempty"`
 	// ClassSectionID scopes the notice to a specific section.
 	// Only meaningful when Audience is STUDENTS or ALL.
-	ClassSectionID *string        `json:"class_section_id,omitempty"`
+	ClassSectionID *uuid.UUID `json:"class_section_id,omitempty"`
 }
 
 // UpdateRequest allows editing a draft notice.
@@ -31,7 +32,7 @@ type UpdateRequest struct {
 	Content        *string         `json:"content,omitempty"`
 	Audience       *NoticeAudience `json:"audience,omitempty"`
 	ExpiresAt      *time.Time      `json:"expires_at,omitempty"`
-	ClassSectionID *string         `json:"class_section_id,omitempty"`
+	ClassSectionID *uuid.UUID      `json:"class_section_id,omitempty"`
 }
 
 // PublishRequest toggles the published state.
@@ -44,14 +45,14 @@ type PublishRequest struct {
 // ─── Response ────────────────────────────────────────────────────────────────
 
 type NoticeResponse struct {
-	ID             string         `json:"id"`
+	ID             uuid.UUID      `json:"id"`
 	Title          string         `json:"title"`
 	Content        string         `json:"content"`
 	Audience       NoticeAudience `json:"audience"`
 	IsPublished    bool           `json:"is_published"`
 	PublishedAt    *time.Time     `json:"published_at,omitempty"`
 	ExpiresAt      *time.Time     `json:"expires_at,omitempty"`
-	ClassSectionID *string        `json:"class_section_id,omitempty"`
+	ClassSectionID *uuid.UUID     `json:"class_section_id,omitempty"`
 	CreatedAt      time.Time      `json:"created_at"`
 	UpdatedAt      time.Time      `json:"updated_at"`
 }
@@ -61,9 +62,9 @@ type NoticeResponse struct {
 type FilterParams struct {
 	Audience       *NoticeAudience `form:"audience"`
 	IsPublished    *bool           `form:"is_published"`
-	ClassSectionID *string         `form:"class_section_id"`
+	ClassSectionID *uuid.UUID      `form:"class_section_id"`
 	// Search matches against title
-	Search         *string         `form:"search"`
+	Search *string `form:"search"`
 }
 
 var allowedSortFields = map[string]bool{

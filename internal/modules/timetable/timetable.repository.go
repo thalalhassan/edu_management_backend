@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/thalalhassan/edu_management/internal/database"
 	"github.com/thalalhassan/edu_management/internal/shared/query_params"
 	"gorm.io/gorm"
@@ -11,16 +12,16 @@ import (
 
 type Repository interface {
 	Create(ctx context.Context, t *TimeTable) error
-	GetByID(ctx context.Context, id string) (*TimeTable, error)
+	GetByID(ctx context.Context, id uuid.UUID) (*TimeTable, error)
 	FindAll(ctx context.Context, q query_params.Query[FilterParams]) ([]*TimeTable, int64, error)
-	FindByClassSection(ctx context.Context, classSectionID string) ([]*TimeTable, error)
-	FindByEmployee(ctx context.Context, employeeID string) ([]*TimeTable, error)
-	Update(ctx context.Context, id string, t *TimeTable) error
-	Delete(ctx context.Context, id string) error
+	FindByClassSection(ctx context.Context, classSectionID uuid.UUID) ([]*TimeTable, error)
+	FindByEmployee(ctx context.Context, employeeID uuid.UUID) ([]*TimeTable, error)
+	Update(ctx context.Context, id uuid.UUID, t *TimeTable) error
+	Delete(ctx context.Context, id uuid.UUID) error
 
 	// Conflict detection
-	HasConflict(ctx context.Context, classSectionID string, dayOfWeek int, start, end time.Time, excludeID string) (bool, error)
-	HasTeacherConflict(ctx context.Context, employeeID string, dayOfWeek int, start, end time.Time, excludeID string) (bool, error)
+	HasConflict(ctx context.Context, classSectionID uuid.UUID, dayOfWeek int, start, end time.Time, excludeID uuid.UUID) (bool, error)
+	HasTeacherConflict(ctx context.Context, employeeID uuid.UUID, dayOfWeek int, start, end time.Time, excludeID uuid.UUID) (bool, error)
 }
 
 type repositoryImpl struct {
@@ -35,7 +36,7 @@ func (r *repositoryImpl) Create(ctx context.Context, t *TimeTable) error {
 	return r.db.WithContext(ctx).Create(t).Error
 }
 
-func (r *repositoryImpl) GetByID(ctx context.Context, id string) (*TimeTable, error) {
+func (r *repositoryImpl) GetByID(ctx context.Context, id uuid.UUID) (*TimeTable, error) {
 	var t TimeTable
 	err := r.db.WithContext(ctx).
 		Preload("ClassSection.Standard.Department").
@@ -85,7 +86,7 @@ func (r *repositoryImpl) FindAll(ctx context.Context, q query_params.Query[Filte
 
 // FindByClassSection returns the full week schedule for a class section,
 // ordered by day then start time — used to render the weekly timetable.
-func (r *repositoryImpl) FindByClassSection(ctx context.Context, classSectionID string) ([]*TimeTable, error) {
+func (r *repositoryImpl) FindByClassSection(ctx context.Context, classSectionID uuid.UUID) ([]*TimeTable, error) {
 	var entries []*TimeTable
 	err := r.db.WithContext(ctx).
 		Preload("Subject").
@@ -98,7 +99,7 @@ func (r *repositoryImpl) FindByClassSection(ctx context.Context, classSectionID 
 }
 
 // FindByTeacher returns the full week schedule for a teacher across all their class sections.
-func (r *repositoryImpl) FindByEmployee(ctx context.Context, employeeID string) ([]*TimeTable, error) {
+func (r *repositoryImpl) FindByEmployee(ctx context.Context, employeeID uuid.UUID) ([]*TimeTable, error) {
 	var entries []*TimeTable
 	err := r.db.WithContext(ctx).
 		Preload("Subject").
@@ -111,24 +112,24 @@ func (r *repositoryImpl) FindByEmployee(ctx context.Context, employeeID string) 
 	return entries, err
 }
 
-func (r *repositoryImpl) Update(ctx context.Context, id string, t *TimeTable) error {
+func (r *repositoryImpl) Update(ctx context.Context, id uuid.UUID, t *TimeTable) error {
 	return r.db.WithContext(ctx).Where("id = ?", id).Save(t).Error
 }
 
-func (r *repositoryImpl) Delete(ctx context.Context, id string) error {
+func (r *repositoryImpl) Delete(ctx context.Context, id uuid.UUID) error {
 	return r.db.WithContext(ctx).Where("id = ?", id).Delete(&TimeTable{}).Error
 }
 
 // HasConflict checks if a class section already has a period that overlaps
 // the requested time slot on the same day.
 // excludeID is the current entry's ID during updates — pass "" for creates.
-func (r *repositoryImpl) HasConflict(ctx context.Context, classSectionID string, dayOfWeek int, start, end time.Time, excludeID string) (bool, error) {
+func (r *repositoryImpl) HasConflict(ctx context.Context, classSectionID uuid.UUID, dayOfWeek int, start, end time.Time, excludeID uuid.UUID) (bool, error) {
 	var count int64
 	query := r.db.WithContext(ctx).
 		Model(&database.TimeTable{}).
 		Where("class_section_id = ? AND day_of_week = ? AND start_time < ? AND end_time > ?",
 			classSectionID, dayOfWeek, end, start)
-	if excludeID != "" {
+	if excludeID != uuid.Nil {
 		query = query.Where("id != ?", excludeID)
 	}
 	err := query.Count(&count).Error
@@ -137,13 +138,13 @@ func (r *repositoryImpl) HasConflict(ctx context.Context, classSectionID string,
 
 // HasTeacherConflict checks if the teacher is already assigned to another
 // class at the same time on the same day.
-func (r *repositoryImpl) HasTeacherConflict(ctx context.Context, employeeID string, dayOfWeek int, start, end time.Time, excludeID string) (bool, error) {
+func (r *repositoryImpl) HasTeacherConflict(ctx context.Context, employeeID uuid.UUID, dayOfWeek int, start, end time.Time, excludeID uuid.UUID) (bool, error) {
 	var count int64
 	query := r.db.WithContext(ctx).
 		Model(&database.TimeTable{}).
 		Where("employee_id = ? AND day_of_week = ? AND start_time < ? AND end_time > ?",
 			employeeID, dayOfWeek, end, start)
-	if excludeID != "" {
+	if excludeID != uuid.Nil {
 		query = query.Where("id != ?", excludeID)
 	}
 	err := query.Count(&count).Error

@@ -3,6 +3,7 @@ package enrollment
 import (
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/thalalhassan/edu_management/internal/database"
 	"github.com/thalalhassan/edu_management/internal/shared/pagination"
 	"gorm.io/gorm"
@@ -11,16 +12,16 @@ import (
 type Repository interface {
 	// Core CRUD
 	Create(ctx context.Context, e *Enrollment) error
-	GetByID(ctx context.Context, id string) (*Enrollment, error)
-	Update(ctx context.Context, id string, e *Enrollment) error
-	Delete(ctx context.Context, id string) error
+	GetByID(ctx context.Context, id uuid.UUID) (*Enrollment, error)
+	Update(ctx context.Context, id uuid.UUID, e *Enrollment) error
+	Delete(ctx context.Context, id uuid.UUID) error
 
 	// Domain queries
-	GetByStudentID(ctx context.Context, studentID string, p pagination.Params) ([]*Enrollment, int64, error)
-	GetRosterByClassSection(ctx context.Context, classSectionID string) ([]*Enrollment, error)
-	GetActiveEnrollment(ctx context.Context, studentID, classSectionID string) (*Enrollment, error)
-	IsStudentEnrolledInYear(ctx context.Context, studentID, academicYearID string) (bool, error)
-	CountEnrolledInClassSection(ctx context.Context, classSectionID string) (int64, error)
+	GetByStudentID(ctx context.Context, studentID uuid.UUID, p pagination.Params) ([]*Enrollment, int64, error)
+	GetRosterByClassSection(ctx context.Context, classSectionID uuid.UUID) ([]*Enrollment, error)
+	GetActiveEnrollment(ctx context.Context, studentID, classSectionID uuid.UUID) (*Enrollment, error)
+	IsStudentEnrolledInYear(ctx context.Context, studentID, academicYearID uuid.UUID) (bool, error)
+	CountEnrolledInClassSection(ctx context.Context, classSectionID uuid.UUID) (int64, error)
 }
 
 type repositoryImpl struct {
@@ -35,7 +36,7 @@ func (r *repositoryImpl) Create(ctx context.Context, e *Enrollment) error {
 	return r.db.WithContext(ctx).Create(e).Error
 }
 
-func (r *repositoryImpl) GetByID(ctx context.Context, id string) (*Enrollment, error) {
+func (r *repositoryImpl) GetByID(ctx context.Context, id uuid.UUID) (*Enrollment, error) {
 	var e Enrollment
 	err := r.db.WithContext(ctx).
 		Preload("Student").
@@ -49,17 +50,17 @@ func (r *repositoryImpl) GetByID(ctx context.Context, id string) (*Enrollment, e
 	return &e, nil
 }
 
-func (r *repositoryImpl) Update(ctx context.Context, id string, e *Enrollment) error {
+func (r *repositoryImpl) Update(ctx context.Context, id uuid.UUID, e *Enrollment) error {
 	return r.db.WithContext(ctx).Where("id = ?", id).Save(e).Error
 }
 
-func (r *repositoryImpl) Delete(ctx context.Context, id string) error {
+func (r *repositoryImpl) Delete(ctx context.Context, id uuid.UUID) error {
 	return r.db.WithContext(ctx).Where("id = ?", id).Delete(&Enrollment{}).Error
 }
 
 // GetByStudentID returns all enrollments for a student across all academic years,
 // ordered newest first — gives a full academic history.
-func (r *repositoryImpl) GetByStudentID(ctx context.Context, studentID string, p pagination.Params) ([]*Enrollment, int64, error) {
+func (r *repositoryImpl) GetByStudentID(ctx context.Context, studentID uuid.UUID, p pagination.Params) ([]*Enrollment, int64, error) {
 	var enrollments []*Enrollment
 	var total int64
 
@@ -86,7 +87,7 @@ func (r *repositoryImpl) GetByStudentID(ctx context.Context, studentID string, p
 
 // GetRosterByClassSection returns all enrollments for a class section
 // with student data preloaded — used to build the class roster.
-func (r *repositoryImpl) GetRosterByClassSection(ctx context.Context, classSectionID string) ([]*Enrollment, error) {
+func (r *repositoryImpl) GetRosterByClassSection(ctx context.Context, classSectionID uuid.UUID) ([]*Enrollment, error) {
 	var enrollments []*Enrollment
 	err := r.db.WithContext(ctx).
 		Where("class_section_id = ? AND status = ?", classSectionID, database.EnrollmentStatusEnrolled).
@@ -101,7 +102,7 @@ func (r *repositoryImpl) GetRosterByClassSection(ctx context.Context, classSecti
 
 // GetActiveEnrollment checks if a student is already enrolled in a specific class section.
 // Used to prevent duplicate enrollments.
-func (r *repositoryImpl) GetActiveEnrollment(ctx context.Context, studentID, classSectionID string) (*Enrollment, error) {
+func (r *repositoryImpl) GetActiveEnrollment(ctx context.Context, studentID, classSectionID uuid.UUID) (*Enrollment, error) {
 	var e Enrollment
 	err := r.db.WithContext(ctx).
 		Where("student_id = ? AND class_section_id = ? AND status = ?",
@@ -115,7 +116,7 @@ func (r *repositoryImpl) GetActiveEnrollment(ctx context.Context, studentID, cla
 
 // IsStudentEnrolledInYear checks if a student has any active enrollment
 // in the given academic year — prevents enrolling in two sections of the same year.
-func (r *repositoryImpl) IsStudentEnrolledInYear(ctx context.Context, studentID, academicYearID string) (bool, error) {
+func (r *repositoryImpl) IsStudentEnrolledInYear(ctx context.Context, studentID, academicYearID uuid.UUID) (bool, error) {
 	var count int64
 	err := r.db.WithContext(ctx).
 		Model(&database.StudentEnrollment{}).
@@ -131,7 +132,7 @@ func (r *repositoryImpl) IsStudentEnrolledInYear(ctx context.Context, studentID,
 
 // CountEnrolledInClassSection returns the number of currently enrolled students
 // in a class section — used to enforce MaxStrength.
-func (r *repositoryImpl) CountEnrolledInClassSection(ctx context.Context, classSectionID string) (int64, error) {
+func (r *repositoryImpl) CountEnrolledInClassSection(ctx context.Context, classSectionID uuid.UUID) (int64, error) {
 	var count int64
 	err := r.db.WithContext(ctx).
 		Model(&database.StudentEnrollment{}).

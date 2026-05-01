@@ -31,7 +31,7 @@ help:
 	@echo "  make dev             - Run in development mode with hot reload"
 	@echo "  make test            - Run tests"
 	@echo "  make migrate-up      - Run pending migrations"
-# 	@echo "  make migrate-down    - Rollback last migration"
+	@echo "  make migrate-down    - Rollback last migration"
 # 	@echo "  make migrate-status  - Show migration status"
 	@echo "  make seed            - Seed database"
 # 	@echo "  make seed-clear      - Clear and seed database"

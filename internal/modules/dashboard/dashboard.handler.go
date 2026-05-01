@@ -2,6 +2,7 @@ package dashboard
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/thalalhassan/edu_management/internal/app"
 	"github.com/thalalhassan/edu_management/internal/config"
 	"github.com/thalalhassan/edu_management/internal/middleware"
@@ -44,8 +45,13 @@ func (h *Handler) getDashboard(c *gin.Context) {
 		response.BadRequest(c, "academic_year_id is required — pass via X-Academic-Year-ID header or ?academic_year_id= query param")
 		return
 	}
+	academicYearUUID, err := uuid.Parse(academicYearID)
+	if err != nil {
+		response.BadRequest(c, "Invalid academic_year_id format")
+		return
+	}
 
-	resp, err := h.service.GetDashboard(c.Request.Context(), academicYearID)
+	resp, err := h.service.GetDashboard(c.Request.Context(), academicYearUUID)
 	if err != nil {
 		response.InternalError(c, err.Error())
 		return

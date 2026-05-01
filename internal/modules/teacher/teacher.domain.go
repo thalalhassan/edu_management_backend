@@ -3,6 +3,7 @@ package teacher
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/thalalhassan/edu_management/internal/database"
 )
 
@@ -11,9 +12,9 @@ type Teacher = database.Employee
 type Gender = database.Gender
 
 type FilterParams struct {
-	Search     *string `form:"search"`
-	IsActive   *bool   `form:"is_active"`
-	EmployeeID *string `form:"employee_id"`
+	Search     *string    `form:"search"`
+	IsActive   *bool      `form:"is_active"`
+	EmployeeID *uuid.UUID `form:"employee_id"`
 }
 
 func (f *FilterParams) ToMap() map[string]interface{} {

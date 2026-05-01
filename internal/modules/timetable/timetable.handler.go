@@ -6,6 +6,7 @@ import (
 	"github.com/thalalhassan/edu_management/internal/config"
 	"github.com/thalalhassan/edu_management/internal/constants"
 	"github.com/thalalhassan/edu_management/internal/middleware"
+	"github.com/thalalhassan/edu_management/internal/shared/helper"
 	"github.com/thalalhassan/edu_management/internal/shared/pagination"
 	"github.com/thalalhassan/edu_management/internal/shared/query_params"
 	"github.com/thalalhassan/edu_management/internal/shared/response"
@@ -58,7 +59,10 @@ func (h *Handler) create(c *gin.Context) {
 }
 
 func (h *Handler) getByID(c *gin.Context) {
-	id := c.Param("id")
+	id, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
 	resp, err := h.service.GetByID(c.Request.Context(), id)
 	if err != nil {
 		response.NotFound(c, err.Error())
@@ -91,7 +95,10 @@ func (h *Handler) list(c *gin.Context) {
 // getClassSchedule returns the weekly timetable for a class section
 // grouped by day — the view students and class teachers use most.
 func (h *Handler) getClassSchedule(c *gin.Context) {
-	classSectionID := c.Param("class_section_id")
+	classSectionID, valid := helper.ParseParamUUIDWithAbort(c, "class_section_id")
+	if !valid {
+		return
+	}
 	resp, err := h.service.GetClassSchedule(c.Request.Context(), classSectionID)
 	if err != nil {
 		response.InternalError(c, err.Error())
@@ -103,7 +110,10 @@ func (h *Handler) getClassSchedule(c *gin.Context) {
 // getEmployeeSchedule returns the full week schedule for an employee
 // across all their assigned class sections.
 func (h *Handler) getEmployeeSchedule(c *gin.Context) {
-	employeeID := c.Param("employee_id")
+	employeeID, valid := helper.ParseParamUUIDWithAbort(c, "employee_id")
+	if !valid {
+		return
+	}
 	resp, err := h.service.GetEmployeeSchedule(c.Request.Context(), employeeID)
 	if err != nil {
 		response.InternalError(c, err.Error())
@@ -113,7 +123,10 @@ func (h *Handler) getEmployeeSchedule(c *gin.Context) {
 }
 
 func (h *Handler) update(c *gin.Context) {
-	id := c.Param("id")
+	id, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
 	var req UpdateRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(c, err.Error())
@@ -128,7 +141,10 @@ func (h *Handler) update(c *gin.Context) {
 }
 
 func (h *Handler) delete(c *gin.Context) {
-	id := c.Param("id")
+	id, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
 	if err := h.service.Delete(c.Request.Context(), id); err != nil {
 		response.BadRequest(c, err.Error())
 		return

@@ -5,21 +5,22 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/thalalhassan/edu_management/internal/database"
 )
 
 type Service interface {
 	Create(ctx context.Context, req CreateRequest) (*StandardResponse, error)
-	GetByID(ctx context.Context, id string) (*StandardResponse, error)
+	GetByID(ctx context.Context, id uuid.UUID) (*StandardResponse, error)
 	List(ctx context.Context) ([]*StandardResponse, error)
-	ListByDepartment(ctx context.Context, departmentID string) ([]*StandardResponse, error)
-	Update(ctx context.Context, id string, req UpdateRequest) (*StandardResponse, error)
-	Delete(ctx context.Context, id string) error
+	ListByDepartment(ctx context.Context, departmentID uuid.UUID) ([]*StandardResponse, error)
+	Update(ctx context.Context, id uuid.UUID, req UpdateRequest) (*StandardResponse, error)
+	Delete(ctx context.Context, id uuid.UUID) error
 
 	// Subject management
-	AssignSubject(ctx context.Context, standardID string, req AssignSubjectRequest) error
-	RemoveSubject(ctx context.Context, standardID, subjectID string) error
-	GetSubjects(ctx context.Context, standardID string) ([]*StandardSubject, error)
+	AssignSubject(ctx context.Context, standardID uuid.UUID, req AssignSubjectRequest) error
+	RemoveSubject(ctx context.Context, standardID, subjectID uuid.UUID) error
+	GetSubjects(ctx context.Context, standardID uuid.UUID) ([]*StandardSubject, error)
 }
 
 type service struct {
@@ -47,7 +48,7 @@ func (s *service) Create(ctx context.Context, req CreateRequest) (*StandardRespo
 	return ToStandardResponse(created), nil
 }
 
-func (s *service) GetByID(ctx context.Context, id string) (*StandardResponse, error) {
+func (s *service) GetByID(ctx context.Context, id uuid.UUID) (*StandardResponse, error) {
 	st, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("standard.Service.GetByID: %w", err)
@@ -67,7 +68,7 @@ func (s *service) List(ctx context.Context) ([]*StandardResponse, error) {
 	return responses, nil
 }
 
-func (s *service) ListByDepartment(ctx context.Context, departmentID string) ([]*StandardResponse, error) {
+func (s *service) ListByDepartment(ctx context.Context, departmentID uuid.UUID) ([]*StandardResponse, error) {
 	standards, err := s.repo.FindByDepartment(ctx, departmentID)
 	if err != nil {
 		return nil, fmt.Errorf("standard.Service.ListByDepartment: %w", err)
@@ -79,7 +80,7 @@ func (s *service) ListByDepartment(ctx context.Context, departmentID string) ([]
 	return responses, nil
 }
 
-func (s *service) Update(ctx context.Context, id string, req UpdateRequest) (*StandardResponse, error) {
+func (s *service) Update(ctx context.Context, id uuid.UUID, req UpdateRequest) (*StandardResponse, error) {
 	st, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("standard.Service.Update.GetByID: %w", err)
@@ -102,7 +103,7 @@ func (s *service) Update(ctx context.Context, id string, req UpdateRequest) (*St
 	return ToStandardResponse(st), nil
 }
 
-func (s *service) Delete(ctx context.Context, id string) error {
+func (s *service) Delete(ctx context.Context, id uuid.UUID) error {
 	st, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return fmt.Errorf("standard.Service.Delete.GetByID: %w", err)
@@ -116,7 +117,7 @@ func (s *service) Delete(ctx context.Context, id string) error {
 	return nil
 }
 
-func (s *service) AssignSubject(ctx context.Context, standardID string, req AssignSubjectRequest) error {
+func (s *service) AssignSubject(ctx context.Context, standardID uuid.UUID, req AssignSubjectRequest) error {
 	// Guard: prevent duplicate assignment
 	exists, err := s.repo.IsSubjectAssigned(ctx, standardID, req.SubjectID)
 	if err != nil {
@@ -137,7 +138,7 @@ func (s *service) AssignSubject(ctx context.Context, standardID string, req Assi
 	return nil
 }
 
-func (s *service) RemoveSubject(ctx context.Context, standardID, subjectID string) error {
+func (s *service) RemoveSubject(ctx context.Context, standardID, subjectID uuid.UUID) error {
 	exists, err := s.repo.IsSubjectAssigned(ctx, standardID, subjectID)
 	if err != nil {
 		return fmt.Errorf("standard.Service.RemoveSubject.Check: %w", err)
@@ -151,7 +152,7 @@ func (s *service) RemoveSubject(ctx context.Context, standardID, subjectID strin
 	return nil
 }
 
-func (s *service) GetSubjects(ctx context.Context, standardID string) ([]*StandardSubject, error) {
+func (s *service) GetSubjects(ctx context.Context, standardID uuid.UUID) ([]*StandardSubject, error) {
 	subjects, err := s.repo.GetSubjects(ctx, standardID)
 	if err != nil {
 		return nil, fmt.Errorf("standard.Service.GetSubjects: %w", err)

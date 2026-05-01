@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
 	"github.com/thalalhassan/edu_management/internal/database"
 	"gorm.io/gorm"
@@ -14,12 +15,12 @@ type Repository interface {
 	CountStudentsByStatus(ctx context.Context) (active, total int, err error)
 	CountEmployeesByStatus(ctx context.Context) (active, total int, err error)
 	CountSubjects(ctx context.Context) (int, error)
-	CountClassSections(ctx context.Context, academicYearID string) (int, error)
+	CountClassSections(ctx context.Context, academicYearID uuid.UUID) (int, error)
 
 	// Fee stats — all scoped to the active academic year
-	CountFeeRecordsByStatus(ctx context.Context, academicYearID string) (paid, pending int, err error)
-	SumFeeByStatus(ctx context.Context, academicYearID string, status database.FeeStatus) (decimal.Decimal, error)
-	SumFeeCollectedBetween(ctx context.Context, academicYearID string, from, to time.Time) (decimal.Decimal, error)
+	CountFeeRecordsByStatus(ctx context.Context, academicYearID uuid.UUID) (paid, pending int, err error)
+	SumFeeByStatus(ctx context.Context, academicYearID uuid.UUID, status database.FeeStatus) (decimal.Decimal, error)
+	SumFeeCollectedBetween(ctx context.Context, academicYearID uuid.UUID, from, to time.Time) (decimal.Decimal, error)
 }
 
 type repositoryImpl struct {
@@ -91,7 +92,7 @@ func (r *repositoryImpl) CountSubjects(ctx context.Context) (int, error) {
 	return int(count), err
 }
 
-func (r *repositoryImpl) CountClassSections(ctx context.Context, academicYearID string) (int, error) {
+func (r *repositoryImpl) CountClassSections(ctx context.Context, academicYearID uuid.UUID) (int, error) {
 	var count int64
 	err := r.db.WithContext(ctx).
 		Model(&database.ClassSection{}).
@@ -107,7 +108,7 @@ func (r *repositoryImpl) CountClassSections(ctx context.Context, academicYearID 
 // CountFeeRecordsByStatus counts distinct student enrollments
 // that have at least one PAID record vs at least one PENDING/OVERDUE record.
 // This drives the "Students Paid" card.
-func (r *repositoryImpl) CountFeeRecordsByStatus(ctx context.Context, academicYearID string) (int, int, error) {
+func (r *repositoryImpl) CountFeeRecordsByStatus(ctx context.Context, academicYearID uuid.UUID) (int, int, error) {
 	type row struct {
 		Status database.FeeStatus
 		Count  int
@@ -139,7 +140,7 @@ func (r *repositoryImpl) CountFeeRecordsByStatus(ctx context.Context, academicYe
 }
 
 // SumFeeByStatus returns the total amount_due or amount_paid for a given status.
-func (r *repositoryImpl) SumFeeByStatus(ctx context.Context, academicYearID string, status database.FeeStatus) (decimal.Decimal, error) {
+func (r *repositoryImpl) SumFeeByStatus(ctx context.Context, academicYearID uuid.UUID, status database.FeeStatus) (decimal.Decimal, error) {
 	type result struct {
 		Total decimal.Decimal
 	}
@@ -163,7 +164,7 @@ func (r *repositoryImpl) SumFeeByStatus(ctx context.Context, academicYearID stri
 }
 
 // SumFeeCollectedBetween returns amount_paid for records paid within a date range.
-func (r *repositoryImpl) SumFeeCollectedBetween(ctx context.Context, academicYearID string, from, to time.Time) (decimal.Decimal, error) {
+func (r *repositoryImpl) SumFeeCollectedBetween(ctx context.Context, academicYearID uuid.UUID, from, to time.Time) (decimal.Decimal, error) {
 	type result struct {
 		Total decimal.Decimal
 	}

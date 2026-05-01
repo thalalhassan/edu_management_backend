@@ -1,36 +1,40 @@
 package teacher_assignment
 
-import "time"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 // ==========================================
 // FILTER
 // ==========================================
 type FilterParams struct {
-	ClassSectionID *string `form:"class_section_id"`
-	EmployeeID     *string `form:"employee_id"`
-	SubjectID      *string `form:"subject_id"`
+	ClassSectionID *uuid.UUID `form:"class_section_id"`
+	EmployeeID     *uuid.UUID `form:"employee_id"`
+	SubjectID      *uuid.UUID `form:"subject_id"`
 }
 
 // ==========================================
 // REQUEST
 // ==========================================
 type CreateRequest struct {
-	ClassSectionID string `json:"class_section_id" binding:"required,uuid"`
-	EmployeeID     string `json:"employee_id"     binding:"required,uuid"`
-	SubjectID      string `json:"subject_id" binding:"required,uuid"`
+	ClassSectionID uuid.UUID `json:"class_section_id" binding:"required,uuid"`
+	EmployeeID     uuid.UUID `json:"employee_id"     binding:"required,uuid"`
+	SubjectID      uuid.UUID `json:"subject_id" binding:"required,uuid"`
 }
 
 type UpdateRequest struct {
-	EmployeeID *string `json:"employee_id,omitempty" binding:"omitempty,uuid"`
+	EmployeeID *uuid.UUID `json:"employee_id,omitempty" binding:"omitempty,uuid"`
 }
 
 // ==========================================
 // RESPONSE
 // ==========================================
 type Response struct {
-	ID             string    `json:"id"`
-	ClassSectionID string    `json:"class_section_id"`
-	EmployeeID     string    `json:"employee_id"`
-	SubjectID      string    `json:"subject_id"`
+	ID             uuid.UUID `json:"id"`
+	ClassSectionID uuid.UUID `json:"class_section_id"`
+	EmployeeID     uuid.UUID `json:"employee_id"`
+	SubjectID      uuid.UUID `json:"subject_id"`
 	CreatedAt      time.Time `json:"created_at"`
 }

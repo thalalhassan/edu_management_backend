@@ -3,17 +3,18 @@ package department
 import (
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/thalalhassan/edu_management/internal/database"
 	"gorm.io/gorm"
 )
 
 type Repository interface {
 	Create(ctx context.Context, d *Department) error
-	GetByID(ctx context.Context, id string) (*Department, error)
+	GetByID(ctx context.Context, id uuid.UUID) (*Department, error)
 	GetByCode(ctx context.Context, code string) (*Department, error)
 	FindAll(ctx context.Context) ([]*Department, error)
-	Update(ctx context.Context, id string, d *Department) error
-	Delete(ctx context.Context, id string) error
+	Update(ctx context.Context, id uuid.UUID, d *Department) error
+	Delete(ctx context.Context, id uuid.UUID) error
 }
 
 type repositoryImpl struct {
@@ -28,7 +29,7 @@ func (r *repositoryImpl) Create(ctx context.Context, d *Department) error {
 	return r.db.WithContext(ctx).Create(d).Error
 }
 
-func (r *repositoryImpl) GetByID(ctx context.Context, id string) (*Department, error) {
+func (r *repositoryImpl) GetByID(ctx context.Context, id uuid.UUID) (*Department, error) {
 	var d Department
 	err := r.db.WithContext(ctx).
 		Preload("HeadTeacher").
@@ -59,10 +60,10 @@ func (r *repositoryImpl) FindAll(ctx context.Context) ([]*Department, error) {
 	return departments, err
 }
 
-func (r *repositoryImpl) Update(ctx context.Context, id string, d *Department) error {
+func (r *repositoryImpl) Update(ctx context.Context, id uuid.UUID, d *Department) error {
 	return r.db.WithContext(ctx).Where("id = ?", id).Save(d).Error
 }
 
-func (r *repositoryImpl) Delete(ctx context.Context, id string) error {
+func (r *repositoryImpl) Delete(ctx context.Context, id uuid.UUID) error {
 	return r.db.WithContext(ctx).Where("id = ?", id).Delete(&Department{}).Error
 }

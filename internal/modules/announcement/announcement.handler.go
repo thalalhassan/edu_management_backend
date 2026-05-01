@@ -2,6 +2,7 @@ package announcement
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/thalalhassan/edu_management/internal/app"
 	"github.com/thalalhassan/edu_management/internal/config"
 	"github.com/thalalhassan/edu_management/internal/constants"
@@ -55,22 +56,35 @@ func (h *Handler) Routes(r *gin.RouterGroup) {
 func (h *Handler) create(c *gin.Context) {
 	var req CreateRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, err.Error())
+		response.BadRequest(c, "invalid request: "+err.Error())
 		return
 	}
-	resp, err := h.service.Create(c.Request.Context(), req)
+	authorIDStr, _ := c.Get(constants.UserIDContextKey)
+	authorID, err := uuid.Parse(authorIDStr.(string))
 	if err != nil {
-		response.BadRequest(c, err.Error())
+		response.BadRequest(c, "Invalid author ID format")
+		return
+	}
+	resp, err := h.service.Create(c.Request.Context(), req, authorID)
+	if err != nil {
+		response.InternalError(c, err.Error())
 		return
 	}
 	response.Created(c, resp, "Announcement created successfully")
 }
 
 func (h *Handler) getByID(c *gin.Context) {
-	id := c.Param("id")
-	resp, err := h.service.GetByID(c.Request.Context(), id)
+	idStr := c.Param("id")
+	id, err := uuid.Parse(idStr)
 	if err != nil {
-		response.NotFound(c, err.Error())
+		response.BadRequest(c, "Invalid ID format")
+		return
+	}
+
+	userAudiences := h.getUserAudiences(c)
+	resp, err := h.service.GetByID(c.Request.Context(), id, userAudiences)
+	if err != nil {
+		h.handleError(c, err)
 		return
 	}
 	response.Success(c, resp, "Announcement retrieved successfully")
@@ -79,7 +93,7 @@ func (h *Handler) getByID(c *gin.Context) {
 func (h *Handler) list(c *gin.Context) {
 	var f FilterParams
 	if err := c.ShouldBindQuery(&f); err != nil {
-		response.BadRequest(c, err.Error())
+		response.BadRequest(c, "invalid query: "+err.Error())
 		return
 	}
 
@@ -89,9 +103,10 @@ func (h *Handler) list(c *gin.Context) {
 		Filter:     f,
 	}
 
-	announcements, total, err := h.service.List(c.Request.Context(), q)
+	userAudiences := h.getUserAudiences(c)
+	announcements, total, err := h.service.List(c.Request.Context(), q, userAudiences)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		h.handleError(c, err)
 		return
 	}
 	meta := pagination.NewMeta(total, q.Pagination)
@@ -99,40 +114,80 @@ func (h *Handler) list(c *gin.Context) {
 }
 
 func (h *Handler) update(c *gin.Context) {
-	id := c.Param("id")
-	var req UpdateRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, err.Error())
+	idStr := c.Param("id")
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		response.BadRequest(c, "Invalid ID format")
 		return
 	}
+	var req UpdateRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.BadRequest(c, "invalid request: "+err.Error())
+		return
+	}
+
 	resp, err := h.service.Update(c.Request.Context(), id, req)
 	if err != nil {
-		response.BadRequest(c, err.Error())
+		h.handleError(c, err)
 		return
 	}
 	response.Success(c, resp, "Announcement updated successfully")
 }
 
 func (h *Handler) publish(c *gin.Context) {
-	id := c.Param("id")
+	idStr := c.Param("id")
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		response.BadRequest(c, "Invalid ID format")
+		return
+	}
 	var req PublishRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.BadRequest(c, err.Error())
+		response.BadRequest(c, "invalid request: "+err.Error())
 		return
 	}
 	resp, err := h.service.Publish(c.Request.Context(), id, req)
 	if err != nil {
-		response.BadRequest(c, err.Error())
+		h.handleError(c, err)
 		return
 	}
 	response.Success(c, resp, "Announcement publish status updated successfully")
 }
 
 func (h *Handler) delete(c *gin.Context) {
-	id := c.Param("id")
+	idStr := c.Param("id")
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		response.BadRequest(c, "Invalid ID format")
+		return
+	}
 	if err := h.service.Delete(c.Request.Context(), id); err != nil {
-		response.InternalError(c, err.Error())
+		h.handleError(c, err)
 		return
 	}
 	response.Success[any](c, nil, "Announcement deleted successfully")
+}
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+func (h *Handler) handleError(c *gin.Context, err error) {
+	switch e := err.(type) {
+	case ValidationError:
+		response.BadRequest(c, e.Error())
+	case BusinessError:
+		response.Unprocessable(c, e.Error())
+	case NotFoundError:
+		response.NotFound(c, e.Error())
+	default:
+		if err == ErrUnauthorized {
+			response.AccessDenied(c, "access denied")
+		} else {
+			response.InternalError(c, "internal server error")
+		}
+	}
+}
+
+func (h *Handler) getUserAudiences(c *gin.Context) []AnnouncementAudience {
+	role, _ := c.Get(constants.RoleContextKey)
+	return GetUserAudience(role.(string))
 }

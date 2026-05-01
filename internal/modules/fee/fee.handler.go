@@ -6,6 +6,7 @@ import (
 	"github.com/thalalhassan/edu_management/internal/config"
 	"github.com/thalalhassan/edu_management/internal/constants"
 	"github.com/thalalhassan/edu_management/internal/middleware"
+	"github.com/thalalhassan/edu_management/internal/shared/helper"
 	"github.com/thalalhassan/edu_management/internal/shared/pagination"
 	"github.com/thalalhassan/edu_management/internal/shared/query_params"
 	"github.com/thalalhassan/edu_management/internal/shared/response"
@@ -99,7 +100,11 @@ func (h *Handler) bulkCreateStructure(c *gin.Context) {
 }
 
 func (h *Handler) getStructureByID(c *gin.Context) {
-	id := c.Param("id")
+	id, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
+
 	resp, err := h.structureSvc.GetByID(c.Request.Context(), id)
 	if err != nil {
 		response.NotFound(c, err.Error())
@@ -128,15 +133,17 @@ func (h *Handler) listStructures(c *gin.Context) {
 }
 
 func (h *Handler) listByStandardAndYear(c *gin.Context) {
-	standardID := c.Param("standard_id")
-	academicYearID := c.GetHeader("X-Academic-Year-ID")
-	if academicYearID == "" {
-		academicYearID = c.Query("academic_year_id")
-	}
-	if academicYearID == "" {
-		response.BadRequest(c, "academic_year_id is required")
+	standardID, valid := helper.ParseParamUUIDWithAbort(c, "standard_id")
+	if !valid {
 		return
 	}
+
+	academicYearID, err := middleware.GetAcademicYearIDFromContext(c)
+	if err != nil {
+		response.BadRequest(c, err.Error())
+		return
+	}
+
 	resp, err := h.structureSvc.ListByStandardAndYear(c.Request.Context(), standardID, academicYearID)
 	if err != nil {
 		response.InternalError(c, err.Error())
@@ -146,7 +153,10 @@ func (h *Handler) listByStandardAndYear(c *gin.Context) {
 }
 
 func (h *Handler) updateStructure(c *gin.Context) {
-	id := c.Param("id")
+	id, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
 	var req UpdateStructureRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(c, err.Error())
@@ -161,7 +171,10 @@ func (h *Handler) updateStructure(c *gin.Context) {
 }
 
 func (h *Handler) deleteStructure(c *gin.Context) {
-	id := c.Param("id")
+	id, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
 	if err := h.structureSvc.Delete(c.Request.Context(), id); err != nil {
 		response.BadRequest(c, err.Error())
 		return
@@ -201,7 +214,10 @@ func (h *Handler) bulkGenerate(c *gin.Context) {
 }
 
 func (h *Handler) getRecordByID(c *gin.Context) {
-	id := c.Param("id")
+	id, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
 	resp, err := h.recordSvc.GetByID(c.Request.Context(), id)
 	if err != nil {
 		response.NotFound(c, err.Error())
@@ -230,7 +246,10 @@ func (h *Handler) listRecords(c *gin.Context) {
 }
 
 func (h *Handler) getStudentSummary(c *gin.Context) {
-	enrollmentID := c.Param("enrollment_id")
+	enrollmentID, valid := helper.ParseParamUUIDWithAbort(c, "enrollment_id")
+	if !valid {
+		return
+	}
 	resp, err := h.recordSvc.GetStudentSummary(c.Request.Context(), enrollmentID)
 	if err != nil {
 		response.InternalError(c, err.Error())
@@ -240,7 +259,10 @@ func (h *Handler) getStudentSummary(c *gin.Context) {
 }
 
 func (h *Handler) recordPayment(c *gin.Context) {
-	id := c.Param("id")
+	id, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
 	var req RecordPaymentRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(c, err.Error())
@@ -255,7 +277,10 @@ func (h *Handler) recordPayment(c *gin.Context) {
 }
 
 func (h *Handler) waive(c *gin.Context) {
-	id := c.Param("id")
+	id, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
 	var req WaiveRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(c, err.Error())
@@ -270,7 +295,10 @@ func (h *Handler) waive(c *gin.Context) {
 }
 
 func (h *Handler) deleteRecord(c *gin.Context) {
-	id := c.Param("id")
+	id, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
 	if err := h.recordSvc.Delete(c.Request.Context(), id); err != nil {
 		response.BadRequest(c, err.Error())
 		return

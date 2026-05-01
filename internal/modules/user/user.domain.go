@@ -3,6 +3,7 @@ package user
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/thalalhassan/edu_management/internal/database"
 )
 
@@ -46,7 +47,7 @@ type CreateEmployeeUserRequest struct {
 	Password string `json:"password" binding:"required,min=8"`
 
 	// --- Employee profile ---
-	EmployeeID     string                    `json:"employee_id"     binding:"required"`
+	EmployeeCode   string                    `json:"employee_code"   binding:"required"`
 	FirstName      string                    `json:"first_name"      binding:"required"`
 	LastName       string                    `json:"last_name"       binding:"required"`
 	Gender         database.Gender           `json:"gender"          binding:"required,oneof=MALE FEMALE"`
@@ -75,7 +76,7 @@ type CreateParentUserRequest struct {
 	Occupation   *string                     `json:"occupation,omitempty"`
 
 	// Optional: link to existing students at creation time.
-	StudentIDs []string `json:"student_ids,omitempty"`
+	StudentIDs []uuid.UUID `json:"student_ids,omitempty"`
 }
 
 // CreateAdminUserRequest creates a bare User with ADMIN / SUPER_ADMIN role —
@@ -112,7 +113,7 @@ type ChangePasswordRequest struct {
 // UserResponse is the safe, public-facing representation of a User.
 // PasswordHash is never included.
 type UserResponse struct {
-	ID          string     `json:"id"`
+	ID          uuid.UUID  `json:"id"`
 	Email       string     `json:"email"`
 	RoleSlug    string     `json:"role_slug"`
 	RoleName    string     `json:"role_name"`
@@ -121,9 +122,9 @@ type UserResponse struct {
 	CreatedAt   time.Time  `json:"created_at"`
 
 	// Inline profile snapshot — only one will be non-nil.
-	EmployeeID *string          `json:"employee_id,omitempty"`
-	StudentID  *string          `json:"student_id,omitempty"`
-	ParentID   *string          `json:"parent_id,omitempty"`
+	EmployeeID *uuid.UUID       `json:"employee_id,omitempty"`
+	StudentID  *uuid.UUID       `json:"student_id,omitempty"`
+	ParentID   *uuid.UUID       `json:"parent_id,omitempty"`
 	Profile    *ProfileSnapshot `json:"profile,omitempty"`
 }
 

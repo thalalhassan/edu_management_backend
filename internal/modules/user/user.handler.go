@@ -2,6 +2,7 @@ package user
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/thalalhassan/edu_management/internal/app"
 	"github.com/thalalhassan/edu_management/internal/config"
 	"github.com/thalalhassan/edu_management/internal/constants"
@@ -112,9 +113,14 @@ func (h *Handler) registerAdmin(c *gin.Context) {
 }
 
 func (h *Handler) userProfile(c *gin.Context) {
-	userID, err := middleware.GetUserIDFromContext(c)
+	userIDStr, err := middleware.GetUserIDFromContext(c)
 	if err != nil {
 		response.Unauthorized(c, err.Error())
+		return
+	}
+	userID, err := uuid.Parse(userIDStr)
+	if err != nil {
+		response.BadRequest(c, "Invalid user ID format")
 		return
 	}
 
@@ -131,7 +137,12 @@ func (h *Handler) userProfile(c *gin.Context) {
 // ──────────────────────────────────────────────────────────────
 
 func (h *Handler) getByID(c *gin.Context) {
-	id := c.Param("id")
+	idStr := c.Param("id")
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		response.BadRequest(c, "Invalid ID format")
+		return
+	}
 	resp, err := h.service.GetByID(c.Request.Context(), id)
 	if err != nil {
 		response.NotFound(c, err.Error())
@@ -157,7 +168,12 @@ func (h *Handler) update(c *gin.Context) {
 		response.BadRequest(c, err.Error())
 		return
 	}
-	resp, err := h.service.Update(c.Request.Context(), id, req)
+	idUUID, err := uuid.Parse(id)
+	if err != nil {
+		response.BadRequest(c, "Invalid id format")
+		return
+	}
+	resp, err := h.service.Update(c.Request.Context(), idUUID, req)
 	if err != nil {
 		response.InternalError(c, err.Error())
 		return
@@ -167,7 +183,12 @@ func (h *Handler) update(c *gin.Context) {
 
 func (h *Handler) delete(c *gin.Context) {
 	id := c.Param("id")
-	if err := h.service.Delete(c.Request.Context(), id); err != nil {
+	idUUID, err := uuid.Parse(id)
+	if err != nil {
+		response.BadRequest(c, "Invalid id format")
+		return
+	}
+	if err := h.service.Delete(c.Request.Context(), idUUID); err != nil {
 		response.InternalError(c, err.Error())
 		return
 	}
@@ -175,9 +196,14 @@ func (h *Handler) delete(c *gin.Context) {
 }
 
 func (h *Handler) changePassword(c *gin.Context) {
-	userID, err := middleware.GetUserIDFromContext(c)
+	userIDStr, err := middleware.GetUserIDFromContext(c)
 	if err != nil {
 		response.Unauthorized(c, err.Error())
+		return
+	}
+	userID, err := uuid.Parse(userIDStr)
+	if err != nil {
+		response.BadRequest(c, "Invalid user ID format")
 		return
 	}
 
@@ -187,16 +213,21 @@ func (h *Handler) changePassword(c *gin.Context) {
 		return
 	}
 	if err := h.service.ChangePassword(c.Request.Context(), userID, req); err != nil {
-		response.BadRequest(c, err.Error())
+		response.InternalError(c, err.Error())
 		return
 	}
 	response.Success[any](c, nil, "Password changed successfully")
 }
 
 func (h *Handler) userUpdateProfile(c *gin.Context) {
-	userID, err := middleware.GetUserIDFromContext(c)
+	userIDStr, err := middleware.GetUserIDFromContext(c)
 	if err != nil {
 		response.Unauthorized(c, err.Error())
+		return
+	}
+	userID, err := uuid.Parse(userIDStr)
+	if err != nil {
+		response.BadRequest(c, "Invalid user ID format")
 		return
 	}
 	var req UpdateUserRequest

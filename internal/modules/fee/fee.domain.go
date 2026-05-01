@@ -3,6 +3,7 @@ package fee
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
 	"github.com/thalalhassan/edu_management/internal/database"
 )
@@ -31,14 +32,14 @@ var AllowedRecordSortFields = map[string]bool{
 }
 
 type StructureFilterParams struct {
-	AcademicYearID *string `form:"academic_year_id"`
-	StandardID     *string `form:"standard_id"`
-	FeeComponentID *string `form:"fee_component_id"`
+	AcademicYearID *uuid.UUID `form:"academic_year_id"`
+	StandardID     *uuid.UUID `form:"standard_id"`
+	FeeComponentID *uuid.UUID `form:"fee_component_id"`
 }
 
 type RecordFilterParams struct {
-	StudentEnrollmentID *string    `form:"student_enrollment_id"`
-	FeeComponentID      *string    `form:"fee_component_id"`
+	StudentEnrollmentID *uuid.UUID `form:"student_enrollment_id"`
+	FeeComponentID      *uuid.UUID `form:"fee_component_id"`
 	Status              *FeeStatus `form:"status"`
 	DueDateFrom         *time.Time `form:"due_date_from"`
 	DueDateTo           *time.Time `form:"due_date_to"`
@@ -49,15 +50,15 @@ type RecordFilterParams struct {
 // ──────────────────────────────────────────────────────────────
 
 type CreateStructureRequest struct {
-	AcademicYearID string          `json:"academic_year_id" binding:"required,uuid"`
-	StandardID     string          `json:"standard_id"      binding:"required,uuid"`
-	FeeComponentID string          `json:"fee_component_id" binding:"required,uuid"`
+	AcademicYearID uuid.UUID       `json:"academic_year_id" binding:"required,uuid"`
+	StandardID     uuid.UUID       `json:"standard_id"      binding:"required,uuid"`
+	FeeComponentID uuid.UUID       `json:"fee_component_id" binding:"required,uuid"`
 	Amount         decimal.Decimal `json:"amount"           binding:"required"`
 	DueDate        *time.Time      `json:"due_date,omitempty"`
 }
 
 type UpdateStructureRequest struct {
-	FeeComponentID *string          `json:"fee_component_id,omitempty"`
+	FeeComponentID *uuid.UUID       `json:"fee_component_id,omitempty"`
 	Amount         *decimal.Decimal `json:"amount,omitempty"`
 	DueDate        *time.Time       `json:"due_date,omitempty"`
 }
@@ -65,13 +66,13 @@ type UpdateStructureRequest struct {
 // BulkCreateStructureRequest creates all fee components for a standard
 // in one call — the typical setup flow at the start of an academic year.
 type BulkCreateStructureRequest struct {
-	AcademicYearID string              `json:"academic_year_id" binding:"required,uuid"`
-	StandardID     string              `json:"standard_id"      binding:"required,uuid"`
+	AcademicYearID uuid.UUID           `json:"academic_year_id" binding:"required,uuid"`
+	StandardID     uuid.UUID           `json:"standard_id"      binding:"required,uuid"`
 	Components     []FeeComponentInput `json:"components"       binding:"required,min=1"`
 }
 
 type FeeComponentInput struct {
-	FeeComponentID string          `json:"fee_component_id" binding:"required,uuid"`
+	FeeComponentID uuid.UUID       `json:"fee_component_id" binding:"required,uuid"`
 	Amount         decimal.Decimal `json:"amount"           binding:"required"`
 	DueDate        *time.Time      `json:"due_date,omitempty"`
 }
@@ -81,8 +82,8 @@ type FeeComponentInput struct {
 // ──────────────────────────────────────────────────────────────
 
 type CreateRecordRequest struct {
-	StudentEnrollmentID string          `json:"student_enrollment_id" binding:"required,uuid"`
-	FeeComponentID      string          `json:"fee_component_id"      binding:"required,uuid"`
+	StudentEnrollmentID uuid.UUID       `json:"student_enrollment_id" binding:"required,uuid"`
+	FeeComponentID      uuid.UUID       `json:"fee_component_id"      binding:"required,uuid"`
 	AmountDue           decimal.Decimal `json:"amount_due"            binding:"required"`
 	DueDate             time.Time       `json:"due_date"              binding:"required"`
 	Remarks             *string         `json:"remarks,omitempty"`
@@ -105,7 +106,7 @@ type WaiveRequest struct {
 // BulkGenerateRequest generates fee records for all enrolled students
 // in a class section based on the fee structure for their standard.
 type BulkGenerateRequest struct {
-	ClassSectionID string `json:"class_section_id" binding:"required,uuid"`
+	ClassSectionID uuid.UUID `json:"class_section_id" binding:"required,uuid"`
 }
 
 // ──────────────────────────────────────────────────────────────
@@ -124,7 +125,7 @@ type FeeRecordResponse struct {
 // StudentFeeSummary gives a rolled-up view of all fee records
 // for a student enrollment — used in the student fee dashboard.
 type StudentFeeSummary struct {
-	StudentEnrollmentID string              `json:"student_enrollment_id"`
+	StudentEnrollmentID uuid.UUID           `json:"student_enrollment_id"`
 	StudentName         string              `json:"student_name"`
 	AdmissionNo         string              `json:"admission_no"`
 	ClassSection        string              `json:"class_section"`

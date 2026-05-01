@@ -3,6 +3,7 @@ package teacher_assignment
 import (
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/thalalhassan/edu_management/internal/database"
 	"github.com/thalalhassan/edu_management/internal/shared/query_params"
 	"gorm.io/gorm"
@@ -15,7 +16,7 @@ type Repository interface {
 	Update(ctx context.Context, m *database.TeacherAssignment) error
 	Delete(ctx context.Context, id string) error
 
-	ExistsConflict(ctx context.Context, classID, subjectID string) (bool, error)
+	ExistsConflict(ctx context.Context, classID, subjectID uuid.UUID) (bool, error)
 }
 
 type repositoryImpl struct {
@@ -80,7 +81,7 @@ func (r *repositoryImpl) Delete(ctx context.Context, id string) error {
 }
 
 // Ensure 1 subject per class section (no duplicates)
-func (r *repositoryImpl) ExistsConflict(ctx context.Context, classID, subjectID string) (bool, error) {
+func (r *repositoryImpl) ExistsConflict(ctx context.Context, classID, subjectID uuid.UUID) (bool, error) {
 	var count int64
 	err := r.db.WithContext(ctx).
 		Model(&database.TeacherAssignment{}).

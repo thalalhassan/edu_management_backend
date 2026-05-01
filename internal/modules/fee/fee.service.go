@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/thalalhassan/edu_management/internal/database"
 	"github.com/thalalhassan/edu_management/internal/shared/query_params"
 	"gorm.io/gorm"
@@ -18,11 +19,11 @@ import (
 type StructureService interface {
 	Create(ctx context.Context, req CreateStructureRequest) (*FeeStructureResponse, error)
 	BulkCreate(ctx context.Context, req BulkCreateStructureRequest) ([]*FeeStructureResponse, error)
-	GetByID(ctx context.Context, id string) (*FeeStructureResponse, error)
+	GetByID(ctx context.Context, id uuid.UUID) (*FeeStructureResponse, error)
 	List(ctx context.Context, q query_params.Query[StructureFilterParams]) ([]*FeeStructureResponse, int64, error)
-	ListByStandardAndYear(ctx context.Context, standardID, academicYearID string) ([]*FeeStructureResponse, error)
-	Update(ctx context.Context, id string, req UpdateStructureRequest) (*FeeStructureResponse, error)
-	Delete(ctx context.Context, id string) error
+	ListByStandardAndYear(ctx context.Context, standardID, academicYearID uuid.UUID) ([]*FeeStructureResponse, error)
+	Update(ctx context.Context, id uuid.UUID, req UpdateStructureRequest) (*FeeStructureResponse, error)
+	Delete(ctx context.Context, id uuid.UUID) error
 }
 
 type structureService struct {
@@ -63,7 +64,7 @@ func (s *structureService) Create(ctx context.Context, req CreateStructureReques
 // Duplicate components within the batch are rejected entirely — no partial inserts.
 func (s *structureService) BulkCreate(ctx context.Context, req BulkCreateStructureRequest) ([]*FeeStructureResponse, error) {
 	// Check for duplicates within the batch itself
-	seen := make(map[string]bool)
+	seen := make(map[uuid.UUID]bool)
 	for _, c := range req.Components {
 		if seen[c.FeeComponentID] {
 			return nil, fmt.Errorf("fee.StructureService.BulkCreate: duplicate component in request")
@@ -100,7 +101,7 @@ func (s *structureService) BulkCreate(ctx context.Context, req BulkCreateStructu
 	return responses, nil
 }
 
-func (s *structureService) GetByID(ctx context.Context, id string) (*FeeStructureResponse, error) {
+func (s *structureService) GetByID(ctx context.Context, id uuid.UUID) (*FeeStructureResponse, error) {
 	f, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("fee.StructureService.GetByID: %w", err)
@@ -120,7 +121,7 @@ func (s *structureService) List(ctx context.Context, q query_params.Query[Struct
 	return responses, total, nil
 }
 
-func (s *structureService) ListByStandardAndYear(ctx context.Context, standardID, academicYearID string) ([]*FeeStructureResponse, error) {
+func (s *structureService) ListByStandardAndYear(ctx context.Context, standardID, academicYearID uuid.UUID) ([]*FeeStructureResponse, error) {
 	structs, err := s.repo.FindByStandardAndYear(ctx, standardID, academicYearID)
 	if err != nil {
 		return nil, fmt.Errorf("fee.StructureService.ListByStandardAndYear: %w", err)
@@ -132,7 +133,7 @@ func (s *structureService) ListByStandardAndYear(ctx context.Context, standardID
 	return responses, nil
 }
 
-func (s *structureService) Update(ctx context.Context, id string, req UpdateStructureRequest) (*FeeStructureResponse, error) {
+func (s *structureService) Update(ctx context.Context, id uuid.UUID, req UpdateStructureRequest) (*FeeStructureResponse, error) {
 	f, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("fee.StructureService.Update.GetByID: %w", err)
@@ -160,7 +161,7 @@ func (s *structureService) Update(ctx context.Context, id string, req UpdateStru
 	return ToFeeStructureResponse(f), nil
 }
 
-func (s *structureService) Delete(ctx context.Context, id string) error {
+func (s *structureService) Delete(ctx context.Context, id uuid.UUID) error {
 	if _, err := s.repo.GetByID(ctx, id); err != nil {
 		return fmt.Errorf("fee.StructureService.Delete.GetByID: %w", err)
 	}
@@ -177,12 +178,12 @@ func (s *structureService) Delete(ctx context.Context, id string) error {
 type RecordService interface {
 	Create(ctx context.Context, req CreateRecordRequest) (*FeeRecordResponse, error)
 	BulkGenerate(ctx context.Context, req BulkGenerateRequest, db *gorm.DB) ([]*FeeRecordResponse, error)
-	GetByID(ctx context.Context, id string) (*FeeRecordResponse, error)
+	GetByID(ctx context.Context, id uuid.UUID) (*FeeRecordResponse, error)
 	List(ctx context.Context, q query_params.Query[RecordFilterParams]) ([]*FeeRecordResponse, int64, error)
-	GetStudentSummary(ctx context.Context, studentEnrollmentID string) (*StudentFeeSummary, error)
-	RecordPayment(ctx context.Context, id string, req RecordPaymentRequest) (*FeeRecordResponse, error)
-	Waive(ctx context.Context, id string, req WaiveRequest) (*FeeRecordResponse, error)
-	Delete(ctx context.Context, id string) error
+	GetStudentSummary(ctx context.Context, studentEnrollmentID uuid.UUID) (*StudentFeeSummary, error)
+	RecordPayment(ctx context.Context, id uuid.UUID, req RecordPaymentRequest) (*FeeRecordResponse, error)
+	Waive(ctx context.Context, id uuid.UUID, req WaiveRequest) (*FeeRecordResponse, error)
+	Delete(ctx context.Context, id uuid.UUID) error
 }
 
 type recordService struct {
@@ -276,7 +277,7 @@ func (s *recordService) BulkGenerate(ctx context.Context, req BulkGenerateReques
 	return responses, nil
 }
 
-func (s *recordService) GetByID(ctx context.Context, id string) (*FeeRecordResponse, error) {
+func (s *recordService) GetByID(ctx context.Context, id uuid.UUID) (*FeeRecordResponse, error) {
 	rec, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("fee.RecordService.GetByID: %w", err)
@@ -298,7 +299,7 @@ func (s *recordService) List(ctx context.Context, q query_params.Query[RecordFil
 
 // GetStudentSummary returns a rolled-up view of all fee records for a student
 // with totals — the primary view for the student fee dashboard.
-func (s *recordService) GetStudentSummary(ctx context.Context, studentEnrollmentID string) (*StudentFeeSummary, error) {
+func (s *recordService) GetStudentSummary(ctx context.Context, studentEnrollmentID uuid.UUID) (*StudentFeeSummary, error) {
 	records, err := s.repo.FindByEnrollment(ctx, studentEnrollmentID)
 	if err != nil {
 		return nil, fmt.Errorf("fee.RecordService.GetStudentSummary.FindByEnrollment: %w", err)
@@ -318,7 +319,7 @@ func (s *recordService) GetStudentSummary(ctx context.Context, studentEnrollment
 	}
 
 	// Populate student and class section info from first record if available
-	if len(records) > 0 && records[0].StudentEnrollment.Student.ID != "" {
+	if len(records) > 0 && records[0].StudentEnrollment.Student.ID != uuid.Nil {
 		s := records[0].StudentEnrollment.Student
 		summary.StudentName = s.FirstName + " " + s.LastName
 		summary.AdmissionNo = s.AdmissionNo
@@ -333,7 +334,7 @@ func (s *recordService) GetStudentSummary(ctx context.Context, studentEnrollment
 }
 
 // RecordPayment applies a payment against a fee record and recomputes status.
-func (s *recordService) RecordPayment(ctx context.Context, id string, req RecordPaymentRequest) (*FeeRecordResponse, error) {
+func (s *recordService) RecordPayment(ctx context.Context, id uuid.UUID, req RecordPaymentRequest) (*FeeRecordResponse, error) {
 	rec, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("fee.RecordService.RecordPayment.GetByID: %w", err)
@@ -365,7 +366,7 @@ func (s *recordService) RecordPayment(ctx context.Context, id string, req Record
 
 // Waive marks a fee record as fully waived — amount_paid stays as-is
 // but status is set to WAIVED and no further payments are accepted.
-func (s *recordService) Waive(ctx context.Context, id string, req WaiveRequest) (*FeeRecordResponse, error) {
+func (s *recordService) Waive(ctx context.Context, id uuid.UUID, req WaiveRequest) (*FeeRecordResponse, error) {
 	rec, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("fee.RecordService.Waive.GetByID: %w", err)
@@ -386,7 +387,7 @@ func (s *recordService) Waive(ctx context.Context, id string, req WaiveRequest) 
 	return ToFeeRecordResponse(rec), nil
 }
 
-func (s *recordService) Delete(ctx context.Context, id string) error {
+func (s *recordService) Delete(ctx context.Context, id uuid.UUID) error {
 	rec, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return fmt.Errorf("fee.RecordService.Delete.GetByID: %w", err)

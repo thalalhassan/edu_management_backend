@@ -2,10 +2,12 @@ package leave
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/thalalhassan/edu_management/internal/app"
 	"github.com/thalalhassan/edu_management/internal/config"
 	"github.com/thalalhassan/edu_management/internal/constants"
 	"github.com/thalalhassan/edu_management/internal/middleware"
+	"github.com/thalalhassan/edu_management/internal/shared/helper"
 	"github.com/thalalhassan/edu_management/internal/shared/pagination"
 	"github.com/thalalhassan/edu_management/internal/shared/query_params"
 	"github.com/thalalhassan/edu_management/internal/shared/response"
@@ -69,7 +71,11 @@ func (h *Handler) apply(c *gin.Context) {
 }
 
 func (h *Handler) getByID(c *gin.Context) {
-	id := c.Param("id")
+	id, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
+
 	resp, err := h.service.GetByID(c.Request.Context(), id)
 	if err != nil {
 		response.NotFound(c, err.Error())
@@ -101,7 +107,10 @@ func (h *Handler) list(c *gin.Context) {
 }
 
 func (h *Handler) update(c *gin.Context) {
-	id := c.Param("id")
+	id, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
 	var req UpdateRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(c, err.Error())
@@ -118,11 +127,19 @@ func (h *Handler) update(c *gin.Context) {
 // review is called by an admin or principal.
 // The reviewer's user ID is pulled from the JWT claims set by AuthCheckMiddleware.
 func (h *Handler) review(c *gin.Context) {
-	id := c.Param("id")
+	id, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
 
-	reviewerID, exists := c.Get("user_id")
+	reviewerIDStr, exists := c.Get("user_id")
 	if !exists {
 		response.Unauthorized(c, "reviewer identity not found in token")
+		return
+	}
+	reviewerID, err := uuid.Parse(reviewerIDStr.(string))
+	if err != nil {
+		response.BadRequest(c, "Invalid reviewer ID format")
 		return
 	}
 
@@ -132,7 +149,7 @@ func (h *Handler) review(c *gin.Context) {
 		return
 	}
 
-	resp, err := h.service.Review(c.Request.Context(), id, reviewerID.(string), req)
+	resp, err := h.service.Review(c.Request.Context(), id, reviewerID, req)
 	if err != nil {
 		response.BadRequest(c, err.Error())
 		return
@@ -147,7 +164,10 @@ func (h *Handler) review(c *gin.Context) {
 
 // cancel is called by the teacher themselves to withdraw a pending request.
 func (h *Handler) cancel(c *gin.Context) {
-	id := c.Param("id")
+	id, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
 	resp, err := h.service.Cancel(c.Request.Context(), id)
 	if err != nil {
 		response.BadRequest(c, err.Error())
@@ -157,7 +177,10 @@ func (h *Handler) cancel(c *gin.Context) {
 }
 
 func (h *Handler) delete(c *gin.Context) {
-	id := c.Param("id")
+	id, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
 	if err := h.service.Delete(c.Request.Context(), id); err != nil {
 		response.BadRequest(c, err.Error())
 		return

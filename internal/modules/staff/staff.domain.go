@@ -3,6 +3,7 @@ package staff
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/thalalhassan/edu_management/internal/database"
 )
 
@@ -35,10 +36,10 @@ type UpdateRequest struct {
 // ==========================================
 
 type Response struct {
-	ID         string    `json:"id"`
+	ID         uuid.UUID `json:"id"`
 	FirstName  string    `json:"first_name"`
 	LastName   string    `json:"last_name"`
-	EmployeeID string    `json:"employee_id"`
+	EmployeeID uuid.UUID `json:"employee_id"`
 	Department *string   `json:"department,omitempty"`
 	Phone      *string   `json:"phone,omitempty"`
 	IsActive   bool      `json:"is_active"`

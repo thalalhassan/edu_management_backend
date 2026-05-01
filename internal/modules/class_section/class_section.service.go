@@ -4,17 +4,19 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
+	"github.com/google/uuid"
 )
 
 type Service interface {
 	Create(ctx context.Context, req CreateRequest) (*ClassSectionResponse, error)
-	GetByID(ctx context.Context, id string) (*ClassSectionResponse, error)
-	ListByAcademicYear(ctx context.Context, academicYearID string) ([]*ClassSectionSummary, error)
-	ListByStandard(ctx context.Context, standardID, academicYearID string) ([]*ClassSectionSummary, error)
-	ListByEmployee(ctx context.Context, employeeID, academicYearID string) ([]*ClassSectionSummary, error)
-	Update(ctx context.Context, id string, req UpdateRequest) (*ClassSectionResponse, error)
-	AssignEmployee(ctx context.Context, id string, req AssignEmployeeRequest) (*ClassSectionResponse, error)
-	Delete(ctx context.Context, id string) error
+	GetByID(ctx context.Context, id uuid.UUID) (*ClassSectionResponse, error)
+	ListByAcademicYear(ctx context.Context, academicYearID uuid.UUID) ([]*ClassSectionSummary, error)
+	ListByStandard(ctx context.Context, standardID, academicYearID uuid.UUID) ([]*ClassSectionSummary, error)
+	ListByEmployee(ctx context.Context, employeeID, academicYearID uuid.UUID) ([]*ClassSectionSummary, error)
+	Update(ctx context.Context, id uuid.UUID, req UpdateRequest) (*ClassSectionResponse, error)
+	AssignEmployee(ctx context.Context, id uuid.UUID, req AssignEmployeeRequest) (*ClassSectionResponse, error)
+	Delete(ctx context.Context, id uuid.UUID) error
 }
 
 type service struct {
@@ -59,7 +61,7 @@ func (s *service) Create(ctx context.Context, req CreateRequest) (*ClassSectionR
 	return ToClassSectionResponse(created), nil
 }
 
-func (s *service) GetByID(ctx context.Context, id string) (*ClassSectionResponse, error) {
+func (s *service) GetByID(ctx context.Context, id uuid.UUID) (*ClassSectionResponse, error) {
 	cs, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("classsection.Service.GetByID: %w", err)
@@ -67,7 +69,7 @@ func (s *service) GetByID(ctx context.Context, id string) (*ClassSectionResponse
 	return ToClassSectionResponse(cs), nil
 }
 
-func (s *service) ListByAcademicYear(ctx context.Context, academicYearID string) ([]*ClassSectionSummary, error) {
+func (s *service) ListByAcademicYear(ctx context.Context, academicYearID uuid.UUID) ([]*ClassSectionSummary, error) {
 	sections, err := s.repo.FindByAcademicYear(ctx, academicYearID)
 	if err != nil {
 		return nil, fmt.Errorf("classsection.Service.ListByAcademicYear: %w", err)
@@ -75,7 +77,7 @@ func (s *service) ListByAcademicYear(ctx context.Context, academicYearID string)
 	return s.toSummaries(ctx, sections)
 }
 
-func (s *service) ListByStandard(ctx context.Context, standardID, academicYearID string) ([]*ClassSectionSummary, error) {
+func (s *service) ListByStandard(ctx context.Context, standardID, academicYearID uuid.UUID) ([]*ClassSectionSummary, error) {
 	sections, err := s.repo.FindByStandard(ctx, standardID, academicYearID)
 	if err != nil {
 		return nil, fmt.Errorf("classsection.Service.ListByStandard: %w", err)
@@ -83,7 +85,7 @@ func (s *service) ListByStandard(ctx context.Context, standardID, academicYearID
 	return s.toSummaries(ctx, sections)
 }
 
-func (s *service) ListByEmployee(ctx context.Context, employeeID, academicYearID string) ([]*ClassSectionSummary, error) {
+func (s *service) ListByEmployee(ctx context.Context, employeeID, academicYearID uuid.UUID) ([]*ClassSectionSummary, error) {
 	sections, err := s.repo.FindByEmployee(ctx, employeeID, academicYearID)
 	if err != nil {
 		return nil, fmt.Errorf("classsection.Service.ListByEmployee: %w", err)
@@ -91,7 +93,7 @@ func (s *service) ListByEmployee(ctx context.Context, employeeID, academicYearID
 	return s.toSummaries(ctx, sections)
 }
 
-func (s *service) Update(ctx context.Context, id string, req UpdateRequest) (*ClassSectionResponse, error) {
+func (s *service) Update(ctx context.Context, id uuid.UUID, req UpdateRequest) (*ClassSectionResponse, error) {
 	cs, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("classsection.Service.Update.GetByID: %w", err)
@@ -132,7 +134,7 @@ func (s *service) Update(ctx context.Context, id string, req UpdateRequest) (*Cl
 	return ToClassSectionResponse(cs), nil
 }
 
-func (s *service) AssignEmployee(ctx context.Context, id string, req AssignEmployeeRequest) (*ClassSectionResponse, error) {
+func (s *service) AssignEmployee(ctx context.Context, id uuid.UUID, req AssignEmployeeRequest) (*ClassSectionResponse, error) {
 	cs, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("classsection.Service.AssignEmployee.GetByID: %w", err)
@@ -148,7 +150,7 @@ func (s *service) AssignEmployee(ctx context.Context, id string, req AssignEmplo
 	return ToClassSectionResponse(updated), nil
 }
 
-func (s *service) Delete(ctx context.Context, id string) error {
+func (s *service) Delete(ctx context.Context, id uuid.UUID) error {
 	enrolled, err := s.repo.CountEnrolled(ctx, id)
 	if err != nil {
 		return fmt.Errorf("classsection.Service.Delete.CountEnrolled: %w", err)

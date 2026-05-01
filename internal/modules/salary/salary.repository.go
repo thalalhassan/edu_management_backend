@@ -3,6 +3,7 @@ package salary
 import (
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
 	"github.com/thalalhassan/edu_management/internal/database"
 	"github.com/thalalhassan/edu_management/internal/shared/query_params"
@@ -15,14 +16,14 @@ import (
 
 type StructureRepository interface {
 	Create(ctx context.Context, s *SalaryStructure) error
-	GetByID(ctx context.Context, id string) (*SalaryStructure, error)
+	GetByID(ctx context.Context, id uuid.UUID) (*SalaryStructure, error)
 	// GetActiveForTeacher returns the most recent structure for a teacher
 	// (highest effective_from date on or before today).
-	GetActiveForTeacher(ctx context.Context, teacherID string) (*SalaryStructure, error)
+	GetActiveForTeacher(ctx context.Context, teacherID uuid.UUID) (*SalaryStructure, error)
 	FindAll(ctx context.Context, q query_params.Query[StructureFilterParams]) ([]*SalaryStructure, int64, error)
-	FindByTeacher(ctx context.Context, teacherID string) ([]*SalaryStructure, error)
-	Update(ctx context.Context, id string, s *SalaryStructure) error
-	Delete(ctx context.Context, id string) error
+	FindByTeacher(ctx context.Context, teacherID uuid.UUID) ([]*SalaryStructure, error)
+	Update(ctx context.Context, id uuid.UUID, s *SalaryStructure) error
+	Delete(ctx context.Context, id uuid.UUID) error
 }
 
 type structureRepo struct {
@@ -37,7 +38,7 @@ func (r *structureRepo) Create(ctx context.Context, s *SalaryStructure) error {
 	return r.db.WithContext(ctx).Create(s).Error
 }
 
-func (r *structureRepo) GetByID(ctx context.Context, id string) (*SalaryStructure, error) {
+func (r *structureRepo) GetByID(ctx context.Context, id uuid.UUID) (*SalaryStructure, error) {
 	var s SalaryStructure
 	err := r.db.WithContext(ctx).
 		Preload("Teacher").
@@ -48,7 +49,7 @@ func (r *structureRepo) GetByID(ctx context.Context, id string) (*SalaryStructur
 	return &s, nil
 }
 
-func (r *structureRepo) GetActiveForTeacher(ctx context.Context, teacherID string) (*SalaryStructure, error) {
+func (r *structureRepo) GetActiveForTeacher(ctx context.Context, teacherID uuid.UUID) (*SalaryStructure, error) {
 	var s SalaryStructure
 	err := r.db.WithContext(ctx).
 		Where("teacher_id = ? AND effective_from <= NOW()", teacherID).
@@ -83,7 +84,7 @@ func (r *structureRepo) FindAll(ctx context.Context, q query_params.Query[Struct
 	return structs, total, err
 }
 
-func (r *structureRepo) FindByTeacher(ctx context.Context, teacherID string) ([]*SalaryStructure, error) {
+func (r *structureRepo) FindByTeacher(ctx context.Context, teacherID uuid.UUID) ([]*SalaryStructure, error) {
 	var structs []*SalaryStructure
 	err := r.db.WithContext(ctx).
 		Where("teacher_id = ?", teacherID).
@@ -92,11 +93,11 @@ func (r *structureRepo) FindByTeacher(ctx context.Context, teacherID string) ([]
 	return structs, err
 }
 
-func (r *structureRepo) Update(ctx context.Context, id string, s *SalaryStructure) error {
+func (r *structureRepo) Update(ctx context.Context, id uuid.UUID, s *SalaryStructure) error {
 	return r.db.WithContext(ctx).Where("id = ?", id).Save(s).Error
 }
 
-func (r *structureRepo) Delete(ctx context.Context, id string) error {
+func (r *structureRepo) Delete(ctx context.Context, id uuid.UUID) error {
 	return r.db.WithContext(ctx).Where("id = ?", id).Delete(&SalaryStructure{}).Error
 }
 
@@ -107,20 +108,20 @@ func (r *structureRepo) Delete(ctx context.Context, id string) error {
 type RecordRepository interface {
 	Create(ctx context.Context, r *SalaryRecord) error
 	BulkCreate(ctx context.Context, records []*SalaryRecord) error
-	GetByID(ctx context.Context, id string) (*SalaryRecord, error)
+	GetByID(ctx context.Context, id uuid.UUID) (*SalaryRecord, error)
 	FindAll(ctx context.Context, q query_params.Query[RecordFilterParams]) ([]*SalaryRecord, int64, error)
-	FindByTeacher(ctx context.Context, teacherID string) ([]*SalaryRecord, error)
-	Update(ctx context.Context, id string, r *SalaryRecord) error
-	Delete(ctx context.Context, id string) error
+	FindByTeacher(ctx context.Context, teacherID uuid.UUID) ([]*SalaryRecord, error)
+	Update(ctx context.Context, id uuid.UUID, r *SalaryRecord) error
+	Delete(ctx context.Context, id uuid.UUID) error
 
 	// IsDuplicate checks if a record already exists for teacher + month + year.
-	IsDuplicate(ctx context.Context, employeeID string, month, year int) (bool, error)
+	IsDuplicate(ctx context.Context, employeeID uuid.UUID, month, year int) (bool, error)
 
 	// GetMonthlySummary aggregates all records for a given month + year.
-	GetMonthlySummary(ctx context.Context, academicYearID string, month, year int) (*MonthlySummary, error)
+	GetMonthlySummary(ctx context.Context, academicYearID uuid.UUID, month, year int) (*MonthlySummary, error)
 
 	// SumByStatus used by dashboard payroll section.
-	SumByStatus(ctx context.Context, academicYearID string, status database.SalaryStatus) (decimal.Decimal, error)
+	SumByStatus(ctx context.Context, academicYearID uuid.UUID, status database.SalaryStatus) (decimal.Decimal, error)
 	CountByStatus(ctx context.Context, month, year int) (paid, pending int, err error)
 }
 
@@ -140,7 +141,7 @@ func (r *recordRepo) BulkCreate(ctx context.Context, records []*SalaryRecord) er
 	return r.db.WithContext(ctx).Create(&records).Error
 }
 
-func (r *recordRepo) GetByID(ctx context.Context, id string) (*SalaryRecord, error) {
+func (r *recordRepo) GetByID(ctx context.Context, id uuid.UUID) (*SalaryRecord, error) {
 	var rec SalaryRecord
 	err := r.db.WithContext(ctx).
 		Preload("Teacher").
@@ -189,7 +190,7 @@ func (r *recordRepo) FindAll(ctx context.Context, q query_params.Query[RecordFil
 	return records, total, err
 }
 
-func (r *recordRepo) FindByTeacher(ctx context.Context, teacherID string) ([]*SalaryRecord, error) {
+func (r *recordRepo) FindByTeacher(ctx context.Context, teacherID uuid.UUID) ([]*SalaryRecord, error) {
 	var records []*SalaryRecord
 	err := r.db.WithContext(ctx).
 		Where("teacher_id = ?", teacherID).
@@ -198,15 +199,15 @@ func (r *recordRepo) FindByTeacher(ctx context.Context, teacherID string) ([]*Sa
 	return records, err
 }
 
-func (r *recordRepo) Update(ctx context.Context, id string, rec *SalaryRecord) error {
+func (r *recordRepo) Update(ctx context.Context, id uuid.UUID, rec *SalaryRecord) error {
 	return r.db.WithContext(ctx).Where("id = ?", id).Save(rec).Error
 }
 
-func (r *recordRepo) Delete(ctx context.Context, id string) error {
+func (r *recordRepo) Delete(ctx context.Context, id uuid.UUID) error {
 	return r.db.WithContext(ctx).Where("id = ?", id).Delete(&SalaryRecord{}).Error
 }
 
-func (r *recordRepo) IsDuplicate(ctx context.Context, employeeID string, month, year int) (bool, error) {
+func (r *recordRepo) IsDuplicate(ctx context.Context, employeeID uuid.UUID, month, year int) (bool, error) {
 	var count int64
 	err := r.db.WithContext(ctx).
 		Model(&database.SalaryRecord{}).
@@ -215,7 +216,7 @@ func (r *recordRepo) IsDuplicate(ctx context.Context, employeeID string, month, 
 	return count > 0, err
 }
 
-func (r *recordRepo) GetMonthlySummary(ctx context.Context, academicYearID string, month, year int) (*MonthlySummary, error) {
+func (r *recordRepo) GetMonthlySummary(ctx context.Context, academicYearID uuid.UUID, month, year int) (*MonthlySummary, error) {
 	type row struct {
 		Status      database.SalaryStatus
 		Count       int
@@ -266,7 +267,7 @@ func (r *recordRepo) GetMonthlySummary(ctx context.Context, academicYearID strin
 	return summary, nil
 }
 
-func (r *recordRepo) SumByStatus(ctx context.Context, academicYearID string, status database.SalaryStatus) (decimal.Decimal, error) {
+func (r *recordRepo) SumByStatus(ctx context.Context, academicYearID uuid.UUID, status database.SalaryStatus) (decimal.Decimal, error) {
 	type result struct{ Total decimal.Decimal }
 	var res result
 	err := r.db.WithContext(ctx).

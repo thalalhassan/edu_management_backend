@@ -2,6 +2,7 @@ package department
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/thalalhassan/edu_management/internal/app"
 	"github.com/thalalhassan/edu_management/internal/config"
 	"github.com/thalalhassan/edu_management/internal/constants"
@@ -53,7 +54,12 @@ func (h *Handler) create(c *gin.Context) {
 
 func (h *Handler) getByID(c *gin.Context) {
 	id := c.Param("id")
-	resp, err := h.service.GetByID(c.Request.Context(), id)
+	idUUID, err := uuid.Parse(id)
+	if err != nil {
+		response.BadRequest(c, "Invalid id format")
+		return
+	}
+	resp, err := h.service.GetByID(c.Request.Context(), idUUID)
 	if err != nil {
 		response.NotFound(c, err.Error())
 		return
@@ -77,7 +83,12 @@ func (h *Handler) update(c *gin.Context) {
 		response.BadRequest(c, err.Error())
 		return
 	}
-	resp, err := h.service.Update(c.Request.Context(), id, req)
+	idUUID, err := uuid.Parse(id)
+	if err != nil {
+		response.BadRequest(c, "Invalid id format")
+		return
+	}
+	resp, err := h.service.Update(c.Request.Context(), idUUID, req)
 	if err != nil {
 		response.BadRequest(c, err.Error())
 		return
@@ -92,7 +103,12 @@ func (h *Handler) assignHead(c *gin.Context) {
 		response.BadRequest(c, err.Error())
 		return
 	}
-	resp, err := h.service.AssignHead(c.Request.Context(), id, req)
+	idUUID, err := uuid.Parse(id)
+	if err != nil {
+		response.BadRequest(c, "Invalid id format")
+		return
+	}
+	resp, err := h.service.AssignHead(c.Request.Context(), idUUID, req)
 	if err != nil {
 		response.BadRequest(c, err.Error())
 		return
@@ -102,7 +118,12 @@ func (h *Handler) assignHead(c *gin.Context) {
 
 func (h *Handler) delete(c *gin.Context) {
 	id := c.Param("id")
-	if err := h.service.Delete(c.Request.Context(), id); err != nil {
+	idUUID, err := uuid.Parse(id)
+	if err != nil {
+		response.BadRequest(c, "Invalid id format")
+		return
+	}
+	if err := h.service.Delete(c.Request.Context(), idUUID); err != nil {
 		response.BadRequest(c, err.Error())
 		return
 	}

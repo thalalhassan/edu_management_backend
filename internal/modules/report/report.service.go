@@ -6,6 +6,7 @@ import (
 	"sort"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
 	"github.com/thalalhassan/edu_management/internal/database"
 )
@@ -52,8 +53,8 @@ func (s *service) GetReportCard(ctx context.Context, req ReportCardRequest) (*Re
 	}
 
 	// Group results by exam
-	examMap := make(map[string]*ExamReportSection)
-	examOrder := []string{}
+	examMap := make(map[uuid.UUID]*ExamReportSection)
+	examOrder := []uuid.UUID{}
 
 	for _, r := range results {
 		eid := r.ExamSchedule.ExamID
@@ -172,7 +173,7 @@ func (s *service) GetClassAttendanceSummary(ctx context.Context, req ClassAttend
 	}
 
 	// Build per-enrollment count maps
-	countMap := make(map[string]map[database.AttendanceStatus]int)
+	countMap := make(map[uuid.UUID]map[database.AttendanceStatus]int)
 	for _, row := range rawCounts {
 		if _, ok := countMap[row.EnrollmentID]; !ok {
 			countMap[row.EnrollmentID] = make(map[database.AttendanceStatus]int)
@@ -241,7 +242,7 @@ func (s *service) GetClassPerformanceReport(ctx context.Context, req ClassPerfor
 		failCount   int
 		absentCount int
 	}
-	subjectMap := make(map[string]*subjectAccumulator)
+	subjectMap := make(map[uuid.UUID]*subjectAccumulator)
 	for _, sch := range exam.Schedules {
 		subjectMap[sch.SubjectID] = &subjectAccumulator{schedule: sch}
 	}
@@ -253,7 +254,7 @@ func (s *service) GetClassPerformanceReport(ctx context.Context, req ClassPerfor
 		total       decimal.Decimal
 		maxTotal    decimal.Decimal
 	}
-	studentTotals := make(map[string]*studentTotal)
+	studentTotals := make(map[uuid.UUID]*studentTotal)
 
 	for _, r := range results {
 		sid := r.ExamSchedule.SubjectID
@@ -464,12 +465,12 @@ func (s *service) GetTeacherAttendanceSummary(ctx context.Context, req TeacherAt
 
 	// Group by teacher
 	type acc struct {
-		employeeID string
+		employeeID uuid.UUID
 		name       string
 		counts     map[database.AttendanceStatus]int
 	}
-	accMap := make(map[string]*acc)
-	order := []string{}
+	accMap := make(map[uuid.UUID]*acc)
+	order := []uuid.UUID{}
 
 	for _, row := range rows {
 		if _, ok := accMap[row.EmployeeID]; !ok {

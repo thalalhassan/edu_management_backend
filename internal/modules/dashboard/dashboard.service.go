@@ -5,13 +5,14 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
 	"github.com/thalalhassan/edu_management/internal/database"
 	"gorm.io/gorm"
 )
 
 type Service interface {
-	GetDashboard(ctx context.Context, academicYearID string) (*DashboardResponse, error)
+	GetDashboard(ctx context.Context, academicYearID uuid.UUID) (*DashboardResponse, error)
 }
 
 type service struct {
@@ -23,7 +24,7 @@ func NewService(repo Repository, db *gorm.DB) Service {
 	return &service{repo: repo, db: db}
 }
 
-func (s *service) GetDashboard(ctx context.Context, academicYearID string) (*DashboardResponse, error) {
+func (s *service) GetDashboard(ctx context.Context, academicYearID uuid.UUID) (*DashboardResponse, error) {
 	// Resolve academic year name
 	var ay database.AcademicYear
 	if err := s.db.WithContext(ctx).First(&ay, "id = ?", academicYearID).Error; err != nil {
@@ -55,7 +56,7 @@ func (s *service) GetDashboard(ctx context.Context, academicYearID string) (*Das
 // INSTITUTION OVERVIEW
 // ──────────────────────────────────────────────────────────────
 
-func (s *service) buildInstitutionOverview(ctx context.Context, academicYearID string) (InstitutionOverview, error) {
+func (s *service) buildInstitutionOverview(ctx context.Context, academicYearID uuid.UUID) (InstitutionOverview, error) {
 	activeStudents, totalStudents, err := s.repo.CountStudentsByStatus(ctx)
 	if err != nil {
 		return InstitutionOverview{}, fmt.Errorf("CountStudentsByStatus: %w", err)
@@ -88,7 +89,7 @@ func (s *service) buildInstitutionOverview(ctx context.Context, academicYearID s
 // FEES
 // ──────────────────────────────────────────────────────────────
 
-func (s *service) buildFeesSummary(ctx context.Context, academicYearID string) (FeesSummary, error) {
+func (s *service) buildFeesSummary(ctx context.Context, academicYearID uuid.UUID) (FeesSummary, error) {
 	paid, pending, err := s.repo.CountFeeRecordsByStatus(ctx, academicYearID)
 	if err != nil {
 		return FeesSummary{}, fmt.Errorf("CountFeeRecordsByStatus: %w", err)

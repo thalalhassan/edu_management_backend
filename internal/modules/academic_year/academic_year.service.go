@@ -2,20 +2,20 @@ package academic_year
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/thalalhassan/edu_management/internal/shared/query_params"
 )
 
 type Service interface {
 	Create(ctx context.Context, req CreateRequest) (*AcademicYearResponse, error)
-	GetByID(ctx context.Context, id string) (*AcademicYearResponse, error)
+	GetByID(ctx context.Context, id uuid.UUID) (*AcademicYearResponse, error)
 	GetActive(ctx context.Context) (*AcademicYearResponse, error)
 	List(ctx context.Context, q query_params.Query[FilterParams]) ([]*AcademicYearResponse, error)
-	Update(ctx context.Context, id string, req UpdateRequest) (*AcademicYearResponse, error)
-	SetActive(ctx context.Context, id string) (*AcademicYearResponse, error)
-	Delete(ctx context.Context, id string) error
+	Update(ctx context.Context, id uuid.UUID, req UpdateRequest) (*AcademicYearResponse, error)
+	SetActive(ctx context.Context, id uuid.UUID) (*AcademicYearResponse, error)
+	Delete(ctx context.Context, id uuid.UUID) error
 }
 
 type service struct {
@@ -27,134 +27,116 @@ func NewService(repo Repository) Service {
 }
 
 func (s *service) Create(ctx context.Context, req CreateRequest) (*AcademicYearResponse, error) {
-	// Guard: end date must be after start date
-	if !req.EndDate.After(req.StartDate) {
-		return nil, errors.New("academic_year.Service.Create: end_date must be after start_date")
-	}
-
-	// Guard: name must be unique
-	isDup, err := s.repo.IsDuplicateName(ctx, req.Name)
+	a, err := NewAcademicYear(req.Name, req.StartDate, req.EndDate)
 	if err != nil {
-		return nil, fmt.Errorf("academic_year.Service.Create.IsDuplicateName: %w", err)
+		return nil, err
 	}
-	if isDup {
-		return nil, fmt.Errorf("academic_year.Service.Create: academic year %q already exists", req.Name)
+	if overlap, err := s.repo.HasOverlappingDates(ctx, req.StartDate, req.EndDate); err != nil {
+		return nil, fmt.Errorf("failed to check overlaps: %w", err)
+	} else if overlap {
+		return nil, NewBusinessError("academic year dates overlap with existing year")
 	}
-
-	a := &AcademicYear{
-		Name:      req.Name,
-		StartDate: req.StartDate,
-		EndDate:   req.EndDate,
-		IsActive:  false, // always inactive on creation — use SetActive explicitly
+	if dup, err := s.repo.IsDuplicateName(ctx, req.Name); err != nil {
+		return nil, fmt.Errorf("failed to check duplicate: %w", err)
+	} else if dup {
+		return nil, NewBusinessError("academic year name already exists")
 	}
 	if err := s.repo.Create(ctx, a); err != nil {
-		return nil, fmt.Errorf("academic_year.Service.Create: %w", err)
+		return nil, fmt.Errorf("failed to create: %w", err)
 	}
-	return ToAcademicYearResponse(a), nil
+	return toResponse(a), nil
 }
 
-func (s *service) GetByID(ctx context.Context, id string) (*AcademicYearResponse, error) {
+func (s *service) GetByID(ctx context.Context, id uuid.UUID) (*AcademicYearResponse, error) {
 	a, err := s.repo.GetByID(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("academic_year.Service.GetByID: %w", err)
+		return nil, &NotFoundError{Resource: "academic year", ID: id}
 	}
-	return ToAcademicYearResponse(a), nil
+	return toResponse(a), nil
 }
 
 func (s *service) GetActive(ctx context.Context) (*AcademicYearResponse, error) {
 	a, err := s.repo.GetActive(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("academic_year.Service.GetActive: no active academic year found")
+		return nil, &NotFoundError{Resource: "active academic year"}
 	}
-	return ToAcademicYearResponse(a), nil
+	return toResponse(a), nil
 }
 
 func (s *service) List(ctx context.Context, q query_params.Query[FilterParams]) ([]*AcademicYearResponse, error) {
 	years, err := s.repo.FindAll(ctx, q)
 	if err != nil {
-		return nil, fmt.Errorf("academic_year.Service.List: %w", err)
+		return nil, fmt.Errorf("failed to list: %w", err)
 	}
 	responses := make([]*AcademicYearResponse, len(years))
 	for i, a := range years {
-		responses[i] = ToAcademicYearResponse(a)
+		responses[i] = toResponse(a)
 	}
 	return responses, nil
 }
 
-func (s *service) Update(ctx context.Context, id string, req UpdateRequest) (*AcademicYearResponse, error) {
+func (s *service) Update(ctx context.Context, id uuid.UUID, req UpdateRequest) (*AcademicYearResponse, error) {
 	a, err := s.repo.GetByID(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("academic_year.Service.Update.GetByID: %w", err)
+		return nil, &NotFoundError{Resource: "academic year", ID: id}
 	}
-
-	if req.Name != nil && *req.Name != a.Name {
-		isDup, err := s.repo.IsDuplicateName(ctx, *req.Name)
-		if err != nil {
-			return nil, fmt.Errorf("academic_year.Service.Update.IsDuplicateName: %w", err)
+	if err := a.Update(req); err != nil {
+		return nil, err
+	}
+	if req.Name != nil {
+		if dup, err := s.repo.IsDuplicateName(ctx, *req.Name); err != nil {
+			return nil, fmt.Errorf("failed to check duplicate: %w", err)
+		} else if dup {
+			return nil, NewBusinessError("academic year name already exists")
 		}
-		if isDup {
-			return nil, fmt.Errorf("academic_year.Service.Update: name %q is already in use", *req.Name)
-		}
-		a.Name = *req.Name
 	}
-	if req.StartDate != nil {
-		a.StartDate = *req.StartDate
-	}
-	if req.EndDate != nil {
-		a.EndDate = *req.EndDate
-	}
-
-	// Re-validate date range after applying changes
-	if !a.EndDate.After(a.StartDate) {
-		return nil, errors.New("academic_year.Service.Update: end_date must be after start_date")
-	}
-
 	if err := s.repo.Update(ctx, id, a); err != nil {
-		return nil, fmt.Errorf("academic_year.Service.Update.Save: %w", err)
+		return nil, fmt.Errorf("failed to update: %w", err)
 	}
-	return ToAcademicYearResponse(a), nil
+	return toResponse(a), nil
 }
 
-// SetActive marks the given year as active and deactivates all others.
-// This is the intended way to switch academic years — the UI calls this
-// when the user changes the global academic year selector.
-func (s *service) SetActive(ctx context.Context, id string) (*AcademicYearResponse, error) {
-	// Confirm the year exists before touching anything
+func (s *service) SetActive(ctx context.Context, id uuid.UUID) (*AcademicYearResponse, error) {
 	a, err := s.repo.GetByID(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("academic_year.Service.SetActive.GetByID: %w", err)
+		return nil, &NotFoundError{Resource: "academic year", ID: id}
 	}
 	if a.IsActive {
-		return ToAcademicYearResponse(a), nil // already active, no-op
+		return toResponse(a), nil
 	}
-
 	if err := s.repo.SetActive(ctx, id); err != nil {
-		return nil, fmt.Errorf("academic_year.Service.SetActive: %w", err)
+		return nil, fmt.Errorf("failed to set active: %w", err)
 	}
-
-	a.IsActive = true
-	return ToAcademicYearResponse(a), nil
+	a.Activate()
+	return toResponse(a), nil
 }
 
-func (s *service) Delete(ctx context.Context, id string) error {
+func (s *service) Delete(ctx context.Context, id uuid.UUID) error {
 	a, err := s.repo.GetByID(ctx, id)
 	if err != nil {
-		return fmt.Errorf("academic_year.Service.Delete.GetByID: %w", err)
+		return &NotFoundError{Resource: "academic year", ID: id}
 	}
 	if a.IsActive {
-		return errors.New("academic_year.Service.Delete: cannot delete the active academic year — set another year active first")
+		return NewBusinessError("cannot delete active academic year")
 	}
-
-	hasSections, err := s.repo.HasClassSections(ctx, id)
-	if err != nil {
-		return fmt.Errorf("academic_year.Service.Delete.HasClassSections: %w", err)
+	if hasSections, err := s.repo.HasClassSections(ctx, id); err != nil {
+		return fmt.Errorf("failed to check sections: %w", err)
+	} else if hasSections {
+		return NewBusinessError("cannot delete academic year with class sections")
 	}
-	if hasSections {
-		return errors.New("academic_year.Service.Delete: cannot delete academic year with existing class sections")
-	}
-
 	if err := s.repo.Delete(ctx, id); err != nil {
-		return fmt.Errorf("academic_year.Service.Delete: %w", err)
+		return fmt.Errorf("failed to delete: %w", err)
 	}
 	return nil
+}
+
+func toResponse(a *AcademicYear) *AcademicYearResponse {
+	return &AcademicYearResponse{
+		ID:        a.ID,
+		Name:      a.Name,
+		StartDate: a.StartDate,
+		EndDate:   a.EndDate,
+		IsActive:  a.IsActive,
+		CreatedAt: a.CreatedAt,
+	}
 }

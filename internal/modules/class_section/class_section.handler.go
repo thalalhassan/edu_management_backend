@@ -2,10 +2,12 @@ package class_section
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/thalalhassan/edu_management/internal/app"
 	"github.com/thalalhassan/edu_management/internal/config"
 	"github.com/thalalhassan/edu_management/internal/constants"
 	"github.com/thalalhassan/edu_management/internal/middleware"
+	"github.com/thalalhassan/edu_management/internal/shared/helper"
 	"github.com/thalalhassan/edu_management/internal/shared/response"
 )
 
@@ -60,7 +62,12 @@ func (h *Handler) create(c *gin.Context) {
 
 func (h *Handler) getByID(c *gin.Context) {
 	id := c.Param("id")
-	resp, err := h.service.GetByID(c.Request.Context(), id)
+	idUUID, err := uuid.Parse(id)
+	if err != nil {
+		response.BadRequest(c, "Invalid id format")
+		return
+	}
+	resp, err := h.service.GetByID(c.Request.Context(), idUUID)
 	if err != nil {
 		response.NotFound(c, err.Error())
 		return
@@ -76,7 +83,6 @@ func (h *Handler) listByAcademicYear(c *gin.Context) {
 		response.BadRequest(c, err.Error())
 		return
 	}
-
 	resp, err := h.service.ListByAcademicYear(c.Request.Context(), academicYearID)
 	if err != nil {
 		response.InternalError(c, err.Error())
@@ -93,8 +99,13 @@ func (h *Handler) listByStandard(c *gin.Context) {
 		response.BadRequest(c, err.Error())
 		return
 	}
+	standardUUID, err := uuid.Parse(standardID)
+	if err != nil {
+		response.BadRequest(c, "Invalid standard_id format")
+		return
+	}
 
-	resp, err := h.service.ListByStandard(c.Request.Context(), standardID, academicYearID)
+	resp, err := h.service.ListByStandard(c.Request.Context(), standardUUID, academicYearID)
 	if err != nil {
 		response.InternalError(c, err.Error())
 		return
@@ -103,7 +114,10 @@ func (h *Handler) listByStandard(c *gin.Context) {
 }
 
 func (h *Handler) listByEmployee(c *gin.Context) {
-	employeeID := c.Param("employee_id")
+	employeeID, valid := helper.ParseParamUUIDWithAbort(c, "employee_id")
+	if !valid {
+		return
+	}
 
 	academicYearID, err := middleware.GetAcademicYearIDFromContext(c)
 	if err != nil {
@@ -126,7 +140,12 @@ func (h *Handler) update(c *gin.Context) {
 		response.BadRequest(c, err.Error())
 		return
 	}
-	resp, err := h.service.Update(c.Request.Context(), id, req)
+	idUUID, err := uuid.Parse(id)
+	if err != nil {
+		response.BadRequest(c, "Invalid id format")
+		return
+	}
+	resp, err := h.service.Update(c.Request.Context(), idUUID, req)
 	if err != nil {
 		response.BadRequest(c, err.Error())
 		return
@@ -141,7 +160,12 @@ func (h *Handler) assignEmployee(c *gin.Context) {
 		response.BadRequest(c, err.Error())
 		return
 	}
-	resp, err := h.service.AssignEmployee(c.Request.Context(), id, req)
+	idUUID, err := uuid.Parse(id)
+	if err != nil {
+		response.BadRequest(c, "Invalid id format")
+		return
+	}
+	resp, err := h.service.AssignEmployee(c.Request.Context(), idUUID, req)
 	if err != nil {
 		response.BadRequest(c, err.Error())
 		return
@@ -151,7 +175,12 @@ func (h *Handler) assignEmployee(c *gin.Context) {
 
 func (h *Handler) delete(c *gin.Context) {
 	id := c.Param("id")
-	if err := h.service.Delete(c.Request.Context(), id); err != nil {
+	idUUID, err := uuid.Parse(id)
+	if err != nil {
+		response.BadRequest(c, "Invalid id format")
+		return
+	}
+	if err := h.service.Delete(c.Request.Context(), idUUID); err != nil {
 		response.BadRequest(c, err.Error())
 		return
 	}

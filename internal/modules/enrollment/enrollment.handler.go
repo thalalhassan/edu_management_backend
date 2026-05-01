@@ -2,6 +2,7 @@ package enrollment
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/thalalhassan/edu_management/internal/app"
 	"github.com/thalalhassan/edu_management/internal/config"
 	"github.com/thalalhassan/edu_management/internal/constants"
@@ -64,7 +65,12 @@ func (h *Handler) enroll(c *gin.Context) {
 }
 
 func (h *Handler) getByID(c *gin.Context) {
-	id := c.Param("id")
+	idStr := c.Param("id")
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		response.BadRequest(c, "Invalid enrollment ID")
+		return
+	}
 	resp, err := h.service.GetByID(c.Request.Context(), id)
 	if err != nil {
 		response.NotFound(c, err.Error())
@@ -74,9 +80,13 @@ func (h *Handler) getByID(c *gin.Context) {
 }
 
 func (h *Handler) getByStudentID(c *gin.Context) {
-	studentID := c.Param("student_id")
+	studentIDStr := c.Param("student_id")
+	studentID, err := uuid.Parse(studentIDStr)
+	if err != nil {
+		response.BadRequest(c, "Invalid student ID")
+		return
+	}
 	p := pagination.NewFromRequest(c)
-
 	resp, total, err := h.service.GetByStudentID(c.Request.Context(), studentID, p)
 	if err != nil {
 		response.InternalError(c, err.Error())
@@ -86,7 +96,12 @@ func (h *Handler) getByStudentID(c *gin.Context) {
 }
 
 func (h *Handler) getRoster(c *gin.Context) {
-	classSectionID := c.Param("class_section_id")
+	classSectionIDStr := c.Param("class_section_id")
+	classSectionID, err := uuid.Parse(classSectionIDStr)
+	if err != nil {
+		response.BadRequest(c, "Invalid class section ID")
+		return
+	}
 	resp, err := h.service.GetRoster(c.Request.Context(), classSectionID)
 	if err != nil {
 		response.InternalError(c, err.Error())
@@ -96,7 +111,12 @@ func (h *Handler) getRoster(c *gin.Context) {
 }
 
 func (h *Handler) updateStatus(c *gin.Context) {
-	id := c.Param("id")
+	idStr := c.Param("id")
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		response.BadRequest(c, "Invalid enrollment ID")
+		return
+	}
 	var req UpdateStatusRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(c, err.Error())
@@ -111,7 +131,12 @@ func (h *Handler) updateStatus(c *gin.Context) {
 }
 
 func (h *Handler) delete(c *gin.Context) {
-	id := c.Param("id")
+	idStr := c.Param("id")
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		response.BadRequest(c, "Invalid enrollment ID")
+		return
+	}
 	if err := h.service.Delete(c.Request.Context(), id); err != nil {
 		response.BadRequest(c, err.Error())
 		return

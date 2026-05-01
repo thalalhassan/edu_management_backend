@@ -3,6 +3,7 @@ package parent
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/thalalhassan/edu_management/internal/database"
 )
 
@@ -52,12 +53,12 @@ type UpdateRequest struct {
 
 // Link / unlink student
 type LinkStudentRequest struct {
-	StudentID string `json:"student_id" binding:"required,uuid"`
-	IsPrimary bool   `json:"is_primary"`
+	StudentID uuid.UUID `json:"student_id" binding:"required,uuid"`
+	IsPrimary bool      `json:"is_primary"`
 }
 
 type UnlinkStudentRequest struct {
-	StudentID string `json:"student_id" binding:"required,uuid"`
+	StudentID uuid.UUID `json:"student_id" binding:"required,uuid"`
 }
 
 // ==========================================
@@ -65,13 +66,13 @@ type UnlinkStudentRequest struct {
 // ==========================================
 
 type StudentBrief struct {
-	ID        string `json:"id"`
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
+	ID        uuid.UUID `json:"id"`
+	FirstName string    `json:"first_name"`
+	LastName  string    `json:"last_name"`
 }
 
 type ParentResponse struct {
-	ID        string         `json:"id"`
+	ID        uuid.UUID      `json:"id"`
 	FirstName string         `json:"first_name"`
 	LastName  string         `json:"last_name"`
 	Phone     string         `json:"phone"`

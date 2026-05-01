@@ -107,6 +107,7 @@ package database
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 )
@@ -435,7 +436,7 @@ const (
 
 // Base is embedded by all entity tables (soft-delete capable).
 type Base struct {
-	ID        string         `gorm:"type:uuid;primaryKey;default:gen_random_uuid()" json:"id"`
+	ID        uuid.UUID      `gorm:"type:uuid;primaryKey;default:gen_random_uuid()" json:"id"`
 	CreatedAt time.Time      `gorm:"autoCreateTime"                                 json:"created_at"`
 	UpdatedAt time.Time      `gorm:"autoUpdateTime"                                 json:"updated_at"`
 	CreatedBy *string        `gorm:"column:created_by;type:uuid"                    json:"created_by,omitempty"`
@@ -446,7 +447,7 @@ type Base struct {
 // BaseJunction is embedded by pure many-to-many tables (hard delete).
 // Hard delete avoids unique-index conflicts on re-insert after removal.
 type BaseJunction struct {
-	ID        string    `gorm:"type:uuid;primaryKey;default:gen_random_uuid()" json:"id"`
+	ID        uuid.UUID `gorm:"type:uuid;primaryKey;default:gen_random_uuid()" json:"id"`
 	CreatedAt time.Time `gorm:"autoCreateTime"                                 json:"created_at"`
 	CreatedBy *string   `gorm:"column:created_by;type:uuid"                    json:"created_by,omitempty"`
 }
@@ -497,9 +498,9 @@ func (Role) TableName() string { return "roles" }
 // RolePermission — explicit junction for audit trail (GrantedByID, GrantedAt).
 type RolePermission struct {
 	BaseJunction
-	RoleID       string     `gorm:"column:role_id;type:uuid;not null;uniqueIndex:idx_role_perm"       json:"role_id"`
-	PermissionID string     `gorm:"column:permission_id;type:uuid;not null;uniqueIndex:idx_role_perm" json:"permission_id"`
-	GrantedByID  string     `gorm:"column:granted_by_id;type:uuid;not null"                           json:"granted_by_id"`
+	RoleID       uuid.UUID  `gorm:"column:role_id;type:uuid;not null;uniqueIndex:idx_role_perm"       json:"role_id"`
+	PermissionID uuid.UUID  `gorm:"column:permission_id;type:uuid;not null;uniqueIndex:idx_role_perm" json:"permission_id"`
+	GrantedByID  uuid.UUID  `gorm:"column:granted_by_id;type:uuid;not null"                           json:"granted_by_id"`
 	Role         Role       `gorm:"foreignKey:RoleID"       json:"role,omitempty"`
 	Permission   Permission `gorm:"foreignKey:PermissionID" json:"permission,omitempty"`
 	GrantedBy    User       `gorm:"foreignKey:GrantedByID"  json:"granted_by,omitempty"`
@@ -509,20 +510,20 @@ func (RolePermission) TableName() string { return "role_permission" }
 
 // RoleChangeLog — immutable append-only RBAC audit trail.
 type RoleChangeLog struct {
-	ID           string    `gorm:"type:uuid;primaryKey;default:gen_random_uuid()" json:"id"`
-	CreatedAt    time.Time `gorm:"autoCreateTime;index"                           json:"created_at"`
-	RoleID       *string   `gorm:"column:role_id;type:uuid;index"                 json:"role_id,omitempty"`
-	TargetUserID *string   `gorm:"column:target_user_id;type:uuid;index"          json:"target_user_id,omitempty"`
-	PermissionID *string   `gorm:"column:permission_id;type:uuid"                 json:"permission_id,omitempty"`
+	ID           uuid.UUID  `gorm:"type:uuid;primaryKey;default:gen_random_uuid()" json:"id"`
+	CreatedAt    time.Time  `gorm:"autoCreateTime;index"                           json:"created_at"`
+	RoleID       *uuid.UUID `gorm:"column:role_id;type:uuid;index"                 json:"role_id,omitempty"`
+	TargetUserID *uuid.UUID `gorm:"column:target_user_id;type:uuid;index"          json:"target_user_id,omitempty"`
+	PermissionID *uuid.UUID `gorm:"column:permission_id;type:uuid"                 json:"permission_id,omitempty"`
 	// Action values: GRANT_PERMISSION | REVOKE_PERMISSION | ASSIGN_ROLE | REVOKE_ROLE
 	//                CREATE_ROLE | UPDATE_ROLE | DELETE_ROLE
-	Action    string  `gorm:"column:action;not null"                   json:"action"`
-	OldValue  *string `gorm:"column:old_value;type:text"               json:"old_value,omitempty"`
-	NewValue  *string `gorm:"column:new_value;type:text"               json:"new_value,omitempty"`
-	ActorID   string  `gorm:"column:actor_id;type:uuid;not null;index" json:"actor_id"`
-	IPAddress *string `gorm:"column:ip_address"                        json:"ip_address,omitempty"`
-	Role      *Role   `gorm:"foreignKey:RoleID"  json:"role,omitempty"`
-	Actor     User    `gorm:"foreignKey:ActorID" json:"actor,omitempty"`
+	Action    string    `gorm:"column:action;not null"                   json:"action"`
+	OldValue  *string   `gorm:"column:old_value;type:text"               json:"old_value,omitempty"`
+	NewValue  *string   `gorm:"column:new_value;type:text"               json:"new_value,omitempty"`
+	ActorID   uuid.UUID `gorm:"column:actor_id;type:uuid;not null;index" json:"actor_id"`
+	IPAddress *string   `gorm:"column:ip_address"                        json:"ip_address,omitempty"`
+	Role      *Role     `gorm:"foreignKey:RoleID"  json:"role,omitempty"`
+	Actor     User      `gorm:"foreignKey:ActorID" json:"actor,omitempty"`
 }
 
 func (RoleChangeLog) TableName() string { return "role_change_log" }
@@ -541,13 +542,13 @@ type User struct {
 	Base
 	Email        string     `gorm:"column:email;uniqueIndex;not null"        json:"email"`
 	PasswordHash string     `gorm:"column:password_hash;not null"            json:"-"`
-	RoleID       string     `gorm:"column:role_id;type:uuid;not null;index"  json:"role_id"`
+	RoleID       uuid.UUID  `gorm:"column:role_id;type:uuid;not null;index"  json:"role_id"`
 	IsActive     bool       `gorm:"column:is_active;default:true"            json:"is_active"`
 	LastLoginAt  *time.Time `gorm:"column:last_login_at"                     json:"last_login_at,omitempty"`
 	// Persona FKs — at most one non-null (DB CHECK enforced in migration 0008).
-	EmployeeID *string `gorm:"column:employee_id;type:uuid;uniqueIndex" json:"employee_id,omitempty"`
-	StudentID  *string `gorm:"column:student_id;type:uuid;uniqueIndex"  json:"student_id,omitempty"`
-	ParentID   *string `gorm:"column:parent_id;type:uuid;uniqueIndex"   json:"parent_id,omitempty"`
+	EmployeeID *uuid.UUID `gorm:"column:employee_id;type:uuid;uniqueIndex" json:"employee_id,omitempty"`
+	StudentID  *uuid.UUID `gorm:"column:student_id;type:uuid;uniqueIndex"  json:"student_id,omitempty"`
+	ParentID   *uuid.UUID `gorm:"column:parent_id;type:uuid;uniqueIndex"   json:"parent_id,omitempty"`
 
 	Role          Role               `gorm:"foreignKey:RoleID"     json:"role,omitempty"`
 	Employee      *Employee          `gorm:"foreignKey:EmployeeID" json:"employee,omitempty"`
@@ -563,8 +564,8 @@ func (User) TableName() string { return "users" }
 // UserRefreshToken — one row per device/session.
 // ExpiresAt is indexed (v7 addition) so cleanup queries do not full-scan.
 type UserRefreshToken struct {
-	ID               string    `gorm:"type:uuid;primaryKey;default:gen_random_uuid()" json:"id"`
-	UserID           string    `gorm:"column:user_id;type:uuid;not null;index"        json:"user_id"`
+	ID               uuid.UUID `gorm:"type:uuid;primaryKey;default:gen_random_uuid()" json:"id"`
+	UserID           uuid.UUID `gorm:"column:user_id;type:uuid;not null;index"        json:"user_id"`
 	Token            string    `gorm:"column:token;uniqueIndex;not null"              json:"-"`
 	ExpiresAt        time.Time `gorm:"column:expires_at;not null;index"               json:"expires_at"` // v7: indexed
 	Revoked          bool      `gorm:"column:revoked;default:false"                   json:"is_revoked"`
@@ -595,10 +596,10 @@ func (UserRefreshToken) TableName() string { return "user_refresh_token" }
 //  3. Role permission grant
 type UserScope struct {
 	Base
-	UserID       string     `gorm:"column:user_id;type:uuid;not null;index"       json:"user_id"`
-	PermissionID string     `gorm:"column:permission_id;type:uuid;not null;index" json:"permission_id"`
+	UserID       uuid.UUID  `gorm:"column:user_id;type:uuid;not null;index"       json:"user_id"`
+	PermissionID uuid.UUID  `gorm:"column:permission_id;type:uuid;not null;index" json:"permission_id"`
 	ScopeType    ScopeType  `gorm:"column:scope_type;not null"                    json:"scope_type"`
-	ScopeID      *string    `gorm:"column:scope_id;type:uuid"                     json:"scope_id,omitempty"`
+	ScopeID      *uuid.UUID `gorm:"column:scope_id;type:uuid"                     json:"scope_id,omitempty"`
 	IsDeny       bool       `gorm:"column:is_deny;not null;default:false"         json:"is_deny"`
 	GrantedBy    string     `gorm:"column:granted_by;type:uuid;not null"          json:"granted_by"`
 	ExpiresAt    *time.Time `gorm:"column:expires_at"                            json:"expires_at,omitempty"`
@@ -614,12 +615,12 @@ func (UserScope) TableName() string { return "user_scope" }
 // Composite index on (resource_type, resource_id) added in migration 0021
 // to support resource-scoped audit queries without full table scan.
 type AuditLog struct {
-	ID           string        `gorm:"type:uuid;primaryKey;default:gen_random_uuid()" json:"id"`
+	ID           uuid.UUID     `gorm:"type:uuid;primaryKey;default:gen_random_uuid()" json:"id"`
 	CreatedAt    time.Time     `gorm:"autoCreateTime;index"                           json:"created_at"`
-	UserID       string        `gorm:"column:user_id;type:uuid;not null;index"        json:"user_id"`
+	UserID       uuid.UUID     `gorm:"column:user_id;type:uuid;not null;index"        json:"user_id"`
 	Action       string        `gorm:"column:action;not null"                         json:"action"`
 	ResourceType *string       `gorm:"column:resource_type;index"                     json:"resource_type,omitempty"`
-	ResourceID   *string       `gorm:"column:resource_id"                             json:"resource_id,omitempty"`
+	ResourceID   *uuid.UUID    `gorm:"column:resource_id"                             json:"resource_id,omitempty"`
 	Decision     AuditDecision `gorm:"column:decision;not null"                       json:"decision"`
 	Reason       *string       `gorm:"column:reason"                                  json:"reason,omitempty"`
 	OldValue     *string       `gorm:"column:old_value;type:text"                     json:"old_value,omitempty"`
@@ -644,7 +645,7 @@ type Employee struct {
 	Gender         Gender           `gorm:"column:gender;type:text;not null"           json:"gender"`
 	Category       EmployeeCategory `gorm:"column:category;type:text;not null;index"   json:"category"`
 	Designation    string           `gorm:"column:designation;not null"                json:"designation"`
-	DepartmentID   *string          `gorm:"column:department_id;type:uuid;index"       json:"department_id,omitempty"`
+	DepartmentID   *uuid.UUID       `gorm:"column:department_id;type:uuid;index"       json:"department_id,omitempty"`
 	DOB            *time.Time       `gorm:"column:dob"                                 json:"dob,omitempty"`
 	Phone          *string          `gorm:"column:phone"                               json:"phone,omitempty"`
 	Email          *string          `gorm:"column:email;uniqueIndex"                   json:"email,omitempty"`
@@ -711,22 +712,22 @@ func (Parent) TableName() string { return "parent" }
 // StudentParent — junction. IsPrimary flags the main contact parent.
 type StudentParent struct {
 	BaseJunction
-	StudentID string  `gorm:"column:student_id;type:uuid;not null;uniqueIndex:idx_student_parent" json:"student_id"`
-	ParentID  string  `gorm:"column:parent_id;type:uuid;not null;uniqueIndex:idx_student_parent"  json:"parent_id"`
-	IsPrimary bool    `gorm:"column:is_primary;default:false"                                     json:"is_primary"`
-	Student   Student `gorm:"foreignKey:StudentID" json:"student,omitempty"`
-	Parent    Parent  `gorm:"foreignKey:ParentID"  json:"parent,omitempty"`
+	StudentID uuid.UUID `gorm:"column:student_id;type:uuid;not null;uniqueIndex:idx_student_parent" json:"student_id"`
+	ParentID  uuid.UUID `gorm:"column:parent_id;type:uuid;not null;uniqueIndex:idx_student_parent"  json:"parent_id"`
+	IsPrimary bool      `gorm:"column:is_primary;default:false"                                     json:"is_primary"`
+	Student   Student   `gorm:"foreignKey:StudentID" json:"student,omitempty"`
+	Parent    Parent    `gorm:"foreignKey:ParentID"  json:"parent,omitempty"`
 }
 
 func (StudentParent) TableName() string { return "student_parent" }
 
 type StudentDocument struct {
 	Base
-	StudentID    string       `gorm:"column:student_id;type:uuid;not null;index"    json:"student_id"`
+	StudentID    uuid.UUID    `gorm:"column:student_id;type:uuid;not null;index"    json:"student_id"`
 	DocumentType DocumentType `gorm:"column:document_type;type:text;not null"       json:"document_type"`
 	Title        string       `gorm:"column:title;not null"                         json:"title"`
 	FileURL      string       `gorm:"column:file_url;not null"                      json:"file_url"`
-	UploadedByID *string      `gorm:"column:uploaded_by_id;type:uuid;index"         json:"uploaded_by_id,omitempty"`
+	UploadedByID *uuid.UUID   `gorm:"column:uploaded_by_id;type:uuid;index"         json:"uploaded_by_id,omitempty"`
 	Student      Student      `gorm:"foreignKey:StudentID"                          json:"student,omitempty"`
 	UploadedBy   *User        `gorm:"foreignKey:UploadedByID"                       json:"uploaded_by,omitempty"`
 }
@@ -737,7 +738,7 @@ func (StudentDocument) TableName() string { return "student_document" }
 // Service layer must create this row when creating a Student.
 type StudentHealth struct {
 	Base
-	StudentID      string      `gorm:"column:student_id;type:uuid;not null;uniqueIndex" json:"student_id"`
+	StudentID      uuid.UUID   `gorm:"column:student_id;type:uuid;not null;uniqueIndex" json:"student_id"`
 	BloodGroup     *BloodGroup `gorm:"column:blood_group;type:text"                     json:"blood_group,omitempty"`
 	Allergies      *string     `gorm:"column:allergies;type:text"                       json:"allergies,omitempty"`
 	MedicalHistory *string     `gorm:"column:medical_history;type:text"                 json:"medical_history,omitempty"`
@@ -757,7 +758,7 @@ type Department struct {
 	Name           string     `gorm:"column:name;uniqueIndex;not null"  json:"name"`
 	Code           string     `gorm:"column:code;uniqueIndex;not null"  json:"code"`
 	Description    *string    `gorm:"column:description;type:text"     json:"description,omitempty"`
-	HeadEmployeeID *string    `gorm:"column:head_employee_id;type:uuid" json:"head_employee_id,omitempty"`
+	HeadEmployeeID *uuid.UUID `gorm:"column:head_employee_id;type:uuid" json:"head_employee_id,omitempty"`
 	IsActive       bool       `gorm:"column:is_active;default:true"    json:"is_active"`
 	HeadEmployee   *Employee  `gorm:"foreignKey:HeadEmployeeID"        json:"head_employee,omitempty"`
 	Standards      []Standard `gorm:"foreignKey:DepartmentID"          json:"standards,omitempty"`
@@ -769,8 +770,8 @@ func (Department) TableName() string { return "department" }
 // Without this, a department can have two standards named "Class 10".
 type Standard struct {
 	Base
-	DepartmentID string `gorm:"column:department_id;type:uuid;not null;index" json:"department_id"`
-	Name         string `gorm:"column:name;not null"                          json:"name"`
+	DepartmentID uuid.UUID `gorm:"column:department_id;type:uuid;not null;index" json:"department_id"`
+	Name         string    `gorm:"column:name;not null"                          json:"name"`
 	// OrderIndex drives display sort; uniqueIndex on (department_id, order_index)
 	// prevents two standards having the same display position within a department.
 	OrderIndex        int               `gorm:"column:order_index;not null;default:0;uniqueIndex:idx_std_order" json:"order_index"`
@@ -798,8 +799,8 @@ func (Subject) TableName() string { return "subject" }
 
 type StandardSubject struct {
 	BaseJunction
-	StandardID  string      `gorm:"column:standard_id;type:uuid;not null;uniqueIndex:idx_std_subj" json:"standard_id"`
-	SubjectID   string      `gorm:"column:subject_id;type:uuid;not null;uniqueIndex:idx_std_subj"  json:"subject_id"`
+	StandardID  uuid.UUID   `gorm:"column:standard_id;type:uuid;not null;uniqueIndex:idx_std_subj" json:"standard_id"`
+	SubjectID   uuid.UUID   `gorm:"column:subject_id;type:uuid;not null;uniqueIndex:idx_std_subj"  json:"subject_id"`
 	SubjectType SubjectType `gorm:"column:subject_type;type:text;not null;default:'CORE'"          json:"subject_type"`
 	Standard    Standard    `gorm:"foreignKey:StandardID"                                          json:"standard,omitempty"`
 	Subject     Subject     `gorm:"foreignKey:SubjectID"                                           json:"subject,omitempty"`
@@ -827,7 +828,7 @@ func (AcademicYear) TableName() string { return "academic_year" }
 
 type SchoolHoliday struct {
 	Base
-	AcademicYearID string       `gorm:"column:academic_year_id;type:uuid;not null;index"        json:"academic_year_id"`
+	AcademicYearID uuid.UUID    `gorm:"column:academic_year_id;type:uuid;not null;index"        json:"academic_year_id"`
 	Date           time.Time    `gorm:"column:date;type:date;not null;uniqueIndex"              json:"date"`
 	Name           string       `gorm:"column:name;not null"                                    json:"name"`
 	HolidayType    HolidayType  `gorm:"column:holiday_type;type:text;not null;default:'PUBLIC'" json:"holiday_type"`
@@ -849,7 +850,7 @@ func (SchoolHoliday) TableName() string { return "school_holiday" }
 //	min_percent < max_percent
 type GradeScale struct {
 	Base
-	AcademicYearID string          `gorm:"column:academic_year_id;type:uuid;not null;uniqueIndex:idx_grade_year_pct;uniqueIndex:idx_grade_year_grade" json:"academic_year_id"`
+	AcademicYearID uuid.UUID       `gorm:"column:academic_year_id;type:uuid;not null;uniqueIndex:idx_grade_year_pct;uniqueIndex:idx_grade_year_grade" json:"academic_year_id"`
 	Grade          string          `gorm:"column:grade;not null;uniqueIndex:idx_grade_year_grade"                                                     json:"grade"`
 	MinPercent     decimal.Decimal `gorm:"column:min_percent;type:decimal(5,2);not null;uniqueIndex:idx_grade_year_pct"                               json:"min_percent"`
 	MaxPercent     decimal.Decimal `gorm:"column:max_percent;type:decimal(5,2);not null"                                                              json:"max_percent"`
@@ -878,12 +879,12 @@ func (Room) TableName() string { return "room" }
 // ClassEmployeeID must be in AcademicEmployeeCategories — service enforced.
 type ClassSection struct {
 	Base
-	AcademicYearID  string  `gorm:"column:academic_year_id;type:uuid;not null;uniqueIndex:idx_cs" json:"academic_year_id"`
-	StandardID      string  `gorm:"column:standard_id;type:uuid;not null;uniqueIndex:idx_cs"      json:"standard_id"`
-	SectionName     string  `gorm:"column:section_name;not null;uniqueIndex:idx_cs"               json:"section_name"`
-	ClassEmployeeID *string `gorm:"column:class_employee_id;type:uuid"                            json:"class_employee_id,omitempty"`
-	RoomID          *string `gorm:"column:room_id;type:uuid"                                      json:"room_id,omitempty"`
-	MaxStrength     int     `gorm:"column:max_strength;default:40"                                json:"max_strength"`
+	AcademicYearID  uuid.UUID  `gorm:"column:academic_year_id;type:uuid;not null;uniqueIndex:idx_cs" json:"academic_year_id"`
+	StandardID      uuid.UUID  `gorm:"column:standard_id;type:uuid;not null;uniqueIndex:idx_cs"      json:"standard_id"`
+	SectionName     string     `gorm:"column:section_name;not null;uniqueIndex:idx_cs"               json:"section_name"`
+	ClassEmployeeID *uuid.UUID `gorm:"column:class_employee_id;type:uuid"                            json:"class_employee_id,omitempty"`
+	RoomID          *uuid.UUID `gorm:"column:room_id;type:uuid"                                      json:"room_id,omitempty"`
+	MaxStrength     int        `gorm:"column:max_strength;default:40"                                json:"max_strength"`
 
 	AcademicYear  AcademicYear               `gorm:"foreignKey:AcademicYearID"  json:"academic_year,omitempty"`
 	Standard      Standard                   `gorm:"foreignKey:StandardID"      json:"standard,omitempty"`
@@ -903,9 +904,9 @@ func (ClassSection) TableName() string { return "class_section" }
 // student_elective INSERT/DELETE (migration 0002).
 type ClassSectionElectiveSlot struct {
 	Base
-	ClassSectionID    string `gorm:"column:class_section_id;type:uuid;not null;uniqueIndex:idx_elec_slot"    json:"class_section_id"`
-	StandardSubjectID string `gorm:"column:standard_subject_id;type:uuid;not null;uniqueIndex:idx_elec_slot" json:"standard_subject_id"`
-	MaxCapacity       int    `gorm:"column:max_capacity;not null;default:30"                                 json:"max_capacity"`
+	ClassSectionID    uuid.UUID `gorm:"column:class_section_id;type:uuid;not null;uniqueIndex:idx_elec_slot"    json:"class_section_id"`
+	StandardSubjectID uuid.UUID `gorm:"column:standard_subject_id;type:uuid;not null;uniqueIndex:idx_elec_slot" json:"standard_subject_id"`
+	MaxCapacity       int       `gorm:"column:max_capacity;not null;default:30"                                 json:"max_capacity"`
 	// CurrentEnrollment maintained by DB trigger — do not update directly.
 	CurrentEnrollment int `gorm:"column:current_enrollment;not null;default:0" json:"current_enrollment"`
 
@@ -920,8 +921,8 @@ func (ClassSectionElectiveSlot) TableName() string { return "class_section_elect
 // prevents two students sharing the same roll number in the same class section.
 type StudentEnrollment struct {
 	Base
-	StudentID      string `gorm:"column:student_id;type:uuid;not null;uniqueIndex:idx_enroll"                          json:"student_id"`
-	ClassSectionID string `gorm:"column:class_section_id;type:uuid;not null;uniqueIndex:idx_enroll;index:idx_roll_cs"  json:"class_section_id"`
+	StudentID      uuid.UUID `gorm:"column:student_id;type:uuid;not null;uniqueIndex:idx_enroll"                          json:"student_id"`
+	ClassSectionID uuid.UUID `gorm:"column:class_section_id;type:uuid;not null;uniqueIndex:idx_enroll;index:idx_roll_cs"  json:"class_section_id"`
 	// RollNumber unique within class section enforced by migration 0015.
 	RollNumber     int              `gorm:"column:roll_number;not null;index:idx_roll_cs"                                         json:"roll_number"`
 	Status         EnrollmentStatus `gorm:"column:status;type:text;default:'ENROLLED'"                                            json:"status"`
@@ -941,8 +942,8 @@ func (StudentEnrollment) TableName() string { return "student_enrollment" }
 // StudentElective — gated by DB trigger (migration 0002) that checks capacity.
 type StudentElective struct {
 	BaseJunction
-	StudentEnrollmentID string            `gorm:"column:student_enrollment_id;type:uuid;not null;uniqueIndex:idx_elective" json:"student_enrollment_id"`
-	StandardSubjectID   string            `gorm:"column:standard_subject_id;type:uuid;not null;uniqueIndex:idx_elective"   json:"standard_subject_id"`
+	StudentEnrollmentID uuid.UUID         `gorm:"column:student_enrollment_id;type:uuid;not null;uniqueIndex:idx_elective" json:"student_enrollment_id"`
+	StandardSubjectID   uuid.UUID         `gorm:"column:standard_subject_id;type:uuid;not null;uniqueIndex:idx_elective"   json:"standard_subject_id"`
 	StudentEnrollment   StudentEnrollment `gorm:"foreignKey:StudentEnrollmentID" json:"student_enrollment,omitempty"`
 	StandardSubject     StandardSubject   `gorm:"foreignKey:StandardSubjectID"   json:"standard_subject,omitempty"`
 }
@@ -953,9 +954,9 @@ func (StudentElective) TableName() string { return "student_elective" }
 // EmployeeID must be in AcademicEmployeeCategories — service enforced.
 type TeacherAssignment struct {
 	Base
-	EmployeeID     string       `gorm:"column:employee_id;type:uuid;not null;uniqueIndex:idx_ta"      json:"employee_id"`
-	ClassSectionID string       `gorm:"column:class_section_id;type:uuid;not null;uniqueIndex:idx_ta" json:"class_section_id"`
-	SubjectID      string       `gorm:"column:subject_id;type:uuid;not null;uniqueIndex:idx_ta"       json:"subject_id"`
+	EmployeeID     uuid.UUID    `gorm:"column:employee_id;type:uuid;not null;uniqueIndex:idx_ta"      json:"employee_id"`
+	ClassSectionID uuid.UUID    `gorm:"column:class_section_id;type:uuid;not null;uniqueIndex:idx_ta" json:"class_section_id"`
+	SubjectID      uuid.UUID    `gorm:"column:subject_id;type:uuid;not null;uniqueIndex:idx_ta"       json:"subject_id"`
 	Employee       Employee     `gorm:"foreignKey:EmployeeID"     json:"employee,omitempty"`
 	ClassSection   ClassSection `gorm:"foreignKey:ClassSectionID" json:"class_section,omitempty"`
 	Subject        Subject      `gorm:"foreignKey:SubjectID"      json:"subject,omitempty"`
@@ -975,13 +976,13 @@ func (TeacherAssignment) TableName() string { return "teacher_assignment" }
 // CHECK end_time > start_time added in migration 0018.
 type TimeTable struct {
 	Base
-	ClassSectionID string    `gorm:"column:class_section_id;type:uuid;not null;uniqueIndex:idx_tt_clash"         json:"class_section_id"`
-	SubjectID      string    `gorm:"column:subject_id;type:uuid;not null"                                         json:"subject_id"`
-	EmployeeID     string    `gorm:"column:employee_id;type:uuid;not null;index:idx_tt_teacher_clash"             json:"employee_id"`
-	DayOfWeek      int       `gorm:"column:day_of_week;not null;uniqueIndex:idx_tt_clash;index:idx_tt_teacher_clash;index:idx_tt_room_clash" json:"day_of_week"`
-	StartTime      time.Time `gorm:"column:start_time;not null;uniqueIndex:idx_tt_clash;index:idx_tt_teacher_clash;index:idx_tt_room_clash"  json:"start_time"`
-	EndTime        time.Time `gorm:"column:end_time;not null"                                                     json:"end_time"`
-	RoomID         *string   `gorm:"column:room_id;type:uuid;index:idx_tt_room_clash"                             json:"room_id,omitempty"`
+	ClassSectionID uuid.UUID  `gorm:"column:class_section_id;type:uuid;not null;uniqueIndex:idx_tt_clash"         json:"class_section_id"`
+	SubjectID      uuid.UUID  `gorm:"column:subject_id;type:uuid;not null"                                         json:"subject_id"`
+	EmployeeID     uuid.UUID  `gorm:"column:employee_id;type:uuid;not null;index:idx_tt_teacher_clash"             json:"employee_id"`
+	DayOfWeek      int        `gorm:"column:day_of_week;not null;uniqueIndex:idx_tt_clash;index:idx_tt_teacher_clash;index:idx_tt_room_clash" json:"day_of_week"`
+	StartTime      time.Time  `gorm:"column:start_time;not null;uniqueIndex:idx_tt_clash;index:idx_tt_teacher_clash;index:idx_tt_room_clash"  json:"start_time"`
+	EndTime        time.Time  `gorm:"column:end_time;not null"                                                     json:"end_time"`
+	RoomID         *uuid.UUID `gorm:"column:room_id;type:uuid;index:idx_tt_room_clash"                             json:"room_id,omitempty"`
 
 	ClassSection ClassSection `gorm:"foreignKey:ClassSectionID" json:"class_section,omitempty"`
 	Subject      Subject      `gorm:"foreignKey:SubjectID"      json:"subject,omitempty"`
@@ -997,12 +998,12 @@ func (TimeTable) TableName() string { return "time_table" }
 
 type Attendance struct {
 	Base
-	StudentEnrollmentID string           `gorm:"column:student_enrollment_id;type:uuid;not null;uniqueIndex:idx_att" json:"student_enrollment_id"`
+	StudentEnrollmentID uuid.UUID        `gorm:"column:student_enrollment_id;type:uuid;not null;uniqueIndex:idx_att" json:"student_enrollment_id"`
 	Date                time.Time        `gorm:"column:date;type:date;not null;uniqueIndex:idx_att"                  json:"date"`
 	Status              AttendanceStatus `gorm:"column:status;type:text;not null"                                    json:"status"`
 	Remark              *string          `gorm:"column:remark;type:text"                                             json:"remark,omitempty"`
 	// RecordedByID points to User (not Employee) to support admin-level recording.
-	RecordedByID *string `gorm:"column:recorded_by_id;type:uuid;index" json:"recorded_by_id,omitempty"`
+	RecordedByID *uuid.UUID `gorm:"column:recorded_by_id;type:uuid;index" json:"recorded_by_id,omitempty"`
 
 	StudentEnrollment StudentEnrollment `gorm:"foreignKey:StudentEnrollmentID" json:"student_enrollment,omitempty"`
 	RecordedBy        *User             `gorm:"foreignKey:RecordedByID"        json:"recorded_by,omitempty"`
@@ -1012,7 +1013,7 @@ func (Attendance) TableName() string { return "attendance" }
 
 type EmployeeAttendance struct {
 	Base
-	EmployeeID string           `gorm:"column:employee_id;type:uuid;not null;uniqueIndex:idx_emp_att" json:"employee_id"`
+	EmployeeID uuid.UUID        `gorm:"column:employee_id;type:uuid;not null;uniqueIndex:idx_emp_att" json:"employee_id"`
 	Date       time.Time        `gorm:"column:date;type:date;not null;uniqueIndex:idx_emp_att"        json:"date"`
 	Status     AttendanceStatus `gorm:"column:status;type:text;not null"                              json:"status"`
 	CheckInAt  *time.Time       `gorm:"column:check_in_at"                                            json:"check_in_at,omitempty"`
@@ -1040,10 +1041,10 @@ func (LeaveType) TableName() string { return "leave_type" }
 // CHECK used_days <= total_days added in migration 0018.
 type LeaveBalance struct {
 	Base
-	EmployeeID     string `gorm:"column:employee_id;type:uuid;not null;uniqueIndex:idx_leave_bal"      json:"employee_id"`
-	LeaveTypeID    string `gorm:"column:leave_type_id;type:uuid;not null;uniqueIndex:idx_leave_bal"    json:"leave_type_id"`
-	AcademicYearID string `gorm:"column:academic_year_id;type:uuid;not null;uniqueIndex:idx_leave_bal" json:"academic_year_id"`
-	TotalDays      int    `gorm:"column:total_days;not null;default:0"                                 json:"total_days"`
+	EmployeeID     uuid.UUID `gorm:"column:employee_id;type:uuid;not null;uniqueIndex:idx_leave_bal"      json:"employee_id"`
+	LeaveTypeID    uuid.UUID `gorm:"column:leave_type_id;type:uuid;not null;uniqueIndex:idx_leave_bal"    json:"leave_type_id"`
+	AcademicYearID uuid.UUID `gorm:"column:academic_year_id;type:uuid;not null;uniqueIndex:idx_leave_bal" json:"academic_year_id"`
+	TotalDays      int       `gorm:"column:total_days;not null;default:0"                                 json:"total_days"`
 	// UsedDays is maintained by DB trigger in migration 0019. Do not update directly.
 	UsedDays     int          `gorm:"column:used_days;not null;default:0"  json:"used_days"`
 	Employee     Employee     `gorm:"foreignKey:EmployeeID"     json:"employee,omitempty"`
@@ -1060,14 +1061,14 @@ func (LeaveBalance) TableName() string { return "leave_balance" }
 // Composite index on (employee_id, status) added in migration 0021.
 type EmployeeLeave struct {
 	Base
-	EmployeeID  string      `gorm:"column:employee_id;type:uuid;not null;index:idx_emp_leave_status" json:"employee_id"`
-	LeaveTypeID string      `gorm:"column:leave_type_id;type:uuid;not null"                          json:"leave_type_id"`
+	EmployeeID  uuid.UUID   `gorm:"column:employee_id;type:uuid;not null;index:idx_emp_leave_status" json:"employee_id"`
+	LeaveTypeID uuid.UUID   `gorm:"column:leave_type_id;type:uuid;not null"                          json:"leave_type_id"`
 	FromDate    time.Time   `gorm:"column:from_date;type:date;not null"                              json:"from_date"`
 	ToDate      time.Time   `gorm:"column:to_date;type:date;not null"                                json:"to_date"`
 	TotalDays   int         `gorm:"column:total_days;not null"                                       json:"total_days"`
 	Reason      string      `gorm:"column:reason;type:text;not null"                                 json:"reason"`
 	Status      LeaveStatus `gorm:"column:status;type:text;default:'PENDING';index:idx_emp_leave_status" json:"status"`
-	ReviewedBy  *string     `gorm:"column:reviewed_by;type:uuid"                                     json:"reviewed_by,omitempty"`
+	ReviewedBy  *uuid.UUID  `gorm:"column:reviewed_by;type:uuid"                                     json:"reviewed_by,omitempty"`
 	ReviewNote  *string     `gorm:"column:review_note;type:text"                                     json:"review_note,omitempty"`
 	ReviewedAt  *time.Time  `gorm:"column:reviewed_at"                                               json:"reviewed_at,omitempty"`
 	Employee    Employee    `gorm:"foreignKey:EmployeeID"  json:"employee,omitempty"`
@@ -1085,7 +1086,7 @@ func (EmployeeLeave) TableName() string { return "employee_leave" }
 // CHECK end_date >= start_date added in migration 0018.
 type Exam struct {
 	Base
-	AcademicYearID string         `gorm:"column:academic_year_id;type:uuid;not null;index" json:"academic_year_id"`
+	AcademicYearID uuid.UUID      `gorm:"column:academic_year_id;type:uuid;not null;index" json:"academic_year_id"`
 	Name           string         `gorm:"column:name;not null"                             json:"name"`
 	Description    *string        `gorm:"column:description;type:text"                     json:"description,omitempty"`
 	ExamType       ExamType       `gorm:"column:exam_type;type:text;not null"              json:"exam_type"` // v7: proper type, not alias
@@ -1102,15 +1103,15 @@ func (Exam) TableName() string { return "exam" }
 // CHECK passing_marks <= max_marks added in migration 0018.
 type ExamSchedule struct {
 	Base
-	ExamID         string          `gorm:"column:exam_id;type:uuid;not null;uniqueIndex:idx_examsched"          json:"exam_id"`
-	ClassSectionID string          `gorm:"column:class_section_id;type:uuid;not null;uniqueIndex:idx_examsched" json:"class_section_id"`
-	SubjectID      string          `gorm:"column:subject_id;type:uuid;not null;uniqueIndex:idx_examsched"       json:"subject_id"`
+	ExamID         uuid.UUID       `gorm:"column:exam_id;type:uuid;not null;uniqueIndex:idx_examsched"          json:"exam_id"`
+	ClassSectionID uuid.UUID       `gorm:"column:class_section_id;type:uuid;not null;uniqueIndex:idx_examsched" json:"class_section_id"`
+	SubjectID      uuid.UUID       `gorm:"column:subject_id;type:uuid;not null;uniqueIndex:idx_examsched"       json:"subject_id"`
 	ExamDate       time.Time       `gorm:"column:exam_date;type:date;not null"                                  json:"exam_date"`
 	StartTime      *time.Time      `gorm:"column:start_time"                                                    json:"start_time,omitempty"`
 	EndTime        *time.Time      `gorm:"column:end_time"                                                      json:"end_time,omitempty"`
 	MaxMarks       decimal.Decimal `gorm:"column:max_marks;type:decimal(6,2);not null"                          json:"max_marks"`
 	PassingMarks   decimal.Decimal `gorm:"column:passing_marks;type:decimal(6,2);not null"                      json:"passing_marks"`
-	RoomID         *string         `gorm:"column:room_id;type:uuid"                                             json:"room_id,omitempty"`
+	RoomID         *uuid.UUID      `gorm:"column:room_id;type:uuid"                                             json:"room_id,omitempty"`
 
 	Exam         Exam         `gorm:"foreignKey:ExamID"         json:"exam,omitempty"`
 	ClassSection ClassSection `gorm:"foreignKey:ClassSectionID" json:"class_section,omitempty"`
@@ -1128,14 +1129,14 @@ func (ExamSchedule) TableName() string { return "exam_schedule" }
 // Grade is set by service from GradeScale, never free text.
 type ExamResult struct {
 	Base
-	ExamScheduleID      string           `gorm:"column:exam_schedule_id;type:uuid;not null;uniqueIndex:idx_examresult"      json:"exam_schedule_id"`
-	StudentEnrollmentID string           `gorm:"column:student_enrollment_id;type:uuid;not null;uniqueIndex:idx_examresult" json:"student_enrollment_id"`
+	ExamScheduleID      uuid.UUID        `gorm:"column:exam_schedule_id;type:uuid;not null;uniqueIndex:idx_examresult"      json:"exam_schedule_id"`
+	StudentEnrollmentID uuid.UUID        `gorm:"column:student_enrollment_id;type:uuid;not null;uniqueIndex:idx_examresult" json:"student_enrollment_id"`
 	MarksObtained       *decimal.Decimal `gorm:"column:marks_obtained;type:decimal(6,2)"                                    json:"marks_obtained,omitempty"`
 	Grade               *string          `gorm:"column:grade"                                                               json:"grade,omitempty"`
 	// GPA removed — join GradeScale at query time.
 	Status     ExamResultStatus `gorm:"column:status;type:text;not null"       json:"status"`
 	Remarks    *string          `gorm:"column:remarks;type:text"               json:"remarks,omitempty"`
-	GradedByID *string          `gorm:"column:graded_by_id;type:uuid"          json:"graded_by_id,omitempty"`
+	GradedByID *uuid.UUID       `gorm:"column:graded_by_id;type:uuid"          json:"graded_by_id,omitempty"`
 
 	ExamSchedule      ExamSchedule      `gorm:"foreignKey:ExamScheduleID"      json:"exam_schedule,omitempty"`
 	StudentEnrollment StudentEnrollment `gorm:"foreignKey:StudentEnrollmentID" json:"student_enrollment,omitempty"`
@@ -1146,9 +1147,9 @@ func (ExamResult) TableName() string { return "exam_result" }
 
 type Assignment struct {
 	Base
-	ClassSectionID string           `gorm:"column:class_section_id;type:uuid;not null;index" json:"class_section_id"`
-	SubjectID      string           `gorm:"column:subject_id;type:uuid;not null;index"       json:"subject_id"`
-	AssignedByID   string           `gorm:"column:assigned_by_id;type:uuid;not null"         json:"assigned_by_id"`
+	ClassSectionID uuid.UUID        `gorm:"column:class_section_id;type:uuid;not null;index" json:"class_section_id"`
+	SubjectID      uuid.UUID        `gorm:"column:subject_id;type:uuid;not null;index"       json:"subject_id"`
+	AssignedByID   uuid.UUID        `gorm:"column:assigned_by_id;type:uuid;not null"         json:"assigned_by_id"`
 	Title          string           `gorm:"column:title;not null"                            json:"title"`
 	Description    *string          `gorm:"column:description;type:text"                     json:"description,omitempty"`
 	DueDate        time.Time        `gorm:"column:due_date;not null"                         json:"due_date"`
@@ -1168,8 +1169,8 @@ func (Assignment) TableName() string { return "assignment" }
 // to support fast ungraded-submission queries per assignment.
 type AssignmentSubmission struct {
 	Base
-	AssignmentID        string           `gorm:"column:assignment_id;type:uuid;not null;uniqueIndex:idx_submission;index:idx_sub_status"         json:"assignment_id"`
-	StudentEnrollmentID string           `gorm:"column:student_enrollment_id;type:uuid;not null;uniqueIndex:idx_submission"                      json:"student_enrollment_id"`
+	AssignmentID        uuid.UUID        `gorm:"column:assignment_id;type:uuid;not null;uniqueIndex:idx_submission;index:idx_sub_status"         json:"assignment_id"`
+	StudentEnrollmentID uuid.UUID        `gorm:"column:student_enrollment_id;type:uuid;not null;uniqueIndex:idx_submission"                      json:"student_enrollment_id"`
 	SubmittedAt         *time.Time       `gorm:"column:submitted_at"                                                                             json:"submitted_at,omitempty"`
 	FileURL             *string          `gorm:"column:file_url"                                                                                 json:"file_url,omitempty"`
 	Notes               *string          `gorm:"column:notes;type:text"                                                                          json:"notes,omitempty"`
@@ -1199,9 +1200,9 @@ func (FeeComponent) TableName() string { return "fee_component" }
 // FeeStructure — unique on (academic_year_id, standard_id, fee_component_id).
 type FeeStructure struct {
 	Base
-	AcademicYearID string          `gorm:"column:academic_year_id;type:uuid;not null;uniqueIndex:idx_feestruct" json:"academic_year_id"`
-	StandardID     string          `gorm:"column:standard_id;type:uuid;not null;uniqueIndex:idx_feestruct"      json:"standard_id"`
-	FeeComponentID string          `gorm:"column:fee_component_id;type:uuid;not null;uniqueIndex:idx_feestruct" json:"fee_component_id"`
+	AcademicYearID uuid.UUID       `gorm:"column:academic_year_id;type:uuid;not null;uniqueIndex:idx_feestruct" json:"academic_year_id"`
+	StandardID     uuid.UUID       `gorm:"column:standard_id;type:uuid;not null;uniqueIndex:idx_feestruct"      json:"standard_id"`
+	FeeComponentID uuid.UUID       `gorm:"column:fee_component_id;type:uuid;not null;uniqueIndex:idx_feestruct" json:"fee_component_id"`
 	Amount         decimal.Decimal `gorm:"column:amount;type:decimal(12,2);not null"                            json:"amount"`
 	DueDate        *time.Time      `gorm:"column:due_date"                                                      json:"due_date,omitempty"`
 	IsRecurring    bool            `gorm:"column:is_recurring;default:false"                                    json:"is_recurring"`
@@ -1220,9 +1221,9 @@ func (FeeStructure) TableName() string { return "fee_structure" }
 //	amount_paid >= 0 AND amount_paid <= (amount_due - discount)
 type FeeRecord struct {
 	Base
-	StudentEnrollmentID string          `gorm:"column:student_enrollment_id;type:uuid;not null;index"   json:"student_enrollment_id"`
-	FeeStructureID      *string         `gorm:"column:fee_structure_id;type:uuid"                       json:"fee_structure_id,omitempty"`
-	FeeComponentID      string          `gorm:"column:fee_component_id;type:uuid;not null;index"        json:"fee_component_id"`
+	StudentEnrollmentID uuid.UUID       `gorm:"column:student_enrollment_id;type:uuid;not null;index"   json:"student_enrollment_id"`
+	FeeStructureID      *uuid.UUID      `gorm:"column:fee_structure_id;type:uuid"                       json:"fee_structure_id,omitempty"`
+	FeeComponentID      uuid.UUID       `gorm:"column:fee_component_id;type:uuid;not null;index"        json:"fee_component_id"`
 	AmountDue           decimal.Decimal `gorm:"column:amount_due;type:decimal(12,2);not null"           json:"amount_due"`
 	Discount            decimal.Decimal `gorm:"column:discount;type:decimal(12,2);default:0"            json:"discount"`
 	AmountPaid          decimal.Decimal `gorm:"column:amount_paid;type:decimal(12,2);default:0"         json:"amount_paid"`
@@ -1230,7 +1231,7 @@ type FeeRecord struct {
 	PaidDate            *time.Time      `gorm:"column:paid_date"                                        json:"paid_date,omitempty"`
 	Status              FeeStatus       `gorm:"column:status;type:text;default:'PENDING'"               json:"status"`
 	TransactionRef      *string         `gorm:"column:transaction_ref"                                  json:"transaction_ref,omitempty"`
-	CollectedByID       *string         `gorm:"column:collected_by_id;type:uuid"                        json:"collected_by_id,omitempty"`
+	CollectedByID       *uuid.UUID      `gorm:"column:collected_by_id;type:uuid"                        json:"collected_by_id,omitempty"`
 	Remarks             *string         `gorm:"column:remarks;type:text"                                json:"remarks,omitempty"`
 
 	StudentEnrollment StudentEnrollment `gorm:"foreignKey:StudentEnrollmentID" json:"student_enrollment,omitempty"`
@@ -1247,7 +1248,7 @@ func (FeeRecord) TableName() string { return "fee_record" }
 // MAX(effective_from) query ambiguous.
 type SalaryStructure struct {
 	Base
-	EmployeeID     string          `gorm:"column:employee_id;type:uuid;not null;uniqueIndex:idx_sal_struct_eff" json:"employee_id"`
+	EmployeeID     uuid.UUID       `gorm:"column:employee_id;type:uuid;not null;uniqueIndex:idx_sal_struct_eff" json:"employee_id"`
 	BasicSalary    decimal.Decimal `gorm:"column:basic_salary;type:decimal(12,2);not null"                      json:"basic_salary"`
 	HRA            decimal.Decimal `gorm:"column:hra;type:decimal(12,2);default:0"                              json:"hra"`
 	DA             decimal.Decimal `gorm:"column:da;type:decimal(12,2);default:0"                               json:"da"`
@@ -1271,8 +1272,8 @@ func (SalaryStructure) TableName() string { return "salary_structure" }
 // NetSalary = GrossSalary - TotalDeduction (CHECK in migration 0001)
 type SalaryRecord struct {
 	Base
-	EmployeeID     string          `gorm:"column:employee_id;type:uuid;not null;uniqueIndex:idx_salary_emp_month" json:"employee_id"`
-	AcademicYearID string          `gorm:"column:academic_year_id;type:uuid;not null;index"                       json:"academic_year_id"`
+	EmployeeID     uuid.UUID       `gorm:"column:employee_id;type:uuid;not null;uniqueIndex:idx_salary_emp_month" json:"employee_id"`
+	AcademicYearID uuid.UUID       `gorm:"column:academic_year_id;type:uuid;not null;index"                       json:"academic_year_id"`
 	Month          int             `gorm:"column:month;not null;uniqueIndex:idx_salary_emp_month"                 json:"month"`
 	Year           int             `gorm:"column:year;not null;uniqueIndex:idx_salary_emp_month"                  json:"year"`
 	WorkingDays    int             `gorm:"column:working_days;not null;default:0"                                 json:"working_days"`
@@ -1311,11 +1312,11 @@ type Notice struct {
 	Title          string         `gorm:"column:title;not null"                   json:"title"`
 	Content        string         `gorm:"column:content;type:text;not null"        json:"content"`
 	Audience       NoticeAudience `gorm:"column:audience;type:text;not null"       json:"audience"`
-	ClassSectionID *string        `gorm:"column:class_section_id;type:uuid;index"  json:"class_section_id,omitempty"`
+	ClassSectionID *uuid.UUID     `gorm:"column:class_section_id;type:uuid;index"  json:"class_section_id,omitempty"`
 	PublishedAt    *time.Time     `gorm:"column:published_at"                      json:"published_at,omitempty"`
 	ExpiresAt      *time.Time     `gorm:"column:expires_at"                        json:"expires_at,omitempty"`
 	IsPublished    bool           `gorm:"column:is_published;default:false"        json:"is_published"`
-	AuthorID       string         `gorm:"column:author_id;type:uuid;not null"      json:"author_id"`
+	AuthorID       uuid.UUID      `gorm:"column:author_id;type:uuid;not null"      json:"author_id"`
 
 	ClassSection *ClassSection `gorm:"foreignKey:ClassSectionID" json:"class_section,omitempty"`
 	Author       User          `gorm:"foreignKey:AuthorID"       json:"author,omitempty"`
@@ -1334,7 +1335,7 @@ type Announcement struct {
 	PublishedAt *time.Time           `gorm:"column:published_at"                  json:"published_at,omitempty"`
 	ExpiresAt   *time.Time           `gorm:"column:expires_at"                    json:"expires_at,omitempty"`
 	IsPublished bool                 `gorm:"column:is_published;default:false"    json:"is_published"`
-	AuthorID    string               `gorm:"column:author_id;type:uuid;not null"  json:"author_id"`
+	AuthorID    uuid.UUID            `gorm:"column:author_id;type:uuid;not null"  json:"author_id"`
 	// AttachmentURL for optional attached document/image.
 	AttachmentURL *string `gorm:"column:attachment_url" json:"attachment_url,omitempty"`
 
@@ -1348,8 +1349,8 @@ func (Announcement) TableName() string { return "announcement" }
 // Hard delete (BaseJunction) since there's no meaningful soft-delete of a read event.
 type AnnouncementRead struct {
 	BaseJunction
-	AnnouncementID string       `gorm:"column:announcement_id;type:uuid;not null;uniqueIndex:idx_ann_read" json:"announcement_id"`
-	UserID         string       `gorm:"column:user_id;type:uuid;not null;uniqueIndex:idx_ann_read"         json:"user_id"`
+	AnnouncementID uuid.UUID    `gorm:"column:announcement_id;type:uuid;not null;uniqueIndex:idx_ann_read" json:"announcement_id"`
+	UserID         uuid.UUID    `gorm:"column:user_id;type:uuid;not null;uniqueIndex:idx_ann_read"         json:"user_id"`
 	Announcement   Announcement `gorm:"foreignKey:AnnouncementID" json:"announcement,omitempty"`
 	User           User         `gorm:"foreignKey:UserID"         json:"user,omitempty"`
 }
@@ -1362,11 +1363,11 @@ func (AnnouncementRead) TableName() string { return "announcement_read" }
 // and replace InitiatorID/RecipientID with a participants relationship.
 type MessageThread struct {
 	Base
-	Subject           string `gorm:"column:subject;not null"                  json:"subject"`
-	InitiatorID       string `gorm:"column:initiator_id;type:uuid;not null"   json:"initiator_id"`
-	RecipientID       string `gorm:"column:recipient_id;type:uuid;not null"   json:"recipient_id"`
-	InitiatorArchived bool   `gorm:"column:initiator_archived;default:false"  json:"initiator_archived"`
-	RecipientArchived bool   `gorm:"column:recipient_archived;default:false"  json:"recipient_archived"`
+	Subject           string    `gorm:"column:subject;not null"                  json:"subject"`
+	InitiatorID       uuid.UUID `gorm:"column:initiator_id;type:uuid;not null"   json:"initiator_id"`
+	RecipientID       uuid.UUID `gorm:"column:recipient_id;type:uuid;not null"   json:"recipient_id"`
+	InitiatorArchived bool      `gorm:"column:initiator_archived;default:false"  json:"initiator_archived"`
+	RecipientArchived bool      `gorm:"column:recipient_archived;default:false"  json:"recipient_archived"`
 
 	Initiator User      `gorm:"foreignKey:InitiatorID" json:"initiator,omitempty"`
 	Recipient User      `gorm:"foreignKey:RecipientID" json:"recipient,omitempty"`
@@ -1381,8 +1382,8 @@ func (MessageThread) TableName() string { return "message_thread" }
 // recipient has read the message. ReadAt records when.
 type Message struct {
 	Base
-	ThreadID string     `gorm:"column:thread_id;type:uuid;not null;index" json:"thread_id"`
-	SenderID string     `gorm:"column:sender_id;type:uuid;not null"        json:"sender_id"`
+	ThreadID uuid.UUID  `gorm:"column:thread_id;type:uuid;not null;index" json:"thread_id"`
+	SenderID uuid.UUID  `gorm:"column:sender_id;type:uuid;not null"        json:"sender_id"`
 	Body     string     `gorm:"column:body;type:text;not null"             json:"body"`
 	IsRead   bool       `gorm:"column:is_read;default:false"               json:"is_read"`
 	ReadAt   *time.Time `gorm:"column:read_at"                             json:"read_at,omitempty"`
@@ -1399,14 +1400,14 @@ func (Message) TableName() string { return "message" }
 // Queries requiring FromStandard should join through StudentEnrollment.
 type PromotionRecord struct {
 	Base
-	StudentEnrollmentID string  `gorm:"column:student_enrollment_id;type:uuid;not null;uniqueIndex" json:"student_enrollment_id"`
-	FromAcademicYearID  string  `gorm:"column:from_academic_year_id;type:uuid;not null"             json:"from_academic_year_id"`
-	ToAcademicYearID    *string `gorm:"column:to_academic_year_id;type:uuid"                        json:"to_academic_year_id,omitempty"`
+	StudentEnrollmentID uuid.UUID  `gorm:"column:student_enrollment_id;type:uuid;not null;uniqueIndex" json:"student_enrollment_id"`
+	FromAcademicYearID  uuid.UUID  `gorm:"column:from_academic_year_id;type:uuid;not null"             json:"from_academic_year_id"`
+	ToAcademicYearID    *uuid.UUID `gorm:"column:to_academic_year_id;type:uuid"                        json:"to_academic_year_id,omitempty"`
 	// FromStandardID removed — use StudentEnrollment → ClassSection → Standard.
-	ToStandardID  *string         `gorm:"column:to_standard_id;type:uuid"                             json:"to_standard_id,omitempty"`
+	ToStandardID  *uuid.UUID      `gorm:"column:to_standard_id;type:uuid"                             json:"to_standard_id,omitempty"`
 	Status        PromotionStatus `gorm:"column:status;type:text;not null"                            json:"status"`
 	Remarks       *string         `gorm:"column:remarks;type:text"                                    json:"remarks,omitempty"`
-	ProcessedByID string          `gorm:"column:processed_by_id;type:uuid;not null"                   json:"processed_by_id"`
+	ProcessedByID uuid.UUID       `gorm:"column:processed_by_id;type:uuid;not null"                   json:"processed_by_id"`
 
 	StudentEnrollment StudentEnrollment `gorm:"foreignKey:StudentEnrollmentID" json:"student_enrollment,omitempty"`
 	FromAcademicYear  AcademicYear      `gorm:"foreignKey:FromAcademicYearID"  json:"from_academic_year,omitempty"`
@@ -1419,14 +1420,14 @@ func (PromotionRecord) TableName() string { return "promotion_record" }
 
 type Event struct {
 	Base
-	AcademicYearID *string   `gorm:"column:academic_year_id;type:uuid;index"       json:"academic_year_id,omitempty"`
-	Title          string    `gorm:"column:title;not null"                         json:"title"`
-	Description    *string   `gorm:"column:description;type:text"                  json:"description,omitempty"`
-	StartAt        time.Time `gorm:"column:start_at;not null"                      json:"start_at"`
-	EndAt          time.Time `gorm:"column:end_at;not null"                        json:"end_at"`
-	Location       *string   `gorm:"column:location"                               json:"location,omitempty"`
-	IsPublic       bool      `gorm:"column:is_public;default:true"                 json:"is_public"`
-	CreatedByID    string    `gorm:"column:created_by_id;type:uuid;not null"       json:"created_by_id"`
+	AcademicYearID *uuid.UUID `gorm:"column:academic_year_id;type:uuid;index"       json:"academic_year_id,omitempty"`
+	Title          string     `gorm:"column:title;not null"                         json:"title"`
+	Description    *string    `gorm:"column:description;type:text"                  json:"description,omitempty"`
+	StartAt        time.Time  `gorm:"column:start_at;not null"                      json:"start_at"`
+	EndAt          time.Time  `gorm:"column:end_at;not null"                        json:"end_at"`
+	Location       *string    `gorm:"column:location"                               json:"location,omitempty"`
+	IsPublic       bool       `gorm:"column:is_public;default:true"                 json:"is_public"`
+	CreatedByID    uuid.UUID  `gorm:"column:created_by_id;type:uuid;not null"       json:"created_by_id"`
 
 	AcademicYear *AcademicYear `gorm:"foreignKey:AcademicYearID" json:"academic_year,omitempty"`
 	CreatedBy    User          `gorm:"foreignKey:CreatedByID"    json:"created_by,omitempty"`
@@ -1476,8 +1477,8 @@ func (LibraryFineRate) TableName() string { return "library_fine_rate" }
 // due_date > issued_at CHECK added in migration 0018.
 type LibraryIssue struct {
 	Base
-	BookID     string          `gorm:"column:book_id;type:uuid;not null;index"        json:"book_id"`
-	IssuedToID string          `gorm:"column:issued_to_id;type:uuid;not null;index"   json:"issued_to_id"`
+	BookID     uuid.UUID       `gorm:"column:book_id;type:uuid;not null;index"        json:"book_id"`
+	IssuedToID uuid.UUID       `gorm:"column:issued_to_id;type:uuid;not null;index"   json:"issued_to_id"`
 	IssuedAt   time.Time       `gorm:"column:issued_at;not null"                      json:"issued_at"`
 	DueDate    time.Time       `gorm:"column:due_date;not null"                       json:"due_date"`
 	ReturnedAt *time.Time      `gorm:"column:returned_at"                             json:"returned_at,omitempty"`
@@ -1497,9 +1498,9 @@ type TransportRoute struct {
 	Base
 	RouteName string `gorm:"column:route_name;uniqueIndex;not null"         json:"route_name"`
 	// VehicleNumber uniqueIndex (v7): prevents same vehicle on two routes.
-	VehicleNumber string  `gorm:"column:vehicle_number;not null;uniqueIndex"      json:"vehicle_number"`
-	DriverID      *string `gorm:"column:driver_id;type:uuid"                     json:"driver_id,omitempty"`
-	IsActive      bool    `gorm:"column:is_active;default:true"                  json:"is_active"`
+	VehicleNumber string     `gorm:"column:vehicle_number;not null;uniqueIndex"      json:"vehicle_number"`
+	DriverID      *uuid.UUID `gorm:"column:driver_id;type:uuid"                     json:"driver_id,omitempty"`
+	IsActive      bool       `gorm:"column:is_active;default:true"                  json:"is_active"`
 
 	Driver   *Employee          `gorm:"foreignKey:DriverID" json:"driver,omitempty"`
 	Students []StudentTransport `gorm:"foreignKey:RouteID"  json:"students,omitempty"`
@@ -1509,9 +1510,9 @@ func (TransportRoute) TableName() string { return "transport_route" }
 
 type StudentTransport struct {
 	BaseJunction
-	StudentEnrollmentID string  `gorm:"column:student_enrollment_id;type:uuid;not null;uniqueIndex" json:"student_enrollment_id"`
-	RouteID             string  `gorm:"column:route_id;type:uuid;not null;index"                    json:"route_id"`
-	PickupPoint         *string `gorm:"column:pickup_point"                                         json:"pickup_point,omitempty"`
+	StudentEnrollmentID uuid.UUID `gorm:"column:student_enrollment_id;type:uuid;not null;uniqueIndex" json:"student_enrollment_id"`
+	RouteID             uuid.UUID `gorm:"column:route_id;type:uuid;not null;index"                    json:"route_id"`
+	PickupPoint         *string   `gorm:"column:pickup_point"                                         json:"pickup_point,omitempty"`
 
 	StudentEnrollment StudentEnrollment `gorm:"foreignKey:StudentEnrollmentID" json:"student_enrollment,omitempty"`
 	Route             TransportRoute    `gorm:"foreignKey:RouteID"             json:"route,omitempty"`

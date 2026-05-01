@@ -3,7 +3,8 @@ package auth
 import (
 	"context"
 
-	"github.com/thalalhassan/edu_management/internal/constants"
+	"github.com/google/uuid"
+	"github.com/thalalhassan/edu_management/internal/apperrors"
 	"github.com/thalalhassan/edu_management/internal/database"
 	"gorm.io/gorm"
 )
@@ -15,7 +16,7 @@ type Repository interface {
 	SaveRefreshToken(ctx context.Context, token *database.UserRefreshToken) error
 	GetRefreshToken(ctx context.Context, rawToken string) (*database.UserRefreshToken, error)
 	RevokeRefreshToken(ctx context.Context, rawToken string) error
-	RevokeAllRefreshTokensForUser(ctx context.Context, userID string) error
+	RevokeAllRefreshTokensForUser(ctx context.Context, userID uuid.UUID) error
 }
 
 type repository struct {
@@ -30,7 +31,7 @@ func (r *repository) GetUserByEmail(ctx context.Context, email string) (*databas
 	var user database.User
 	if err := r.db.WithContext(ctx).Where("email = ?", email).First(&user).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
-			return nil, constants.Errors.ErrUserNotFound
+			return nil, apperrors.ErrNotFound
 		}
 		return nil, err
 	}
@@ -66,7 +67,7 @@ func (r *repository) RevokeRefreshToken(ctx context.Context, rawToken string) er
 		Update("revoked", true).Error
 }
 
-func (r *repository) RevokeAllRefreshTokensForUser(ctx context.Context, userID string) error {
+func (r *repository) RevokeAllRefreshTokensForUser(ctx context.Context, userID uuid.UUID) error {
 	return r.db.WithContext(ctx).
 		Model(&database.UserRefreshToken{}).
 		Where("user_id = ?", userID).

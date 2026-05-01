@@ -1,11 +1,14 @@
 package exam
 
 import (
+	"errors"
+
 	"github.com/gin-gonic/gin"
 	"github.com/thalalhassan/edu_management/internal/app"
 	"github.com/thalalhassan/edu_management/internal/config"
 	"github.com/thalalhassan/edu_management/internal/constants"
 	"github.com/thalalhassan/edu_management/internal/middleware"
+	"github.com/thalalhassan/edu_management/internal/shared/helper"
 	"github.com/thalalhassan/edu_management/internal/shared/pagination"
 	"github.com/thalalhassan/edu_management/internal/shared/query_params"
 	"github.com/thalalhassan/edu_management/internal/shared/response"
@@ -81,17 +84,21 @@ func (h *Handler) createExam(c *gin.Context) {
 	}
 	resp, err := h.service.CreateExam(c.Request.Context(), req)
 	if err != nil {
-		response.BadRequest(c, err.Error())
+		respondWithServiceError(c, err)
 		return
 	}
 	response.Created(c, resp, "Exam created successfully")
 }
 
 func (h *Handler) getExam(c *gin.Context) {
-	id := c.Param("id")
+	id, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
+
 	resp, err := h.service.GetExamByID(c.Request.Context(), id)
 	if err != nil {
-		response.NotFound(c, err.Error())
+		respondWithServiceError(c, err)
 		return
 	}
 	response.Success(c, resp, "Exam retrieved successfully")
@@ -100,7 +107,7 @@ func (h *Handler) getExam(c *gin.Context) {
 func (h *Handler) listExams(c *gin.Context) {
 	var f FilterParams
 	if err := c.ShouldBindQuery(&f); err != nil {
-		response.BadRequest(c, err.Error())
+		respondWithServiceError(c, err)
 		return
 	}
 
@@ -120,7 +127,10 @@ func (h *Handler) listExams(c *gin.Context) {
 }
 
 func (h *Handler) updateExam(c *gin.Context) {
-	id := c.Param("id")
+	id, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
 	var req UpdateExamRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(c, err.Error())
@@ -128,14 +138,17 @@ func (h *Handler) updateExam(c *gin.Context) {
 	}
 	resp, err := h.service.UpdateExam(c.Request.Context(), id, req)
 	if err != nil {
-		response.BadRequest(c, err.Error())
+		respondWithServiceError(c, err)
 		return
 	}
 	response.Success(c, resp, "Exam updated successfully")
 }
 
 func (h *Handler) publishExam(c *gin.Context) {
-	id := c.Param("id")
+	id, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
 	var req PublishExamRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(c, err.Error())
@@ -143,20 +156,23 @@ func (h *Handler) publishExam(c *gin.Context) {
 	}
 	resp, err := h.service.PublishExam(c.Request.Context(), id, req)
 	if err != nil {
-		response.BadRequest(c, err.Error())
+		respondWithServiceError(c, err)
 		return
 	}
 	msg := "Exam unpublished successfully"
-	if req.IsPublished {
+	if req.IsPublished != nil && *req.IsPublished {
 		msg = "Exam published successfully"
 	}
 	response.Success(c, resp, msg)
 }
 
 func (h *Handler) deleteExam(c *gin.Context) {
-	id := c.Param("id")
+	id, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
 	if err := h.service.DeleteExam(c.Request.Context(), id); err != nil {
-		response.BadRequest(c, err.Error())
+		respondWithServiceError(c, err)
 		return
 	}
 	response.Success[any](c, nil, "Exam deleted successfully")
@@ -165,7 +181,10 @@ func (h *Handler) deleteExam(c *gin.Context) {
 // ─── ExamSchedule handlers ────────────────────────────────────────────────────
 
 func (h *Handler) createSchedule(c *gin.Context) {
-	examID := c.Param("id")
+	examID, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
 	var req CreateScheduleRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(c, err.Error())
@@ -173,24 +192,30 @@ func (h *Handler) createSchedule(c *gin.Context) {
 	}
 	resp, err := h.service.CreateSchedule(c.Request.Context(), examID, req)
 	if err != nil {
-		response.BadRequest(c, err.Error())
+		respondWithServiceError(c, err)
 		return
 	}
 	response.Created(c, resp, "Exam schedule created successfully")
 }
 
 func (h *Handler) getSchedule(c *gin.Context) {
-	id := c.Param("id")
+	id, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
 	resp, err := h.service.GetScheduleByID(c.Request.Context(), id)
 	if err != nil {
-		response.NotFound(c, err.Error())
+		respondWithServiceError(c, err)
 		return
 	}
 	response.Success(c, resp, "Exam schedule retrieved successfully")
 }
 
 func (h *Handler) listSchedulesByExam(c *gin.Context) {
-	examID := c.Param("id")
+	examID, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
 	resp, err := h.service.ListSchedulesByExam(c.Request.Context(), examID)
 	if err != nil {
 		response.InternalError(c, err.Error())
@@ -200,7 +225,10 @@ func (h *Handler) listSchedulesByExam(c *gin.Context) {
 }
 
 func (h *Handler) listSchedulesByClassSection(c *gin.Context) {
-	classSectionID := c.Param("class_section_id")
+	classSectionID, valid := helper.ParseParamUUIDWithAbort(c, "class_section_id")
+	if !valid {
+		return
+	}
 	resp, err := h.service.ListSchedulesByClassSection(c.Request.Context(), classSectionID)
 	if err != nil {
 		response.InternalError(c, err.Error())
@@ -210,7 +238,10 @@ func (h *Handler) listSchedulesByClassSection(c *gin.Context) {
 }
 
 func (h *Handler) updateSchedule(c *gin.Context) {
-	id := c.Param("id")
+	id, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
 	var req UpdateScheduleRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(c, err.Error())
@@ -218,16 +249,19 @@ func (h *Handler) updateSchedule(c *gin.Context) {
 	}
 	resp, err := h.service.UpdateSchedule(c.Request.Context(), id, req)
 	if err != nil {
-		response.BadRequest(c, err.Error())
+		respondWithServiceError(c, err)
 		return
 	}
 	response.Success(c, resp, "Exam schedule updated successfully")
 }
 
 func (h *Handler) deleteSchedule(c *gin.Context) {
-	id := c.Param("id")
+	id, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
 	if err := h.service.DeleteSchedule(c.Request.Context(), id); err != nil {
-		response.BadRequest(c, err.Error())
+		respondWithServiceError(c, err)
 		return
 	}
 	response.Success[any](c, nil, "Exam schedule deleted successfully")
@@ -236,7 +270,10 @@ func (h *Handler) deleteSchedule(c *gin.Context) {
 // ─── ExamResult handlers ──────────────────────────────────────────────────────
 
 func (h *Handler) createResult(c *gin.Context) {
-	scheduleID := c.Param("id")
+	scheduleID, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
 	var req CreateResultRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(c, err.Error())
@@ -244,14 +281,17 @@ func (h *Handler) createResult(c *gin.Context) {
 	}
 	resp, err := h.service.CreateResult(c.Request.Context(), scheduleID, req)
 	if err != nil {
-		response.BadRequest(c, err.Error())
+		respondWithServiceError(c, err)
 		return
 	}
 	response.Created(c, resp, "Exam result created successfully")
 }
 
 func (h *Handler) bulkCreateResults(c *gin.Context) {
-	scheduleID := c.Param("id")
+	scheduleID, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
 	var req BulkCreateResultRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(c, err.Error())
@@ -259,24 +299,30 @@ func (h *Handler) bulkCreateResults(c *gin.Context) {
 	}
 	resp, err := h.service.BulkCreateResults(c.Request.Context(), scheduleID, req)
 	if err != nil {
-		response.BadRequest(c, err.Error())
+		respondWithServiceError(c, err)
 		return
 	}
 	response.Created(c, resp, "Exam results created successfully")
 }
 
 func (h *Handler) getResult(c *gin.Context) {
-	id := c.Param("id")
+	id, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
 	resp, err := h.service.GetResultByID(c.Request.Context(), id)
 	if err != nil {
-		response.NotFound(c, err.Error())
+		respondWithServiceError(c, err)
 		return
 	}
 	response.Success(c, resp, "Exam result retrieved successfully")
 }
 
 func (h *Handler) listResultsBySchedule(c *gin.Context) {
-	scheduleID := c.Param("id")
+	scheduleID, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
 	resp, err := h.service.ListResultsBySchedule(c.Request.Context(), scheduleID)
 	if err != nil {
 		response.InternalError(c, err.Error())
@@ -286,7 +332,10 @@ func (h *Handler) listResultsBySchedule(c *gin.Context) {
 }
 
 func (h *Handler) listResultsByStudent(c *gin.Context) {
-	enrollmentID := c.Param("student_enrollment_id")
+	enrollmentID, valid := helper.ParseParamUUIDWithAbort(c, "student_enrollment_id")
+	if !valid {
+		return
+	}
 	resp, err := h.service.ListResultsByStudent(c.Request.Context(), enrollmentID)
 	if err != nil {
 		response.InternalError(c, err.Error())
@@ -296,7 +345,10 @@ func (h *Handler) listResultsByStudent(c *gin.Context) {
 }
 
 func (h *Handler) updateResult(c *gin.Context) {
-	id := c.Param("id")
+	id, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
 	var req UpdateResultRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(c, err.Error())
@@ -304,17 +356,39 @@ func (h *Handler) updateResult(c *gin.Context) {
 	}
 	resp, err := h.service.UpdateResult(c.Request.Context(), id, req)
 	if err != nil {
-		response.BadRequest(c, err.Error())
+		respondWithServiceError(c, err)
 		return
 	}
 	response.Success(c, resp, "Exam result updated successfully")
 }
 
 func (h *Handler) deleteResult(c *gin.Context) {
-	id := c.Param("id")
+	id, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
 	if err := h.service.DeleteResult(c.Request.Context(), id); err != nil {
-		response.BadRequest(c, err.Error())
+		respondWithServiceError(c, err)
 		return
 	}
 	response.Success[any](c, nil, "Exam result deleted successfully")
+}
+
+func respondWithServiceError(c *gin.Context, err error) {
+	if err == nil {
+		return
+	}
+	var appErr *AppError
+	if ok := errors.As(err, &appErr); ok && appErr != nil {
+		switch appErr.Code {
+		case CodeNotFound:
+			response.NotFound(c, appErr.Message)
+		case CodeValidation, CodeDuplicate, CodeBusinessRule:
+			response.BadRequest(c, appErr.Message)
+		default:
+			response.InternalError(c, appErr.Message)
+		}
+		return
+	}
+	response.InternalError(c, err.Error())
 }

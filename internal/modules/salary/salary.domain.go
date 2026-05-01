@@ -3,6 +3,7 @@ package salary
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
 	"github.com/thalalhassan/edu_management/internal/database"
 )
@@ -30,12 +31,12 @@ var AllowedRecordSortFields = map[string]bool{
 }
 
 type StructureFilterParams struct {
-	TeacherID *string `form:"teacher_id"`
+	TeacherID *uuid.UUID `form:"teacher_id"`
 }
 
 type RecordFilterParams struct {
-	TeacherID      *string       `form:"teacher_id"`
-	AcademicYearID *string       `form:"academic_year_id"`
+	TeacherID      *uuid.UUID    `form:"teacher_id"`
+	AcademicYearID *uuid.UUID    `form:"academic_year_id"`
 	Month          *int          `form:"month"`
 	Year           *int          `form:"year"`
 	Status         *SalaryStatus `form:"status"`
@@ -46,7 +47,7 @@ type RecordFilterParams struct {
 // ──────────────────────────────────────────────────────────────
 
 type CreateStructureRequest struct {
-	EmployeeID     string          `json:"employee_id"     binding:"required,uuid"`
+	EmployeeID     uuid.UUID       `json:"employee_id"     binding:"required,uuid"`
 	BasicSalary    decimal.Decimal `json:"basic_salary"    binding:"required"`
 	HRA            decimal.Decimal `json:"hra"`
 	DA             decimal.Decimal `json:"da"`
@@ -77,9 +78,9 @@ type UpdateStructureRequest struct {
 // BulkGenerateRequest generates monthly salary records for all
 // active teachers using their current salary structure.
 type BulkGenerateRequest struct {
-	AcademicYearID string `json:"academic_year_id" binding:"required,uuid"`
-	Month          int    `json:"month"            binding:"required,min=1,max=12"`
-	Year           int    `json:"year"             binding:"required,min=2000"`
+	AcademicYearID uuid.UUID `json:"academic_year_id" binding:"required,uuid"`
+	Month          int       `json:"month"            binding:"required,min=1,max=12"`
+	Year           int       `json:"year"             binding:"required,min=2000"`
 	// If true, salary is prorated based on present_days / working_days.
 	// If false, full net salary is paid regardless of attendance.
 	Prorate bool `json:"prorate"`

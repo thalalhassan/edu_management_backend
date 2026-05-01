@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
 	"github.com/thalalhassan/edu_management/internal/database"
 	"gorm.io/gorm"
@@ -11,30 +12,30 @@ import (
 
 type Repository interface {
 	// Report card
-	GetEnrollmentWithStudent(ctx context.Context, enrollmentID string) (*database.StudentEnrollment, error)
-	GetExamResultsForEnrollment(ctx context.Context, enrollmentID, examID string) ([]database.ExamResult, error)
+	GetEnrollmentWithStudent(ctx context.Context, enrollmentID uuid.UUID) (*database.StudentEnrollment, error)
+	GetExamResultsForEnrollment(ctx context.Context, enrollmentID, examID uuid.UUID) ([]database.ExamResult, error)
 
 	// Student attendance
-	GetStudentAttendanceCounts(ctx context.Context, enrollmentID string, from, to *time.Time) (map[database.AttendanceStatus]int, error)
+	GetStudentAttendanceCounts(ctx context.Context, enrollmentID uuid.UUID, from, to *time.Time) (map[database.AttendanceStatus]int, error)
 
 	// Class attendance
-	GetClassRoster(ctx context.Context, classSectionID string) ([]database.StudentEnrollment, error)
-	GetClassAttendanceCounts(ctx context.Context, classSectionID string, from, to *time.Time) ([]attendanceCount, error)
+	GetClassRoster(ctx context.Context, classSectionID uuid.UUID) ([]database.StudentEnrollment, error)
+	GetClassAttendanceCounts(ctx context.Context, classSectionID uuid.UUID, from, to *time.Time) ([]attendanceCount, error)
 
 	// Class performance
-	GetExamResultsForClassSection(ctx context.Context, classSectionID, examID string) ([]database.ExamResult, error)
-	GetExamWithSchedules(ctx context.Context, examID, classSectionID string) (*database.Exam, error)
+	GetExamResultsForClassSection(ctx context.Context, classSectionID, examID uuid.UUID) ([]database.ExamResult, error)
+	GetExamWithSchedules(ctx context.Context, examID, classSectionID uuid.UUID) (*database.Exam, error)
 
 	// Fee collection
-	GetFeeCollectionAggregates(ctx context.Context, academicYearID string, standardID, classSectionID *string) ([]feeAggregate, error)
+	GetFeeCollectionAggregates(ctx context.Context, academicYearID uuid.UUID, standardID, classSectionID *uuid.UUID) ([]feeAggregate, error)
 
 	// Teacher attendance
-	GetTeacherAttendanceCounts(ctx context.Context, teacherID *string, from, to *time.Time) ([]teacherAttCount, error)
+	GetTeacherAttendanceCounts(ctx context.Context, teacherID *uuid.UUID, from, to *time.Time) ([]teacherAttCount, error)
 }
 
 // Internal scan targets — not exported, used only within the repository.
 type attendanceCount struct {
-	EnrollmentID string
+	EnrollmentID uuid.UUID
 	Status       database.AttendanceStatus
 	Count        int
 }
@@ -49,8 +50,8 @@ type feeAggregate struct {
 }
 
 type teacherAttCount struct {
-	EmployeeID string
-	EmpID      string
+	EmployeeID uuid.UUID
+	EmpID      uuid.UUID
 	FirstName  string
 	LastName   string
 	Status     database.AttendanceStatus
@@ -65,7 +66,7 @@ func NewRepository(db *gorm.DB) Repository {
 	return &repositoryImpl{db: db}
 }
 
-func (r *repositoryImpl) GetEnrollmentWithStudent(ctx context.Context, enrollmentID string) (*database.StudentEnrollment, error) {
+func (r *repositoryImpl) GetEnrollmentWithStudent(ctx context.Context, enrollmentID uuid.UUID) (*database.StudentEnrollment, error) {
 	var e database.StudentEnrollment
 	err := r.db.WithContext(ctx).
 		Preload("Student").
@@ -80,14 +81,14 @@ func (r *repositoryImpl) GetEnrollmentWithStudent(ctx context.Context, enrollmen
 
 // GetExamResultsForEnrollment returns results for a student.
 // If examID is empty, returns all results across every exam in the AY.
-func (r *repositoryImpl) GetExamResultsForEnrollment(ctx context.Context, enrollmentID, examID string) ([]database.ExamResult, error) {
+func (r *repositoryImpl) GetExamResultsForEnrollment(ctx context.Context, enrollmentID, examID uuid.UUID) ([]database.ExamResult, error) {
 	var results []database.ExamResult
 	query := r.db.WithContext(ctx).
 		Preload("ExamSchedule.Exam").
 		Preload("ExamSchedule.Subject").
 		Where("student_enrollment_id = ?", enrollmentID)
 
-	if examID != "" {
+	if examID != uuid.Nil {
 		query = query.Joins("JOIN exam_schedule ON exam_schedule.id = exam_results.exam_schedule_id").
 			Where("exam_schedule.exam_id = ?", examID)
 	}
@@ -96,7 +97,7 @@ func (r *repositoryImpl) GetExamResultsForEnrollment(ctx context.Context, enroll
 	return results, err
 }
 
-func (r *repositoryImpl) GetStudentAttendanceCounts(ctx context.Context, enrollmentID string, from, to *time.Time) (map[database.AttendanceStatus]int, error) {
+func (r *repositoryImpl) GetStudentAttendanceCounts(ctx context.Context, enrollmentID uuid.UUID, from, to *time.Time) (map[database.AttendanceStatus]int, error) {
 	type row struct {
 		Status database.AttendanceStatus
 		Count  int
@@ -127,7 +128,7 @@ func (r *repositoryImpl) GetStudentAttendanceCounts(ctx context.Context, enrollm
 	return counts, nil
 }
 
-func (r *repositoryImpl) GetClassRoster(ctx context.Context, classSectionID string) ([]database.StudentEnrollment, error) {
+func (r *repositoryImpl) GetClassRoster(ctx context.Context, classSectionID uuid.UUID) ([]database.StudentEnrollment, error) {
 	var enrollments []database.StudentEnrollment
 	err := r.db.WithContext(ctx).
 		Preload("Student").
@@ -137,7 +138,7 @@ func (r *repositoryImpl) GetClassRoster(ctx context.Context, classSectionID stri
 	return enrollments, err
 }
 
-func (r *repositoryImpl) GetClassAttendanceCounts(ctx context.Context, classSectionID string, from, to *time.Time) ([]attendanceCount, error) {
+func (r *repositoryImpl) GetClassAttendanceCounts(ctx context.Context, classSectionID uuid.UUID, from, to *time.Time) ([]attendanceCount, error) {
 	var rows []attendanceCount
 
 	query := r.db.WithContext(ctx).
@@ -158,7 +159,7 @@ func (r *repositoryImpl) GetClassAttendanceCounts(ctx context.Context, classSect
 	return rows, err
 }
 
-func (r *repositoryImpl) GetExamResultsForClassSection(ctx context.Context, classSectionID, examID string) ([]database.ExamResult, error) {
+func (r *repositoryImpl) GetExamResultsForClassSection(ctx context.Context, classSectionID, examID uuid.UUID) ([]database.ExamResult, error) {
 	var results []database.ExamResult
 	err := r.db.WithContext(ctx).
 		Preload("ExamSchedule.Subject").
@@ -171,7 +172,7 @@ func (r *repositoryImpl) GetExamResultsForClassSection(ctx context.Context, clas
 	return results, err
 }
 
-func (r *repositoryImpl) GetExamWithSchedules(ctx context.Context, examID, classSectionID string) (*database.Exam, error) {
+func (r *repositoryImpl) GetExamWithSchedules(ctx context.Context, examID, classSectionID uuid.UUID) (*database.Exam, error) {
 	var exam database.Exam
 	err := r.db.WithContext(ctx).
 		Preload("Schedules", "class_section_id = ?", classSectionID).
@@ -183,7 +184,7 @@ func (r *repositoryImpl) GetExamWithSchedules(ctx context.Context, examID, class
 	return &exam, nil
 }
 
-func (r *repositoryImpl) GetFeeCollectionAggregates(ctx context.Context, academicYearID string, standardID, classSectionID *string) ([]feeAggregate, error) {
+func (r *repositoryImpl) GetFeeCollectionAggregates(ctx context.Context, academicYearID uuid.UUID, standardID, classSectionID *uuid.UUID) ([]feeAggregate, error) {
 	var rows []feeAggregate
 
 	query := r.db.WithContext(ctx).
@@ -214,7 +215,7 @@ func (r *repositoryImpl) GetFeeCollectionAggregates(ctx context.Context, academi
 	return rows, err
 }
 
-func (r *repositoryImpl) GetTeacherAttendanceCounts(ctx context.Context, teacherID *string, from, to *time.Time) ([]teacherAttCount, error) {
+func (r *repositoryImpl) GetTeacherAttendanceCounts(ctx context.Context, teacherID *uuid.UUID, from, to *time.Time) ([]teacherAttCount, error) {
 	var rows []teacherAttCount
 
 	query := r.db.WithContext(ctx).

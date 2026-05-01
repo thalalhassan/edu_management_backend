@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/thalalhassan/edu_management/internal/database"
 	"github.com/thalalhassan/edu_management/internal/shared/pagination"
 	"gorm.io/gorm"
@@ -13,16 +14,16 @@ import (
 
 type Service interface {
 	Enroll(ctx context.Context, req EnrollRequest) (*EnrollmentResponse, error)
-	GetByID(ctx context.Context, id string) (*EnrollmentResponse, error)
-	GetByStudentID(ctx context.Context, studentID string, p pagination.Params) ([]*EnrollmentResponse, int64, error)
-	GetRoster(ctx context.Context, classSectionID string) ([]*RosterEntry, error)
-	UpdateStatus(ctx context.Context, id string, req UpdateStatusRequest) (*EnrollmentResponse, error)
-	Delete(ctx context.Context, id string) error
+	GetByID(ctx context.Context, id uuid.UUID) (*EnrollmentResponse, error)
+	GetByStudentID(ctx context.Context, studentID uuid.UUID, p pagination.Params) ([]*EnrollmentResponse, int64, error)
+	GetRoster(ctx context.Context, classSectionID uuid.UUID) ([]*RosterEntry, error)
+	UpdateStatus(ctx context.Context, id uuid.UUID, req UpdateStatusRequest) (*EnrollmentResponse, error)
+	Delete(ctx context.Context, id uuid.UUID) error
 }
 
 type service struct {
-	repo        Repository
-	classSvcDB  *gorm.DB // raw db for class section lookups — avoids circular module import
+	repo       Repository
+	classSvcDB *gorm.DB // raw db for class section lookups — avoids circular module import
 }
 
 func NewService(repo Repository, db *gorm.DB) Service {
@@ -84,7 +85,7 @@ func (s *service) Enroll(ctx context.Context, req EnrollRequest) (*EnrollmentRes
 	return ToEnrollmentResponse(created), nil
 }
 
-func (s *service) GetByID(ctx context.Context, id string) (*EnrollmentResponse, error) {
+func (s *service) GetByID(ctx context.Context, id uuid.UUID) (*EnrollmentResponse, error) {
 	e, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("enrollment.Service.GetByID: %w", err)
@@ -92,7 +93,7 @@ func (s *service) GetByID(ctx context.Context, id string) (*EnrollmentResponse, 
 	return ToEnrollmentResponse(e), nil
 }
 
-func (s *service) GetByStudentID(ctx context.Context, studentID string, p pagination.Params) ([]*EnrollmentResponse, int64, error) {
+func (s *service) GetByStudentID(ctx context.Context, studentID uuid.UUID, p pagination.Params) ([]*EnrollmentResponse, int64, error) {
 	enrollments, total, err := s.repo.GetByStudentID(ctx, studentID, p)
 	if err != nil {
 		return nil, 0, fmt.Errorf("enrollment.Service.GetByStudentID: %w", err)
@@ -104,7 +105,7 @@ func (s *service) GetByStudentID(ctx context.Context, studentID string, p pagina
 	return responses, total, nil
 }
 
-func (s *service) GetRoster(ctx context.Context, classSectionID string) ([]*RosterEntry, error) {
+func (s *service) GetRoster(ctx context.Context, classSectionID uuid.UUID) ([]*RosterEntry, error) {
 	enrollments, err := s.repo.GetRosterByClassSection(ctx, classSectionID)
 	if err != nil {
 		return nil, fmt.Errorf("enrollment.Service.GetRoster: %w", err)
@@ -121,7 +122,7 @@ func (s *service) GetRoster(ctx context.Context, classSectionID string) ([]*Rost
 //   - PROMOTED / DETAINED: terminal states for the academic year — no further changes allowed
 //   - WITHDRAWN: requires a LeftDate
 //   - ENROLLED → any transition is valid
-func (s *service) UpdateStatus(ctx context.Context, id string, req UpdateStatusRequest) (*EnrollmentResponse, error) {
+func (s *service) UpdateStatus(ctx context.Context, id uuid.UUID, req UpdateStatusRequest) (*EnrollmentResponse, error) {
 	e, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("enrollment.Service.UpdateStatus.GetByID: %w", err)
@@ -148,7 +149,7 @@ func (s *service) UpdateStatus(ctx context.Context, id string, req UpdateStatusR
 	return ToEnrollmentResponse(e), nil
 }
 
-func (s *service) Delete(ctx context.Context, id string) error {
+func (s *service) Delete(ctx context.Context, id uuid.UUID) error {
 	e, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return fmt.Errorf("enrollment.Service.Delete.GetByID: %w", err)

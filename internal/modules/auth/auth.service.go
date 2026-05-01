@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/thalalhassan/edu_management/internal/config"
 	"github.com/thalalhassan/edu_management/internal/database"
 	"github.com/thalalhassan/edu_management/internal/modules/user"
@@ -17,7 +18,7 @@ type Service interface {
 	Login(ctx context.Context, req LoginRequest) (*LoginResponse, error)
 	RefreshToken(ctx context.Context, req RefreshRequest) (*RefreshResponse, error)
 	Logout(ctx context.Context, refreshToken string) error
-	LogoutAllSessions(ctx context.Context, userID string) error
+	LogoutAllSessions(ctx context.Context, userID uuid.UUID) error
 }
 
 type service struct {
@@ -47,7 +48,7 @@ func (s *service) Login(ctx context.Context, req LoginRequest) (*LoginResponse, 
 		return nil, errors.New("user.Service.Login: invalid credentials")
 	}
 
-	accessToken, err := jwt.GenerateAccessToken(string(u.ID), u.Role.Slug, string(u.Email), s.jwtConfig.Secret, s.jwtConfig.Expiration)
+	accessToken, err := jwt.GenerateAccessToken(u.ID.String(), u.Role.Slug, string(u.Email), s.jwtConfig.Secret, s.jwtConfig.Expiration)
 	if err != nil {
 		return nil, fmt.Errorf("user.Service.Login.GenerateAccessToken: %w", err)
 	}
@@ -96,7 +97,7 @@ func (s *service) RefreshToken(ctx context.Context, req RefreshRequest) (*Refres
 		return nil, fmt.Errorf("user.Service.RefreshToken.Revoke: %w", err)
 	}
 
-	accessToken, err := jwt.GenerateAccessToken(string(u.ID), u.Role.Slug, string(u.Email), s.jwtConfig.Secret, s.jwtConfig.Expiration)
+	accessToken, err := jwt.GenerateAccessToken(u.ID.String(), u.Role.Slug, string(u.Email), s.jwtConfig.Secret, s.jwtConfig.Expiration)
 	if err != nil {
 		return nil, fmt.Errorf("user.Service.RefreshToken.GenerateAccessToken: %w", err)
 	}
@@ -126,7 +127,7 @@ func (s *service) Logout(ctx context.Context, refreshToken string) error {
 	return nil
 }
 
-func (s *service) LogoutAllSessions(ctx context.Context, userID string) error {
+func (s *service) LogoutAllSessions(ctx context.Context, userID uuid.UUID) error {
 	if err := s.repo.RevokeAllRefreshTokensForUser(ctx, userID); err != nil {
 		return fmt.Errorf("user.Service.LogoutAllSessions: %w", err)
 	}

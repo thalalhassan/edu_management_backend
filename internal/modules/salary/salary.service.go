@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/thalalhassan/edu_management/internal/database"
 	"github.com/thalalhassan/edu_management/internal/shared/query_params"
 	"gorm.io/gorm"
@@ -16,12 +17,12 @@ import (
 
 type StructureService interface {
 	Create(ctx context.Context, req CreateStructureRequest) (*SalaryStructureResponse, error)
-	GetByID(ctx context.Context, id string) (*SalaryStructureResponse, error)
-	GetActiveForTeacher(ctx context.Context, teacherID string) (*SalaryStructureResponse, error)
+	GetByID(ctx context.Context, id uuid.UUID) (*SalaryStructureResponse, error)
+	GetActiveForTeacher(ctx context.Context, teacherID uuid.UUID) (*SalaryStructureResponse, error)
 	List(ctx context.Context, q query_params.Query[StructureFilterParams]) ([]*SalaryStructureResponse, int64, error)
-	ListByTeacher(ctx context.Context, teacherID string) ([]*SalaryStructureResponse, error)
-	Update(ctx context.Context, id string, req UpdateStructureRequest) (*SalaryStructureResponse, error)
-	Delete(ctx context.Context, id string) error
+	ListByTeacher(ctx context.Context, teacherID uuid.UUID) ([]*SalaryStructureResponse, error)
+	Update(ctx context.Context, id uuid.UUID, req UpdateStructureRequest) (*SalaryStructureResponse, error)
+	Delete(ctx context.Context, id uuid.UUID) error
 }
 
 type structureService struct {
@@ -55,7 +56,7 @@ func (s *structureService) Create(ctx context.Context, req CreateStructureReques
 	return ToStructureResponse(created), nil
 }
 
-func (s *structureService) GetByID(ctx context.Context, id string) (*SalaryStructureResponse, error) {
+func (s *structureService) GetByID(ctx context.Context, id uuid.UUID) (*SalaryStructureResponse, error) {
 	str, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("salary.StructureService.GetByID: %w", err)
@@ -63,7 +64,7 @@ func (s *structureService) GetByID(ctx context.Context, id string) (*SalaryStruc
 	return ToStructureResponse(str), nil
 }
 
-func (s *structureService) GetActiveForTeacher(ctx context.Context, teacherID string) (*SalaryStructureResponse, error) {
+func (s *structureService) GetActiveForTeacher(ctx context.Context, teacherID uuid.UUID) (*SalaryStructureResponse, error) {
 	str, err := s.repo.GetActiveForTeacher(ctx, teacherID)
 	if err != nil {
 		return nil, fmt.Errorf("salary.StructureService.GetActiveForTeacher: no active structure found for this teacher")
@@ -83,7 +84,7 @@ func (s *structureService) List(ctx context.Context, q query_params.Query[Struct
 	return responses, total, nil
 }
 
-func (s *structureService) ListByTeacher(ctx context.Context, teacherID string) ([]*SalaryStructureResponse, error) {
+func (s *structureService) ListByTeacher(ctx context.Context, teacherID uuid.UUID) ([]*SalaryStructureResponse, error) {
 	structs, err := s.repo.FindByTeacher(ctx, teacherID)
 	if err != nil {
 		return nil, fmt.Errorf("salary.StructureService.ListByTeacher: %w", err)
@@ -95,7 +96,7 @@ func (s *structureService) ListByTeacher(ctx context.Context, teacherID string) 
 	return responses, nil
 }
 
-func (s *structureService) Update(ctx context.Context, id string, req UpdateStructureRequest) (*SalaryStructureResponse, error) {
+func (s *structureService) Update(ctx context.Context, id uuid.UUID, req UpdateStructureRequest) (*SalaryStructureResponse, error) {
 	str, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("salary.StructureService.Update.GetByID: %w", err)
@@ -133,7 +134,7 @@ func (s *structureService) Update(ctx context.Context, id string, req UpdateStru
 	return ToStructureResponse(str), nil
 }
 
-func (s *structureService) Delete(ctx context.Context, id string) error {
+func (s *structureService) Delete(ctx context.Context, id uuid.UUID) error {
 	if _, err := s.repo.GetByID(ctx, id); err != nil {
 		return fmt.Errorf("salary.StructureService.Delete.GetByID: %w", err)
 	}
@@ -149,12 +150,12 @@ func (s *structureService) Delete(ctx context.Context, id string) error {
 
 type RecordService interface {
 	BulkGenerate(ctx context.Context, req BulkGenerateRequest, db *gorm.DB) ([]*SalaryRecordResponse, error)
-	GetByID(ctx context.Context, id string) (*SalaryRecordResponse, error)
+	GetByID(ctx context.Context, id uuid.UUID) (*SalaryRecordResponse, error)
 	List(ctx context.Context, q query_params.Query[RecordFilterParams]) ([]*SalaryRecordResponse, int64, error)
-	ListByTeacher(ctx context.Context, teacherID string) ([]*SalaryRecordResponse, error)
-	GetMonthlySummary(ctx context.Context, academicYearID string, month, year int) (*MonthlySummary, error)
-	RecordPayment(ctx context.Context, id string, req RecordPaymentRequest) (*SalaryRecordResponse, error)
-	Delete(ctx context.Context, id string) error
+	ListByTeacher(ctx context.Context, teacherID uuid.UUID) ([]*SalaryRecordResponse, error)
+	GetMonthlySummary(ctx context.Context, academicYearID uuid.UUID, month, year int) (*MonthlySummary, error)
+	RecordPayment(ctx context.Context, id uuid.UUID, req RecordPaymentRequest) (*SalaryRecordResponse, error)
+	Delete(ctx context.Context, id uuid.UUID) error
 }
 
 type recordService struct {
@@ -250,7 +251,7 @@ func (s *recordService) BulkGenerate(ctx context.Context, req BulkGenerateReques
 	return responses, nil
 }
 
-func (s *recordService) GetByID(ctx context.Context, id string) (*SalaryRecordResponse, error) {
+func (s *recordService) GetByID(ctx context.Context, id uuid.UUID) (*SalaryRecordResponse, error) {
 	rec, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("salary.RecordService.GetByID: %w", err)
@@ -270,7 +271,7 @@ func (s *recordService) List(ctx context.Context, q query_params.Query[RecordFil
 	return responses, total, nil
 }
 
-func (s *recordService) ListByTeacher(ctx context.Context, teacherID string) ([]*SalaryRecordResponse, error) {
+func (s *recordService) ListByTeacher(ctx context.Context, teacherID uuid.UUID) ([]*SalaryRecordResponse, error) {
 	records, err := s.repo.FindByTeacher(ctx, teacherID)
 	if err != nil {
 		return nil, fmt.Errorf("salary.RecordService.ListByTeacher: %w", err)
@@ -282,7 +283,7 @@ func (s *recordService) ListByTeacher(ctx context.Context, teacherID string) ([]
 	return responses, nil
 }
 
-func (s *recordService) GetMonthlySummary(ctx context.Context, academicYearID string, month, year int) (*MonthlySummary, error) {
+func (s *recordService) GetMonthlySummary(ctx context.Context, academicYearID uuid.UUID, month, year int) (*MonthlySummary, error) {
 	summary, err := s.repo.GetMonthlySummary(ctx, academicYearID, month, year)
 	if err != nil {
 		return nil, fmt.Errorf("salary.RecordService.GetMonthlySummary: %w", err)
@@ -291,7 +292,7 @@ func (s *recordService) GetMonthlySummary(ctx context.Context, academicYearID st
 }
 
 // RecordPayment marks a salary record as paid (or partial).
-func (s *recordService) RecordPayment(ctx context.Context, id string, req RecordPaymentRequest) (*SalaryRecordResponse, error) {
+func (s *recordService) RecordPayment(ctx context.Context, id uuid.UUID, req RecordPaymentRequest) (*SalaryRecordResponse, error) {
 	rec, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("salary.RecordService.RecordPayment.GetByID: %w", err)
@@ -321,7 +322,7 @@ func (s *recordService) RecordPayment(ctx context.Context, id string, req Record
 	return ToRecordResponse(rec), nil
 }
 
-func (s *recordService) Delete(ctx context.Context, id string) error {
+func (s *recordService) Delete(ctx context.Context, id uuid.UUID) error {
 	rec, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return fmt.Errorf("salary.RecordService.Delete.GetByID: %w", err)

@@ -6,6 +6,7 @@ import (
 	"github.com/thalalhassan/edu_management/internal/config"
 	"github.com/thalalhassan/edu_management/internal/constants"
 	"github.com/thalalhassan/edu_management/internal/middleware"
+	"github.com/thalalhassan/edu_management/internal/shared/helper"
 	"github.com/thalalhassan/edu_management/internal/shared/pagination"
 	"github.com/thalalhassan/edu_management/internal/shared/query_params"
 	"github.com/thalalhassan/edu_management/internal/shared/response"
@@ -41,7 +42,11 @@ func (h *Handler) Routes(r *gin.RouterGroup) {
 }
 
 func (h *Handler) getByID(c *gin.Context) {
-	id := c.Param("id")
+	id, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
+
 	resp, err := h.service.GetByID(c.Request.Context(), id)
 	if err != nil {
 		response.NotFound(c, err.Error())
@@ -51,7 +56,10 @@ func (h *Handler) getByID(c *gin.Context) {
 }
 
 func (h *Handler) getByEmployeeID(c *gin.Context) {
-	empID := c.Param("employee_id")
+	empID, valid := helper.ParseParamUUIDWithAbort(c, "employee_id")
+	if !valid {
+		return
+	}
 	resp, err := h.service.GetByEmployeeID(c.Request.Context(), empID)
 	if err != nil {
 		response.NotFound(c, err.Error())
@@ -83,7 +91,10 @@ func (h *Handler) list(c *gin.Context) {
 }
 
 func (h *Handler) update(c *gin.Context) {
-	id := c.Param("id")
+	id, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
 	var req UpdateRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 
@@ -101,7 +112,10 @@ func (h *Handler) update(c *gin.Context) {
 // setActive handles PATCH /teacher/:id/active
 // Body: { "is_active": true } or { "is_active": false }
 func (h *Handler) setActive(c *gin.Context) {
-	id := c.Param("id")
+	id, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
 
 	var body struct {
 		IsActive bool `json:"is_active"`
@@ -122,7 +136,10 @@ func (h *Handler) setActive(c *gin.Context) {
 }
 
 func (h *Handler) delete(c *gin.Context) {
-	id := c.Param("id")
+	id, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
 	if err := h.service.Delete(c.Request.Context(), id); err != nil {
 		response.InternalError(c, err.Error())
 		return

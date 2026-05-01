@@ -2,6 +2,7 @@ package auth
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/thalalhassan/edu_management/internal/app"
 	"github.com/thalalhassan/edu_management/internal/constants"
 	"github.com/thalalhassan/edu_management/internal/middleware"
@@ -84,7 +85,13 @@ func (h *Handler) logoutAll(c *gin.Context) {
 		return
 	}
 
-	if err := h.service.LogoutAllSessions(c.Request.Context(), userID); err != nil {
+	id, err := uuid.Parse(userID)
+	if err != nil {
+		response.BadRequest(c, "Invalid user ID")
+		return
+	}
+
+	if err := h.service.LogoutAllSessions(c.Request.Context(), id); err != nil {
 		response.InternalError(c, err.Error())
 		return
 	}

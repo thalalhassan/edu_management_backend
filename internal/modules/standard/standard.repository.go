@@ -3,23 +3,24 @@ package standard
 import (
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/thalalhassan/edu_management/internal/database"
 	"gorm.io/gorm"
 )
 
 type Repository interface {
 	Create(ctx context.Context, s *Standard) error
-	GetByID(ctx context.Context, id string) (*Standard, error)
+	GetByID(ctx context.Context, id uuid.UUID) (*Standard, error)
 	FindAll(ctx context.Context) ([]*Standard, error)
-	FindByDepartment(ctx context.Context, departmentID string) ([]*Standard, error)
-	Update(ctx context.Context, id string, s *Standard) error
-	Delete(ctx context.Context, id string) error
+	FindByDepartment(ctx context.Context, departmentID uuid.UUID) ([]*Standard, error)
+	Update(ctx context.Context, id uuid.UUID, s *Standard) error
+	Delete(ctx context.Context, id uuid.UUID) error
 
 	// Subject assignments
 	AssignSubject(ctx context.Context, link *StandardSubject) error
-	RemoveSubject(ctx context.Context, standardID, subjectID string) error
-	GetSubjects(ctx context.Context, standardID string) ([]*StandardSubject, error)
-	IsSubjectAssigned(ctx context.Context, standardID, subjectID string) (bool, error)
+	RemoveSubject(ctx context.Context, standardID, subjectID uuid.UUID) error
+	GetSubjects(ctx context.Context, standardID uuid.UUID) ([]*StandardSubject, error)
+	IsSubjectAssigned(ctx context.Context, standardID, subjectID uuid.UUID) (bool, error)
 }
 
 type repositoryImpl struct {
@@ -34,7 +35,7 @@ func (r *repositoryImpl) Create(ctx context.Context, s *Standard) error {
 	return r.db.WithContext(ctx).Create(s).Error
 }
 
-func (r *repositoryImpl) GetByID(ctx context.Context, id string) (*Standard, error) {
+func (r *repositoryImpl) GetByID(ctx context.Context, id uuid.UUID) (*Standard, error) {
 	var s Standard
 	err := r.db.WithContext(ctx).
 		Preload("Department").
@@ -55,7 +56,7 @@ func (r *repositoryImpl) FindAll(ctx context.Context) ([]*Standard, error) {
 	return standards, err
 }
 
-func (r *repositoryImpl) FindByDepartment(ctx context.Context, departmentID string) ([]*Standard, error) {
+func (r *repositoryImpl) FindByDepartment(ctx context.Context, departmentID uuid.UUID) ([]*Standard, error) {
 	var standards []*Standard
 	err := r.db.WithContext(ctx).
 		Preload("Subjects.Subject").
@@ -65,11 +66,11 @@ func (r *repositoryImpl) FindByDepartment(ctx context.Context, departmentID stri
 	return standards, err
 }
 
-func (r *repositoryImpl) Update(ctx context.Context, id string, s *Standard) error {
+func (r *repositoryImpl) Update(ctx context.Context, id uuid.UUID, s *Standard) error {
 	return r.db.WithContext(ctx).Where("id = ?", id).Save(s).Error
 }
 
-func (r *repositoryImpl) Delete(ctx context.Context, id string) error {
+func (r *repositoryImpl) Delete(ctx context.Context, id uuid.UUID) error {
 	return r.db.WithContext(ctx).Where("id = ?", id).Delete(&Standard{}).Error
 }
 
@@ -77,13 +78,13 @@ func (r *repositoryImpl) AssignSubject(ctx context.Context, link *StandardSubjec
 	return r.db.WithContext(ctx).Create(link).Error
 }
 
-func (r *repositoryImpl) RemoveSubject(ctx context.Context, standardID, subjectID string) error {
+func (r *repositoryImpl) RemoveSubject(ctx context.Context, standardID, subjectID uuid.UUID) error {
 	return r.db.WithContext(ctx).
 		Where("standard_id = ? AND subject_id = ?", standardID, subjectID).
 		Delete(&database.StandardSubject{}).Error
 }
 
-func (r *repositoryImpl) GetSubjects(ctx context.Context, standardID string) ([]*StandardSubject, error) {
+func (r *repositoryImpl) GetSubjects(ctx context.Context, standardID uuid.UUID) ([]*StandardSubject, error) {
 	var links []*StandardSubject
 	err := r.db.WithContext(ctx).
 		Preload("Subject").
@@ -92,7 +93,7 @@ func (r *repositoryImpl) GetSubjects(ctx context.Context, standardID string) ([]
 	return links, err
 }
 
-func (r *repositoryImpl) IsSubjectAssigned(ctx context.Context, standardID, subjectID string) (bool, error) {
+func (r *repositoryImpl) IsSubjectAssigned(ctx context.Context, standardID, subjectID uuid.UUID) (bool, error) {
 	var count int64
 	err := r.db.WithContext(ctx).
 		Model(&database.StandardSubject{}).

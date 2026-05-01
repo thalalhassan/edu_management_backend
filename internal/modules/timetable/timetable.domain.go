@@ -3,6 +3,7 @@ package timetable
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/thalalhassan/edu_management/internal/database"
 )
 
@@ -38,29 +39,29 @@ var AllowedSortFields = map[string]bool{
 
 // FilterParams binds from query string.
 type FilterParams struct {
-	ClassSectionID *string `form:"class_section_id"`
-	TeacherID      *string `form:"teacher_id"`
-	SubjectID      *string `form:"subject_id"`
-	DayOfWeek      *int    `form:"day_of_week"` // 0–6
+	ClassSectionID *uuid.UUID `form:"class_section_id"`
+	TeacherID      *uuid.UUID `form:"teacher_id"`
+	SubjectID      *uuid.UUID `form:"subject_id"`
+	DayOfWeek      *int       `form:"day_of_week"` // 0–6
 }
 
 type CreateRequest struct {
-	ClassSectionID string    `json:"class_section_id" binding:"required,uuid"`
-	SubjectID      string    `json:"subject_id"       binding:"required,uuid"`
-	EmployeeID     string    `json:"employee_id"      binding:"required,uuid"`
-	DayOfWeek      int       `json:"day_of_week"      binding:"required,min=0,max=6"`
-	StartTime      time.Time `json:"start_time"       binding:"required"`
-	EndTime        time.Time `json:"end_time"         binding:"required"`
-	RoomID         *string   `json:"room_id,omitempty"`
+	ClassSectionID uuid.UUID  `json:"class_section_id" binding:"required,uuid"`
+	SubjectID      uuid.UUID  `json:"subject_id"       binding:"required,uuid"`
+	EmployeeID     uuid.UUID  `json:"employee_id"      binding:"required,uuid"`
+	DayOfWeek      int        `json:"day_of_week"      binding:"required,min=0,max=6"`
+	StartTime      time.Time  `json:"start_time"       binding:"required"`
+	EndTime        time.Time  `json:"end_time"         binding:"required"`
+	RoomID         *uuid.UUID `json:"room_id,omitempty"`
 }
 
 type UpdateRequest struct {
-	SubjectID  *string    `json:"subject_id,omitempty"  binding:"omitempty,uuid"`
-	EmployeeID *string    `json:"employee_id,omitempty" binding:"omitempty,uuid"`
+	SubjectID  *uuid.UUID `json:"subject_id,omitempty"  binding:"omitempty,uuid"`
+	EmployeeID *uuid.UUID `json:"employee_id,omitempty" binding:"omitempty,uuid"`
 	DayOfWeek  *int       `json:"day_of_week,omitempty" binding:"omitempty,min=0,max=6"`
 	StartTime  *time.Time `json:"start_time,omitempty"`
 	EndTime    *time.Time `json:"end_time,omitempty"`
-	RoomID     *string    `json:"room_id,omitempty"`
+	RoomID     *uuid.UUID `json:"room_id,omitempty"`
 }
 
 // TimeTableResponse is the full response with nested relations.
@@ -71,7 +72,7 @@ type TimeTableResponse struct {
 
 // PeriodEntry is a lightweight row used in the class/teacher schedule view.
 type PeriodEntry struct {
-	ID           string    `json:"id"`
+	ID           uuid.UUID `json:"id"`
 	DayOfWeek    int       `json:"day_of_week"`
 	DayName      string    `json:"day_name"`
 	StartTime    time.Time `json:"start_time"`

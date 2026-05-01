@@ -2,6 +2,7 @@ package academic_year
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/thalalhassan/edu_management/internal/app"
 	"github.com/thalalhassan/edu_management/internal/config"
 	"github.com/thalalhassan/edu_management/internal/constants"
@@ -56,28 +57,31 @@ func (h *Handler) create(c *gin.Context) {
 	}
 	resp, err := h.service.Create(c.Request.Context(), req)
 	if err != nil {
-		response.BadRequest(c, err.Error())
+		h.handleError(c, err)
 		return
 	}
 	response.Created(c, resp, "Academic year created successfully")
 }
 
 func (h *Handler) getByID(c *gin.Context) {
-	id := c.Param("id")
+	idStr := c.Param("id")
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		response.BadRequest(c, "Invalid ID format")
+		return
+	}
 	resp, err := h.service.GetByID(c.Request.Context(), id)
 	if err != nil {
-		response.NotFound(c, err.Error())
+		h.handleError(c, err)
 		return
 	}
 	response.Success(c, resp, "Academic year retrieved successfully")
 }
 
-// getActive is public — called by the UI on initial load to set
-// the global academic year context before any auth takes place.
 func (h *Handler) getActive(c *gin.Context) {
 	resp, err := h.service.GetActive(c.Request.Context())
 	if err != nil {
-		response.NotFound(c, err.Error())
+		h.handleError(c, err)
 		return
 	}
 	response.Success(c, resp, "Active academic year retrieved successfully")
@@ -89,23 +93,26 @@ func (h *Handler) list(c *gin.Context) {
 		response.BadRequest(c, err.Error())
 		return
 	}
-
 	q := query_params.Query[FilterParams]{
 		Pagination: pagination.NewFromRequest(c),
 		Sort:       query_params.NewSortFromRequest(c, allowedSortFields, "created_at"),
 		Filter:     f,
 	}
-
 	resp, err := h.service.List(c.Request.Context(), q)
 	if err != nil {
-		response.InternalError(c, err.Error())
+		h.handleError(c, err)
 		return
 	}
 	response.Success(c, resp, "Academic years listed successfully")
 }
 
 func (h *Handler) update(c *gin.Context) {
-	id := c.Param("id")
+	idStr := c.Param("id")
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		response.BadRequest(c, "Invalid ID format")
+		return
+	}
 	var req UpdateRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(c, err.Error())
@@ -113,30 +120,57 @@ func (h *Handler) update(c *gin.Context) {
 	}
 	resp, err := h.service.Update(c.Request.Context(), id, req)
 	if err != nil {
-		response.BadRequest(c, err.Error())
+		h.handleError(c, err)
 		return
 	}
 	response.Success(c, resp, "Academic year updated successfully")
 }
 
-// setActive is the endpoint the UI calls when the user switches
-// the global academic year selector. Returns the newly active year
-// so the UI can update its context in one round trip.
 func (h *Handler) setActive(c *gin.Context) {
-	id := c.Param("id")
+	idStr := c.Param("id")
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		response.BadRequest(c, "Invalid ID format")
+		return
+	}
 	resp, err := h.service.SetActive(c.Request.Context(), id)
 	if err != nil {
-		response.BadRequest(c, err.Error())
+		h.handleError(c, err)
 		return
 	}
 	response.Success(c, resp, "Academic year activated successfully")
 }
 
 func (h *Handler) delete(c *gin.Context) {
-	id := c.Param("id")
+	idStr := c.Param("id")
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		response.BadRequest(c, "Invalid ID format")
+		return
+	}
 	if err := h.service.Delete(c.Request.Context(), id); err != nil {
-		response.BadRequest(c, err.Error())
+		h.handleError(c, err)
 		return
 	}
 	response.Success[any](c, nil, "Academic year deleted successfully")
+}
+
+func (h *Handler) handleError(c *gin.Context, err error) {
+	switch e := err.(type) {
+	case *ValidationError:
+		response.BadRequest(c, e.Error())
+	case *NotFoundError:
+		response.NotFound(c, e.Error())
+	case *BusinessError:
+		response.Conflict(c, e.Error())
+	default:
+		response.InternalError(c, "An unexpected error occurred")
+	}
+}
+
+var allowedSortFields = map[string]bool{
+	"name":       true,
+	"start_date": true,
+	"end_date":   true,
+	"created_at": true,
 }

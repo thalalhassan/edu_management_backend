@@ -2,7 +2,9 @@ package announcement
 
 import (
 	"context"
+	"errors"
 
+	"github.com/google/uuid"
 	"github.com/thalalhassan/edu_management/internal/database"
 	"github.com/thalalhassan/edu_management/internal/shared/query_params"
 	"gorm.io/gorm"
@@ -11,11 +13,12 @@ import (
 // ─── Repository interface ─────────────────────────────────────────────────────
 
 type Repository interface {
+	WithTx(tx *gorm.DB) Repository
 	Create(ctx context.Context, a *Announcement) error
-	GetByID(ctx context.Context, id string) (*Announcement, error)
+	GetByID(ctx context.Context, id uuid.UUID) (*Announcement, error)
 	FindAll(ctx context.Context, q query_params.Query[FilterParams]) ([]*Announcement, int64, error)
 	Update(ctx context.Context, a *Announcement) error
-	Delete(ctx context.Context, id string) error
+	Delete(ctx context.Context, id uuid.UUID) error
 }
 
 // ─── repositoryImpl ───────────────────────────────────────────────────────────
@@ -28,15 +31,22 @@ func NewRepository(db *gorm.DB) Repository {
 	return &repositoryImpl{db: db}
 }
 
+func (r *repositoryImpl) WithTx(tx *gorm.DB) Repository {
+	return &repositoryImpl{db: tx}
+}
+
 func (r *repositoryImpl) Create(ctx context.Context, a *Announcement) error {
 	return r.db.WithContext(ctx).Create(a).Error
 }
 
-func (r *repositoryImpl) GetByID(ctx context.Context, id string) (*Announcement, error) {
+func (r *repositoryImpl) GetByID(ctx context.Context, id uuid.UUID) (*Announcement, error) {
 	var a Announcement
 	if err := r.db.WithContext(ctx).
 		Model(&database.Announcement{}).
 		First(&a, "id = ?", id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrNotFound
+		}
 		return nil, err
 	}
 	return &a, nil
@@ -74,6 +84,6 @@ func (r *repositoryImpl) Update(ctx context.Context, a *Announcement) error {
 	return r.db.WithContext(ctx).Save(a).Error
 }
 
-func (r *repositoryImpl) Delete(ctx context.Context, id string) error {
+func (r *repositoryImpl) Delete(ctx context.Context, id uuid.UUID) error {
 	return r.db.WithContext(ctx).Delete(&database.Announcement{}, "id = ?", id).Error
 }

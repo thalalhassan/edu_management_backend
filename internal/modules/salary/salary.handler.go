@@ -8,6 +8,7 @@ import (
 	"github.com/thalalhassan/edu_management/internal/config"
 	"github.com/thalalhassan/edu_management/internal/constants"
 	"github.com/thalalhassan/edu_management/internal/middleware"
+	"github.com/thalalhassan/edu_management/internal/shared/helper"
 	"github.com/thalalhassan/edu_management/internal/shared/pagination"
 	"github.com/thalalhassan/edu_management/internal/shared/query_params"
 	"github.com/thalalhassan/edu_management/internal/shared/response"
@@ -86,7 +87,13 @@ func (h *Handler) createStructure(c *gin.Context) {
 }
 
 func (h *Handler) getStructureByID(c *gin.Context) {
-	resp, err := h.structureSvc.GetByID(c.Request.Context(), c.Param("id"))
+
+	id, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
+
+	resp, err := h.structureSvc.GetByID(c.Request.Context(), id)
 	if err != nil {
 		response.NotFound(c, err.Error())
 		return
@@ -95,7 +102,11 @@ func (h *Handler) getStructureByID(c *gin.Context) {
 }
 
 func (h *Handler) getActiveForTeacher(c *gin.Context) {
-	resp, err := h.structureSvc.GetActiveForTeacher(c.Request.Context(), c.Param("teacher_id"))
+	teacherID, valid := helper.ParseParamUUIDWithAbort(c, "teacher_id")
+	if !valid {
+		return
+	}
+	resp, err := h.structureSvc.GetActiveForTeacher(c.Request.Context(), teacherID)
 	if err != nil {
 		response.NotFound(c, err.Error())
 		return
@@ -123,7 +134,11 @@ func (h *Handler) listStructures(c *gin.Context) {
 }
 
 func (h *Handler) listByTeacher(c *gin.Context) {
-	resp, err := h.structureSvc.ListByTeacher(c.Request.Context(), c.Param("teacher_id"))
+	teacherID, valid := helper.ParseParamUUIDWithAbort(c, "teacher_id")
+	if !valid {
+		return
+	}
+	resp, err := h.structureSvc.ListByTeacher(c.Request.Context(), teacherID)
 	if err != nil {
 		response.InternalError(c, err.Error())
 		return
@@ -132,12 +147,16 @@ func (h *Handler) listByTeacher(c *gin.Context) {
 }
 
 func (h *Handler) updateStructure(c *gin.Context) {
+	id, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
 	var req UpdateStructureRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(c, err.Error())
 		return
 	}
-	resp, err := h.structureSvc.Update(c.Request.Context(), c.Param("id"), req)
+	resp, err := h.structureSvc.Update(c.Request.Context(), id, req)
 	if err != nil {
 		response.BadRequest(c, err.Error())
 		return
@@ -146,7 +165,11 @@ func (h *Handler) updateStructure(c *gin.Context) {
 }
 
 func (h *Handler) deleteStructure(c *gin.Context) {
-	if err := h.structureSvc.Delete(c.Request.Context(), c.Param("id")); err != nil {
+	id, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
+	if err := h.structureSvc.Delete(c.Request.Context(), id); err != nil {
 		response.BadRequest(c, err.Error())
 		return
 	}
@@ -170,7 +193,11 @@ func (h *Handler) bulkGenerate(c *gin.Context) {
 }
 
 func (h *Handler) getRecordByID(c *gin.Context) {
-	resp, err := h.recordSvc.GetByID(c.Request.Context(), c.Param("id"))
+	id, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
+	resp, err := h.recordSvc.GetByID(c.Request.Context(), id)
 	if err != nil {
 		response.NotFound(c, err.Error())
 		return
@@ -198,7 +225,11 @@ func (h *Handler) listRecords(c *gin.Context) {
 }
 
 func (h *Handler) listByTeacherRecords(c *gin.Context) {
-	resp, err := h.recordSvc.ListByTeacher(c.Request.Context(), c.Param("teacher_id"))
+	teacherID, valid := helper.ParseParamUUIDWithAbort(c, "teacher_id")
+	if !valid {
+		return
+	}
+	resp, err := h.recordSvc.ListByTeacher(c.Request.Context(), teacherID)
 	if err != nil {
 		response.InternalError(c, err.Error())
 		return
@@ -209,12 +240,9 @@ func (h *Handler) listByTeacherRecords(c *gin.Context) {
 // getMonthlySummary godoc
 // GET /salary/record/summary?academic_year_id=xxx&month=7&year=2024
 func (h *Handler) getMonthlySummary(c *gin.Context) {
-	academicYearID := c.Query("academic_year_id")
-	if academicYearID == "" {
-		academicYearID = c.GetHeader("X-Academic-Year-ID")
-	}
-	if academicYearID == "" {
-		response.BadRequest(c, "academic_year_id is required")
+	academicYearID, err := middleware.GetAcademicYearIDFromContext(c)
+	if err != nil {
+		response.BadRequest(c, "invalid academic year ID")
 		return
 	}
 
@@ -239,11 +267,17 @@ func (h *Handler) getMonthlySummary(c *gin.Context) {
 
 func (h *Handler) recordPayment(c *gin.Context) {
 	var req RecordPaymentRequest
+
+	id, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
+
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(c, err.Error())
 		return
 	}
-	resp, err := h.recordSvc.RecordPayment(c.Request.Context(), c.Param("id"), req)
+	resp, err := h.recordSvc.RecordPayment(c.Request.Context(), id, req)
 	if err != nil {
 		response.BadRequest(c, err.Error())
 		return
@@ -252,7 +286,11 @@ func (h *Handler) recordPayment(c *gin.Context) {
 }
 
 func (h *Handler) deleteRecord(c *gin.Context) {
-	if err := h.recordSvc.Delete(c.Request.Context(), c.Param("id")); err != nil {
+	id, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
+	if err := h.recordSvc.Delete(c.Request.Context(), id); err != nil {
 		response.BadRequest(c, err.Error())
 		return
 	}

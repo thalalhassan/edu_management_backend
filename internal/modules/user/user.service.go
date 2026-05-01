@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/thalalhassan/edu_management/internal/database"
 	"github.com/thalalhassan/edu_management/internal/shared/pagination"
 	"github.com/thalalhassan/edu_management/pkg/crypto"
@@ -20,11 +21,11 @@ type Service interface {
 	RegisterAdmin(ctx context.Context, req CreateAdminUserRequest) (*UserResponse, error)
 
 	// User management
-	GetByID(ctx context.Context, id string) (*UserResponse, error)
+	GetByID(ctx context.Context, id uuid.UUID) (*UserResponse, error)
 	List(ctx context.Context, p pagination.Params) ([]*UserResponse, int64, error)
-	Update(ctx context.Context, id string, req UpdateUserRequest) (*UserResponse, error)
-	Delete(ctx context.Context, id string) error
-	ChangePassword(ctx context.Context, userID string, req ChangePasswordRequest) error
+	Update(ctx context.Context, id uuid.UUID, req UpdateUserRequest) (*UserResponse, error)
+	Delete(ctx context.Context, id uuid.UUID) error
+	ChangePassword(ctx context.Context, userID uuid.UUID, req ChangePasswordRequest) error
 }
 
 type service struct {
@@ -125,7 +126,7 @@ func (s *service) RegisterEmployee(ctx context.Context, req CreateEmployeeUserRe
 	}
 
 	employee := &Employee{
-		EmployeeCode:   req.EmployeeID,
+		EmployeeCode:   req.EmployeeCode,
 		FirstName:      req.FirstName,
 		LastName:       req.LastName,
 		Gender:         req.Gender,
@@ -274,7 +275,7 @@ func (s *service) RegisterAdmin(ctx context.Context, req CreateAdminUserRequest)
 // USER MANAGEMENT
 // ──────────────────────────────────────────────────────────────
 
-func (s *service) GetByID(ctx context.Context, id string) (*UserResponse, error) {
+func (s *service) GetByID(ctx context.Context, id uuid.UUID) (*UserResponse, error) {
 	u, err := s.repo.GetUserByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("user.Service.GetByID: %w", err)
@@ -294,7 +295,7 @@ func (s *service) List(ctx context.Context, p pagination.Params) ([]*UserRespons
 	return responses, total, nil
 }
 
-func (s *service) Update(ctx context.Context, id string, req UpdateUserRequest) (*UserResponse, error) {
+func (s *service) Update(ctx context.Context, id uuid.UUID, req UpdateUserRequest) (*UserResponse, error) {
 	u, err := s.repo.GetUserByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("user.Service.Update.GetByID: %w", err)
@@ -317,7 +318,7 @@ func (s *service) Update(ctx context.Context, id string, req UpdateUserRequest) 
 	return ToUserResponse(u), nil
 }
 
-func (s *service) Delete(ctx context.Context, id string) error {
+func (s *service) Delete(ctx context.Context, id uuid.UUID) error {
 	// Revoke all sessions before hard-deleting
 	// _ = s.repo.RevokeAllRefreshTokensForUser(ctx, id)
 	if err := s.repo.DeleteUser(ctx, id); err != nil {
@@ -326,7 +327,7 @@ func (s *service) Delete(ctx context.Context, id string) error {
 	return nil
 }
 
-func (s *service) ChangePassword(ctx context.Context, userID string, req ChangePasswordRequest) error {
+func (s *service) ChangePassword(ctx context.Context, userID uuid.UUID, req ChangePasswordRequest) error {
 	u, err := s.repo.GetUserByID(ctx, userID)
 	if err != nil {
 		return fmt.Errorf("user.Service.ChangePassword.GetByID: %w", err)

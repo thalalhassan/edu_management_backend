@@ -2,6 +2,7 @@ package attendance
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/thalalhassan/edu_management/internal/app"
 	"github.com/thalalhassan/edu_management/internal/config"
 	"github.com/thalalhassan/edu_management/internal/constants"
@@ -88,7 +89,14 @@ func (h *Handler) bulkMarkAttendance(c *gin.Context) {
 }
 
 func (h *Handler) getAttendance(c *gin.Context) {
-	id := c.Param("id")
+	idStr := c.Param("id")
+
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		response.BadRequest(c, "invalid ID format")
+		return
+	}
+
 	resp, err := h.service.GetAttendanceByID(c.Request.Context(), id)
 	if err != nil {
 		response.NotFound(c, err.Error())
@@ -120,7 +128,12 @@ func (h *Handler) listStudentAttendance(c *gin.Context) {
 }
 
 func (h *Handler) getClassAttendanceSummary(c *gin.Context) {
-	classSectionID := c.Param("class_section_id")
+	classSectionIDStr := c.Param("class_section_id")
+	classSectionID, err := uuid.Parse(classSectionIDStr)
+	if err != nil {
+		response.BadRequest(c, "invalid class section ID format")
+		return
+	}
 	date := c.Query("date")
 	if date == "" {
 		response.BadRequest(c, "query param 'date' is required (format: YYYY-MM-DD)")
@@ -136,7 +149,12 @@ func (h *Handler) getClassAttendanceSummary(c *gin.Context) {
 }
 
 func (h *Handler) updateAttendance(c *gin.Context) {
-	id := c.Param("id")
+	idStr := c.Param("id")
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		response.BadRequest(c, "invalid ID format")
+		return
+	}
 	var req UpdateStudentAttendanceRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(c, err.Error())
@@ -151,7 +169,13 @@ func (h *Handler) updateAttendance(c *gin.Context) {
 }
 
 func (h *Handler) deleteAttendance(c *gin.Context) {
-	id := c.Param("id")
+	idStr := c.Param("id")
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		response.BadRequest(c, "invalid ID format")
+		return
+	}
+
 	if err := h.service.DeleteAttendance(c.Request.Context(), id); err != nil {
 		response.BadRequest(c, err.Error())
 		return
@@ -190,7 +214,12 @@ func (h *Handler) bulkMarkEmployeeAttendance(c *gin.Context) {
 }
 
 func (h *Handler) getEmployeeAttendance(c *gin.Context) {
-	id := c.Param("id")
+	idStr := c.Param("id")
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		response.BadRequest(c, "invalid ID format")
+		return
+	}
 	resp, err := h.service.GetEmployeeAttendanceByID(c.Request.Context(), id)
 	if err != nil {
 		response.NotFound(c, err.Error())
@@ -222,7 +251,12 @@ func (h *Handler) listEmployeeAttendance(c *gin.Context) {
 }
 
 func (h *Handler) updateEmployeeAttendance(c *gin.Context) {
-	id := c.Param("id")
+	idStr := c.Param("id")
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		response.BadRequest(c, "invalid ID format")
+		return
+	}
 	var req UpdateEmployeeAttendanceRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(c, err.Error())
@@ -237,7 +271,14 @@ func (h *Handler) updateEmployeeAttendance(c *gin.Context) {
 }
 
 func (h *Handler) deleteEmployeeAttendance(c *gin.Context) {
-	id := c.Param("id")
+	idStr := c.Param("id")
+
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		response.BadRequest(c, "invalid ID format")
+		return
+	}
+
 	if err := h.service.DeleteEmployeeAttendance(c.Request.Context(), id); err != nil {
 		response.BadRequest(c, err.Error())
 		return

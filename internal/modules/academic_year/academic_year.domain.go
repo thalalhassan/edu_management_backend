@@ -3,53 +3,58 @@ package academic_year
 import (
 	"time"
 
-	"github.com/thalalhassan/edu_management/internal/database"
+	"github.com/google/uuid"
 )
 
-type AcademicYear = database.AcademicYear
-
-type CreateRequest struct {
-	Name      string    `json:"name"       binding:"required"`
-	StartDate time.Time `json:"start_date" binding:"required"`
-	EndDate   time.Time `json:"end_date"   binding:"required"`
+type AcademicYear struct {
+	ID        uuid.UUID
+	Name      string
+	StartDate time.Time
+	EndDate   time.Time
+	IsActive  bool
+	CreatedAt time.Time
 }
 
-type UpdateRequest struct {
-	Name      *string    `json:"name,omitempty"`
-	StartDate *time.Time `json:"start_date,omitempty"`
-	EndDate   *time.Time `json:"end_date,omitempty"`
-}
-
-// AcademicYearResponse is the standard response shape.
-// ClassSections, Exams, FeeStructures are intentionally omitted —
-// those are fetched through their own modules scoped to this AY.
-type AcademicYearResponse struct {
-	ID        string    `json:"id"`
-	Name      string    `json:"name"`
-	StartDate time.Time `json:"start_date"`
-	EndDate   time.Time `json:"end_date"`
-	IsActive  bool      `json:"is_active"`
-	CreatedAt time.Time `json:"created_at"`
-}
-
-func ToAcademicYearResponse(a *AcademicYear) *AcademicYearResponse {
-	return &AcademicYearResponse{
-		ID:        a.ID,
-		Name:      a.Name,
-		StartDate: a.StartDate,
-		EndDate:   a.EndDate,
-		IsActive:  a.IsActive,
-		CreatedAt: a.CreatedAt,
+func NewAcademicYear(name string, start, end time.Time) (*AcademicYear, error) {
+	if !end.After(start) {
+		return nil, NewValidationError("end_date must be after start_date")
 	}
+	if len(name) < 1 || len(name) > 100 {
+		return nil, NewValidationError("name must be 1-100 characters")
+	}
+	return &AcademicYear{
+		Name:      name,
+		StartDate: start,
+		EndDate:   end,
+		IsActive:  false,
+	}, nil
 }
 
-type FilterParams struct {
-	Search *string `form:"search"`
+func (a *AcademicYear) Update(updates UpdateRequest) error {
+	if updates.Name != nil {
+		if len(*updates.Name) < 1 || len(*updates.Name) > 100 {
+			return NewValidationError("name must be 1-100 characters")
+		}
+		a.Name = *updates.Name
+	}
+	if updates.StartDate != nil {
+		a.StartDate = *updates.StartDate
+	}
+	if updates.EndDate != nil {
+		a.EndDate = *updates.EndDate
+	}
+	if !a.EndDate.After(a.StartDate) {
+		return NewValidationError("end_date must be after start_date")
+	}
+	return nil
 }
 
-var allowedSortFields = map[string]bool{
-	"name":       true,
-	"start_date": true,
-	"end_date":   true,
-	"created_at": true,
+func (a *AcademicYear) Activate() {
+	a.IsActive = true
 }
+
+func (a *AcademicYear) Deactivate() {
+	a.IsActive = false
+}
+
+func (AcademicYear) TableName() string { return "academic_year" }

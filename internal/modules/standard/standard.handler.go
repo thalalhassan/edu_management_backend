@@ -6,6 +6,7 @@ import (
 	"github.com/thalalhassan/edu_management/internal/config"
 	"github.com/thalalhassan/edu_management/internal/constants"
 	"github.com/thalalhassan/edu_management/internal/middleware"
+	"github.com/thalalhassan/edu_management/internal/shared/helper"
 	"github.com/thalalhassan/edu_management/internal/shared/response"
 )
 
@@ -57,7 +58,10 @@ func (h *Handler) create(c *gin.Context) {
 }
 
 func (h *Handler) getByID(c *gin.Context) {
-	id := c.Param("id")
+	id, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
 	resp, err := h.service.GetByID(c.Request.Context(), id)
 	if err != nil {
 		response.NotFound(c, err.Error())
@@ -76,7 +80,10 @@ func (h *Handler) list(c *gin.Context) {
 }
 
 func (h *Handler) listByDepartment(c *gin.Context) {
-	departmentID := c.Param("department_id")
+	departmentID, valid := helper.ParseParamUUIDWithAbort(c, "department_id")
+	if !valid {
+		return
+	}
 	resp, err := h.service.ListByDepartment(c.Request.Context(), departmentID)
 	if err != nil {
 		response.InternalError(c, err.Error())
@@ -86,7 +93,10 @@ func (h *Handler) listByDepartment(c *gin.Context) {
 }
 
 func (h *Handler) update(c *gin.Context) {
-	id := c.Param("id")
+	id, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
 	var req UpdateRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(c, err.Error())
@@ -101,7 +111,10 @@ func (h *Handler) update(c *gin.Context) {
 }
 
 func (h *Handler) delete(c *gin.Context) {
-	id := c.Param("id")
+	id, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
 	if err := h.service.Delete(c.Request.Context(), id); err != nil {
 		response.BadRequest(c, err.Error())
 		return
@@ -110,7 +123,10 @@ func (h *Handler) delete(c *gin.Context) {
 }
 
 func (h *Handler) getSubjects(c *gin.Context) {
-	id := c.Param("id")
+	id, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
 	resp, err := h.service.GetSubjects(c.Request.Context(), id)
 	if err != nil {
 		response.InternalError(c, err.Error())
@@ -120,7 +136,10 @@ func (h *Handler) getSubjects(c *gin.Context) {
 }
 
 func (h *Handler) assignSubject(c *gin.Context) {
-	id := c.Param("id")
+	id, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
 	var req AssignSubjectRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(c, err.Error())
@@ -134,8 +153,14 @@ func (h *Handler) assignSubject(c *gin.Context) {
 }
 
 func (h *Handler) removeSubject(c *gin.Context) {
-	id := c.Param("id")
-	subjectID := c.Param("subject_id")
+	id, valid := helper.ParseParamUUIDWithAbort(c, "id")
+	if !valid {
+		return
+	}
+	subjectID, valid := helper.ParseParamUUIDWithAbort(c, "subject_id")
+	if !valid {
+		return
+	}
 	if err := h.service.RemoveSubject(c.Request.Context(), id, subjectID); err != nil {
 		response.BadRequest(c, err.Error())
 		return

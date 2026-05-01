@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/thalalhassan/edu_management/internal/database"
 	"github.com/thalalhassan/edu_management/internal/shared/pagination"
 	"gorm.io/gorm"
@@ -11,11 +12,11 @@ import (
 type Repository interface {
 	// User CRUD
 	CreateUser(ctx context.Context, user *User) error
-	GetUserByID(ctx context.Context, id string) (*User, error)
+	GetUserByID(ctx context.Context, id uuid.UUID) (*User, error)
 	GetUserByEmail(ctx context.Context, email string) (*User, error)
 	FindAllUsers(ctx context.Context, p pagination.Params) ([]*User, int64, error)
-	UpdateUser(ctx context.Context, id string, user *User) error
-	DeleteUser(ctx context.Context, id string) error
+	UpdateUser(ctx context.Context, id uuid.UUID, user *User) error
+	DeleteUser(ctx context.Context, id uuid.UUID) error
 
 	// Profile creation — each runs inside the same tx as CreateUser
 	CreateStudent(ctx context.Context, tx *gorm.DB, student *Student) error
@@ -44,7 +45,7 @@ func (r *repositoryImpl) CreateUser(ctx context.Context, user *User) error {
 	return r.db.WithContext(ctx).Create(user).Error
 }
 
-func (r *repositoryImpl) GetUserByID(ctx context.Context, id string) (*User, error) {
+func (r *repositoryImpl) GetUserByID(ctx context.Context, id uuid.UUID) (*User, error) {
 	var u User
 	err := r.db.WithContext(ctx).
 		Preload("Employee").
@@ -97,11 +98,11 @@ func (r *repositoryImpl) FindAllUsers(ctx context.Context, p pagination.Params) 
 	return users, total, nil
 }
 
-func (r *repositoryImpl) UpdateUser(ctx context.Context, id string, user *User) error {
+func (r *repositoryImpl) UpdateUser(ctx context.Context, id uuid.UUID, user *User) error {
 	return r.db.WithContext(ctx).Where("id = ?", id).Save(user).Error
 }
 
-func (r *repositoryImpl) DeleteUser(ctx context.Context, id string) error {
+func (r *repositoryImpl) DeleteUser(ctx context.Context, id uuid.UUID) error {
 	return r.db.WithContext(ctx).Where("id = ?", id).Delete(&database.User{}).Error
 }
 

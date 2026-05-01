@@ -3,18 +3,19 @@ package teacher
 import (
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/thalalhassan/edu_management/internal/database"
 	"github.com/thalalhassan/edu_management/internal/shared/query_params"
 	"gorm.io/gorm"
 )
 
 type Repository interface {
-	GetByID(ctx context.Context, id string) (*Teacher, error)
-	GetByEmployeeID(ctx context.Context, employeeID string) (*Teacher, error)
+	GetByID(ctx context.Context, id uuid.UUID) (*Teacher, error)
+	GetByEmployeeID(ctx context.Context, employeeID uuid.UUID) (*Teacher, error)
 	FindAll(ctx context.Context, q query_params.Query[FilterParams]) ([]*Teacher, int64, error)
-	Update(ctx context.Context, id string, teacher *Teacher) error
-	UpdateStatus(ctx context.Context, id string, isActive bool) error
-	Delete(ctx context.Context, id string) error
+	Update(ctx context.Context, id uuid.UUID, teacher *Teacher) error
+	UpdateStatus(ctx context.Context, id uuid.UUID, isActive bool) error
+	Delete(ctx context.Context, id uuid.UUID) error
 }
 
 type repositoryImpl struct {
@@ -25,7 +26,7 @@ func NewRepository(db *gorm.DB) Repository {
 	return &repositoryImpl{db: db.Model(&database.Employee{})}
 }
 
-func (r *repositoryImpl) GetByID(ctx context.Context, id string) (*Teacher, error) {
+func (r *repositoryImpl) GetByID(ctx context.Context, id uuid.UUID) (*Teacher, error) {
 	var t Teacher
 	err := r.db.WithContext(ctx).
 		Preload("Assignments.ClassSection.Standard").
@@ -38,7 +39,7 @@ func (r *repositoryImpl) GetByID(ctx context.Context, id string) (*Teacher, erro
 	return &t, nil
 }
 
-func (r *repositoryImpl) GetByEmployeeID(ctx context.Context, employeeID string) (*Teacher, error) {
+func (r *repositoryImpl) GetByEmployeeID(ctx context.Context, employeeID uuid.UUID) (*Teacher, error) {
 	var t Teacher
 	if err := r.db.WithContext(ctx).First(&t, "employee_id = ?", employeeID).Error; err != nil {
 		return nil, err
@@ -77,14 +78,14 @@ func (r *repositoryImpl) FindAll(ctx context.Context, q query_params.Query[Filte
 	return teachers, total, nil
 }
 
-func (r *repositoryImpl) Update(ctx context.Context, id string, teacher *Teacher) error {
+func (r *repositoryImpl) Update(ctx context.Context, id uuid.UUID, teacher *Teacher) error {
 	return r.db.WithContext(ctx).Where("id = ?", id).Updates(teacher).Error
 }
 
-func (r *repositoryImpl) UpdateStatus(ctx context.Context, id string, isActive bool) error {
+func (r *repositoryImpl) UpdateStatus(ctx context.Context, id uuid.UUID, isActive bool) error {
 	return r.db.WithContext(ctx).Where("id = ?", id).Update("is_active", isActive).Error
 }
 
-func (r *repositoryImpl) Delete(ctx context.Context, id string) error {
+func (r *repositoryImpl) Delete(ctx context.Context, id uuid.UUID) error {
 	return r.db.WithContext(ctx).Where("id = ?", id).Delete(&Teacher{}).Error
 }

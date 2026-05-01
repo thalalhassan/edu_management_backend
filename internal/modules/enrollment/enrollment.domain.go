@@ -3,6 +3,7 @@ package enrollment
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/thalalhassan/edu_management/internal/database"
 )
 
@@ -10,8 +11,8 @@ type Enrollment = database.StudentEnrollment
 
 // EnrollRequest creates a new enrollment for a student into a class section.
 type EnrollRequest struct {
-	StudentID      string    `json:"student_id"       binding:"required,uuid"`
-	ClassSectionID string    `json:"class_section_id" binding:"required,uuid"`
+	StudentID      uuid.UUID `json:"student_id"       binding:"required,uuid"`
+	ClassSectionID uuid.UUID `json:"class_section_id" binding:"required,uuid"`
 	RollNumber     int       `json:"roll_number"      binding:"required,min=1"`
 	EnrollmentDate time.Time `json:"enrollment_date"  binding:"required"`
 }
@@ -35,15 +36,15 @@ type EnrollmentResponse struct {
 // RosterEntry is a lightweight row used in the class roster list —
 // avoids sending full nested objects for every student.
 type RosterEntry struct {
-	EnrollmentID   string                   `json:"enrollment_id"`
-	RollNumber     int                      `json:"roll_number"`
+	EnrollmentID   uuid.UUID                 `json:"enrollment_id"`
+	RollNumber     int                       `json:"roll_number"`
 	Status         database.EnrollmentStatus `json:"status"`
-	EnrollmentDate time.Time                `json:"enrollment_date"`
-	StudentID      string                   `json:"student_id"`
-	FirstName      string                   `json:"first_name"`
-	LastName       string                   `json:"last_name"`
-	AdmissionNo    string                   `json:"admission_no"`
-	Gender         database.Gender          `json:"gender"`
+	EnrollmentDate time.Time                 `json:"enrollment_date"`
+	StudentID      uuid.UUID                 `json:"student_id"`
+	FirstName      string                    `json:"first_name"`
+	LastName       string                    `json:"last_name"`
+	AdmissionNo    string                    `json:"admission_no"`
+	Gender         database.Gender           `json:"gender"`
 }
 
 // ──────────────────────────────────────────────────────────────

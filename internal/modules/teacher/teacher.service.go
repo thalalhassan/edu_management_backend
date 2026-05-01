@@ -4,17 +4,18 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/thalalhassan/edu_management/internal/database"
 	"github.com/thalalhassan/edu_management/internal/shared/query_params"
 )
 
 type Service interface {
-	GetByID(ctx context.Context, id string) (*TeacherResponse, error)
-	GetByEmployeeID(ctx context.Context, employeeID string) (*TeacherResponse, error)
+	GetByID(ctx context.Context, id uuid.UUID) (*TeacherResponse, error)
+	GetByEmployeeID(ctx context.Context, employeeID uuid.UUID) (*TeacherResponse, error)
 	List(ctx context.Context, q query_params.Query[FilterParams]) ([]*TeacherResponse, int64, error)
-	Update(ctx context.Context, id string, req UpdateRequest) (*TeacherResponse, error)
-	SetActive(ctx context.Context, id string, active bool) (*TeacherResponse, error)
-	Delete(ctx context.Context, id string) error
+	Update(ctx context.Context, id uuid.UUID, req UpdateRequest) (*TeacherResponse, error)
+	SetActive(ctx context.Context, id uuid.UUID, active bool) (*TeacherResponse, error)
+	Delete(ctx context.Context, id uuid.UUID) error
 }
 
 type service struct {
@@ -25,7 +26,7 @@ func NewService(repo Repository) Service {
 	return &service{repo: repo}
 }
 
-func (s *service) GetByID(ctx context.Context, id string) (*TeacherResponse, error) {
+func (s *service) GetByID(ctx context.Context, id uuid.UUID) (*TeacherResponse, error) {
 	t, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("teacher.Service.GetByID: %w", err)
@@ -33,7 +34,7 @@ func (s *service) GetByID(ctx context.Context, id string) (*TeacherResponse, err
 	return ToTeacherResponse(t), nil
 }
 
-func (s *service) GetByEmployeeID(ctx context.Context, employeeID string) (*TeacherResponse, error) {
+func (s *service) GetByEmployeeID(ctx context.Context, employeeID uuid.UUID) (*TeacherResponse, error) {
 	t, err := s.repo.GetByEmployeeID(ctx, employeeID)
 	if err != nil {
 		return nil, fmt.Errorf("teacher.Service.GetByEmployeeID: %w", err)
@@ -53,7 +54,7 @@ func (s *service) List(ctx context.Context, q query_params.Query[FilterParams]) 
 	return responses, total, nil
 }
 
-func (s *service) Update(ctx context.Context, id string, req UpdateRequest) (*TeacherResponse, error) {
+func (s *service) Update(ctx context.Context, id uuid.UUID, req UpdateRequest) (*TeacherResponse, error) {
 	t, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("teacher.Service.Update.GetByID: %w", err)
@@ -101,7 +102,7 @@ func (s *service) Update(ctx context.Context, id string, req UpdateRequest) (*Te
 
 // SetActive is a dedicated endpoint for activating/deactivating a teacher
 // without requiring a full update payload.
-func (s *service) SetActive(ctx context.Context, id string, active bool) (*TeacherResponse, error) {
+func (s *service) SetActive(ctx context.Context, id uuid.UUID, active bool) (*TeacherResponse, error) {
 	t, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("teacher.Service.SetActive.GetByID: %w", err)
@@ -114,7 +115,7 @@ func (s *service) SetActive(ctx context.Context, id string, active bool) (*Teach
 	return ToTeacherResponse(t), nil
 }
 
-func (s *service) Delete(ctx context.Context, id string) error {
+func (s *service) Delete(ctx context.Context, id uuid.UUID) error {
 	// Soft-delete only — GORM respects DeletedAt.
 	// Hard-deleting a teacher would orphan TeacherAssignment and TimeTable rows.
 	// Prefer SetActive(false) for deactivation; Delete for permanent removal after cleanup.

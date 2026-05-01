@@ -3,6 +3,7 @@ package leave
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/thalalhassan/edu_management/internal/database"
 )
 
@@ -14,7 +15,7 @@ type LeaveStatus = database.LeaveStatus
 
 // ApplyRequest is submitted by an employee (or on their behalf) to create a leave request.
 type ApplyRequest struct {
-	EmployeeID string    `json:"employee_id" binding:"required,uuid"`
+	EmployeeID uuid.UUID `json:"employee_id" binding:"required,uuid"`
 	FromDate   time.Time `json:"from_date"   binding:"required"`
 	ToDate     time.Time `json:"to_date"     binding:"required"`
 	Reason     string    `json:"reason"      binding:"required"`
@@ -37,13 +38,13 @@ type ReviewRequest struct {
 // ─── Response ────────────────────────────────────────────────────────────────
 
 type LeaveResponse struct {
-	ID         string      `json:"id"`
-	EmployeeID string      `json:"employee_id"`
+	ID         uuid.UUID   `json:"id"`
+	EmployeeID uuid.UUID   `json:"employee_id"`
 	FromDate   time.Time   `json:"from_date"`
 	ToDate     time.Time   `json:"to_date"`
 	Reason     string      `json:"reason"`
 	Status     LeaveStatus `json:"status"`
-	ReviewedBy *string     `json:"reviewed_by,omitempty"`
+	ReviewedBy *uuid.UUID  `json:"reviewed_by,omitempty"`
 	ReviewNote *string     `json:"review_note,omitempty"`
 	ReviewedAt *time.Time  `json:"reviewed_at,omitempty"`
 	// Computed convenience field — number of calendar days
@@ -55,7 +56,7 @@ type LeaveResponse struct {
 // ─── Filter params ────────────────────────────────────────────────────────────
 
 type FilterParams struct {
-	EmployeeID *string      `form:"employee_id"`
+	EmployeeID *uuid.UUID   `form:"employee_id"`
 	Status     *LeaveStatus `form:"status"`
 	DateFrom   *time.Time   `form:"date_from"`
 	DateTo     *time.Time   `form:"date_to"`

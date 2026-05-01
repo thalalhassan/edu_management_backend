@@ -3,20 +3,21 @@ package class_section
 import (
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/thalalhassan/edu_management/internal/database"
 	"gorm.io/gorm"
 )
 
 type Repository interface {
 	Create(ctx context.Context, cs *ClassSection) error
-	GetByID(ctx context.Context, id string) (*ClassSection, error)
-	FindByAcademicYear(ctx context.Context, academicYearID string) ([]*ClassSection, error)
-	FindByStandard(ctx context.Context, standardID, academicYearID string) ([]*ClassSection, error)
-	FindByEmployee(ctx context.Context, employeeID, academicYearID string) ([]*ClassSection, error)
-	Update(ctx context.Context, id string, cs *ClassSection) error
-	Delete(ctx context.Context, id string) error
-	CountEnrolled(ctx context.Context, classSectionID string) (int64, error)
-	IsDuplicate(ctx context.Context, academicYearID, standardID, sectionName string) (bool, error)
+	GetByID(ctx context.Context, id uuid.UUID) (*ClassSection, error)
+	FindByAcademicYear(ctx context.Context, academicYearID uuid.UUID) ([]*ClassSection, error)
+	FindByStandard(ctx context.Context, standardID, academicYearID uuid.UUID) ([]*ClassSection, error)
+	FindByEmployee(ctx context.Context, employeeID, academicYearID uuid.UUID) ([]*ClassSection, error)
+	Update(ctx context.Context, id uuid.UUID, cs *ClassSection) error
+	Delete(ctx context.Context, id uuid.UUID) error
+	CountEnrolled(ctx context.Context, classSectionID uuid.UUID) (int64, error)
+	IsDuplicate(ctx context.Context, academicYearID, standardID uuid.UUID, sectionName string) (bool, error)
 }
 
 type repositoryImpl struct {
@@ -31,7 +32,7 @@ func (r *repositoryImpl) Create(ctx context.Context, cs *ClassSection) error {
 	return r.db.WithContext(ctx).Create(cs).Error
 }
 
-func (r *repositoryImpl) GetByID(ctx context.Context, id string) (*ClassSection, error) {
+func (r *repositoryImpl) GetByID(ctx context.Context, id uuid.UUID) (*ClassSection, error) {
 	var cs ClassSection
 	err := r.db.WithContext(ctx).
 		Preload("AcademicYear").
@@ -45,7 +46,7 @@ func (r *repositoryImpl) GetByID(ctx context.Context, id string) (*ClassSection,
 }
 
 // FindByAcademicYear is the primary list query — scoped to the selected AY.
-func (r *repositoryImpl) FindByAcademicYear(ctx context.Context, academicYearID string) ([]*ClassSection, error) {
+func (r *repositoryImpl) FindByAcademicYear(ctx context.Context, academicYearID uuid.UUID) ([]*ClassSection, error) {
 	var sections []*ClassSection
 	err := r.db.WithContext(ctx).
 		Preload("AcademicYear").
@@ -58,7 +59,7 @@ func (r *repositoryImpl) FindByAcademicYear(ctx context.Context, academicYearID 
 }
 
 // FindByStandard returns sections for a specific standard in an academic year.
-func (r *repositoryImpl) FindByStandard(ctx context.Context, standardID, academicYearID string) ([]*ClassSection, error) {
+func (r *repositoryImpl) FindByStandard(ctx context.Context, standardID, academicYearID uuid.UUID) ([]*ClassSection, error) {
 	var sections []*ClassSection
 	err := r.db.WithContext(ctx).
 		Preload("ClassTeacher").
@@ -69,7 +70,7 @@ func (r *repositoryImpl) FindByStandard(ctx context.Context, standardID, academi
 }
 
 // FindByEmployee returns all sections an employee is the class employee of in an academic year.
-func (r *repositoryImpl) FindByEmployee(ctx context.Context, employeeID, academicYearID string) ([]*ClassSection, error) {
+func (r *repositoryImpl) FindByEmployee(ctx context.Context, employeeID, academicYearID uuid.UUID) ([]*ClassSection, error) {
 	var sections []*ClassSection
 	err := r.db.WithContext(ctx).
 		Preload("Standard.Department").
@@ -79,15 +80,15 @@ func (r *repositoryImpl) FindByEmployee(ctx context.Context, employeeID, academi
 	return sections, err
 }
 
-func (r *repositoryImpl) Update(ctx context.Context, id string, cs *ClassSection) error {
+func (r *repositoryImpl) Update(ctx context.Context, id uuid.UUID, cs *ClassSection) error {
 	return r.db.WithContext(ctx).Where("id = ?", id).Save(cs).Error
 }
 
-func (r *repositoryImpl) Delete(ctx context.Context, id string) error {
+func (r *repositoryImpl) Delete(ctx context.Context, id uuid.UUID) error {
 	return r.db.WithContext(ctx).Where("id = ?", id).Delete(&ClassSection{}).Error
 }
 
-func (r *repositoryImpl) CountEnrolled(ctx context.Context, classSectionID string) (int64, error) {
+func (r *repositoryImpl) CountEnrolled(ctx context.Context, classSectionID uuid.UUID) (int64, error) {
 	var count int64
 	err := r.db.WithContext(ctx).
 		Model(&database.StudentEnrollment{}).
@@ -98,7 +99,7 @@ func (r *repositoryImpl) CountEnrolled(ctx context.Context, classSectionID strin
 
 // IsDuplicate checks if a section with the same name already exists for this
 // standard + academic year combination.
-func (r *repositoryImpl) IsDuplicate(ctx context.Context, academicYearID, standardID, sectionName string) (bool, error) {
+func (r *repositoryImpl) IsDuplicate(ctx context.Context, academicYearID, standardID uuid.UUID, sectionName string) (bool, error) {
 	var count int64
 	err := r.db.WithContext(ctx).
 		Model(&database.ClassSection{}).

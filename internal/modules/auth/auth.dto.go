@@ -1,11 +1,13 @@
 package auth
 
+import "github.com/google/uuid"
+
 // @Description Information about authenticated user
 // @Name UserAuthInfo
 type UserAuthInfo struct {
-	ID    string `json:"id"`
-	Email string `json:"email"`
-	Role  string `json:"role"`
+	ID    uuid.UUID `json:"id"`
+	Email string    `json:"email"`
+	Role  string    `json:"role"`
 }
 
 // ──────────────────────────────────────────────────────────────

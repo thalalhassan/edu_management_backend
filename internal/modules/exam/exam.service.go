@@ -4,41 +4,82 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 
-	"github.com/thalalhassan/edu_management/internal/database"
+	"github.com/google/uuid"
 	"github.com/thalalhassan/edu_management/internal/shared/query_params"
+	"gorm.io/gorm"
 )
 
-// ─── Service interface ────────────────────────────────────────────────────────
+type Code string
 
-type Service interface {
-	// Exam
-	CreateExam(ctx context.Context, req CreateExamRequest) (*ExamResponse, error)
-	GetExamByID(ctx context.Context, id string) (*ExamResponse, error)
-	ListExams(ctx context.Context, q query_params.Query[FilterParams]) ([]*ExamResponse, int64, error)
-	UpdateExam(ctx context.Context, id string, req UpdateExamRequest) (*ExamResponse, error)
-	PublishExam(ctx context.Context, id string, req PublishExamRequest) (*ExamResponse, error)
-	DeleteExam(ctx context.Context, id string) error
+const (
+	CodeNotFound     Code = "not_found"
+	CodeDuplicate    Code = "duplicate"
+	CodeValidation   Code = "validation_error"
+	CodeBusinessRule Code = "business_rule"
+	CodeInternal     Code = "internal"
+)
 
-	// ExamSchedule
-	CreateSchedule(ctx context.Context, examID string, req CreateScheduleRequest) (*ExamScheduleResponse, error)
-	GetScheduleByID(ctx context.Context, id string) (*ExamScheduleResponse, error)
-	ListSchedulesByExam(ctx context.Context, examID string) ([]*ExamScheduleResponse, error)
-	ListSchedulesByClassSection(ctx context.Context, classSectionID string) ([]*ExamScheduleResponse, error)
-	UpdateSchedule(ctx context.Context, id string, req UpdateScheduleRequest) (*ExamScheduleResponse, error)
-	DeleteSchedule(ctx context.Context, id string) error
-
-	// ExamResult
-	CreateResult(ctx context.Context, scheduleID string, req CreateResultRequest) (*ExamResultResponse, error)
-	BulkCreateResults(ctx context.Context, scheduleID string, req BulkCreateResultRequest) ([]*ExamResultResponse, error)
-	GetResultByID(ctx context.Context, id string) (*ExamResultResponse, error)
-	ListResultsBySchedule(ctx context.Context, scheduleID string) ([]*ExamResultResponse, error)
-	ListResultsByStudent(ctx context.Context, studentEnrollmentID string) ([]*ExamResultResponse, error)
-	UpdateResult(ctx context.Context, id string, req UpdateResultRequest) (*ExamResultResponse, error)
-	DeleteResult(ctx context.Context, id string) error
+type AppError struct {
+	Code    Code   `json:"code"`
+	Message string `json:"message"`
+	Detail  string `json:"detail,omitempty"`
 }
 
-// ─── service struct ───────────────────────────────────────────────────────────
+func (e *AppError) Error() string {
+	if e == nil {
+		return ""
+	}
+	if e.Detail == "" {
+		return e.Message
+	}
+	return fmt.Sprintf("%s: %s", e.Message, e.Detail)
+}
+
+func NewAppError(code Code, message string, detail ...string) *AppError {
+	err := &AppError{Code: code, Message: message}
+	if len(detail) > 0 {
+		err.Detail = detail[0]
+	}
+	return err
+}
+
+func (e *AppError) Unwrap() error {
+	return nil
+}
+
+func mapRepoError(err error, entity string) error {
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return NewAppError(CodeNotFound, fmt.Sprintf("%s not found", entity), err.Error())
+	}
+	return err
+}
+
+// Service defines the exam use case contract.
+type Service interface {
+	CreateExam(ctx context.Context, req CreateExamRequest) (*ExamResponse, error)
+	GetExamByID(ctx context.Context, id uuid.UUID) (*ExamResponse, error)
+	ListExams(ctx context.Context, q query_params.Query[FilterParams]) ([]*ExamResponse, int64, error)
+	UpdateExam(ctx context.Context, id uuid.UUID, req UpdateExamRequest) (*ExamResponse, error)
+	PublishExam(ctx context.Context, id uuid.UUID, req PublishExamRequest) (*ExamResponse, error)
+	DeleteExam(ctx context.Context, id uuid.UUID) error
+
+	CreateSchedule(ctx context.Context, examID uuid.UUID, req CreateScheduleRequest) (*ExamScheduleResponse, error)
+	GetScheduleByID(ctx context.Context, id uuid.UUID) (*ExamScheduleResponse, error)
+	ListSchedulesByExam(ctx context.Context, examID uuid.UUID) ([]*ExamScheduleResponse, error)
+	ListSchedulesByClassSection(ctx context.Context, classSectionID uuid.UUID) ([]*ExamScheduleResponse, error)
+	UpdateSchedule(ctx context.Context, id uuid.UUID, req UpdateScheduleRequest) (*ExamScheduleResponse, error)
+	DeleteSchedule(ctx context.Context, id uuid.UUID) error
+
+	CreateResult(ctx context.Context, scheduleID uuid.UUID, req CreateResultRequest) (*ExamResultResponse, error)
+	BulkCreateResults(ctx context.Context, scheduleID uuid.UUID, req BulkCreateResultRequest) ([]*ExamResultResponse, error)
+	GetResultByID(ctx context.Context, id uuid.UUID) (*ExamResultResponse, error)
+	ListResultsBySchedule(ctx context.Context, scheduleID uuid.UUID) ([]*ExamResultResponse, error)
+	ListResultsByStudent(ctx context.Context, studentEnrollmentID uuid.UUID) ([]*ExamResultResponse, error)
+	UpdateResult(ctx context.Context, id uuid.UUID, req UpdateResultRequest) (*ExamResultResponse, error)
+	DeleteResult(ctx context.Context, id uuid.UUID) error
+}
 
 type service struct {
 	repo Repository
@@ -48,50 +89,38 @@ func NewService(repo Repository) Service {
 	return &service{repo: repo}
 }
 
-// ─── helpers ─────────────────────────────────────────────────────────────────
-
-// deriveStatus computes PASS / FAIL / ABSENT from marks and passing threshold.
-func deriveStatus(marks, passingMarks interface {
-	Cmp(interface{ Cmp(interface{}) int }) int
-}) database.ExamResultStatus {
-	// Use shopspring/decimal comparison via marks.Cmp
-	return database.ExamResultStatusPass // handled inline below using decimal
-}
-
-// ─── Exam ─────────────────────────────────────────────────────────────────────
-
 func (s *service) CreateExam(ctx context.Context, req CreateExamRequest) (*ExamResponse, error) {
-	if !req.EndDate.After(req.StartDate) {
-		return nil, errors.New("exam.Service.CreateExam: end_date must be after start_date")
+	if err := ValidateExamWindow(req.StartDate, req.EndDate); err != nil {
+		return nil, NewAppError(CodeValidation, err.Error())
 	}
-
-	isDup, err := s.repo.IsDuplicateExamName(ctx, req.AcademicYearID, req.Name)
+	trimmedName := strings.TrimSpace(req.Name)
+	isDup, err := s.repo.IsDuplicateExamName(ctx, req.AcademicYearID, trimmedName)
 	if err != nil {
-		return nil, fmt.Errorf("exam.Service.CreateExam.IsDuplicateName: %w", err)
+		return nil, err
 	}
 	if isDup {
-		return nil, fmt.Errorf("exam.Service.CreateExam: exam %q already exists for this academic year", req.Name)
+		return nil, NewAppError(CodeDuplicate, "exam already exists for this academic year")
 	}
 
 	e := &Exam{
 		AcademicYearID: req.AcademicYearID,
-		Name:           req.Name,
-		Description:    req.Description,
+		Name:           trimmedName,
+		Description:    normalizeStringPtr(req.Description),
 		ExamType:       req.ExamType,
 		StartDate:      req.StartDate,
 		EndDate:        req.EndDate,
 		IsPublished:    false,
 	}
 	if err := s.repo.CreateExam(ctx, e); err != nil {
-		return nil, fmt.Errorf("exam.Service.CreateExam: %w", err)
+		return nil, err
 	}
 	return ToExamResponse(e), nil
 }
 
-func (s *service) GetExamByID(ctx context.Context, id string) (*ExamResponse, error) {
+func (s *service) GetExamByID(ctx context.Context, id uuid.UUID) (*ExamResponse, error) {
 	e, err := s.repo.GetExamByID(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("exam.Service.GetExamByID: %w", err)
+		return nil, mapRepoError(err, "exam")
 	}
 	return ToExamResponse(e), nil
 }
@@ -99,121 +128,132 @@ func (s *service) GetExamByID(ctx context.Context, id string) (*ExamResponse, er
 func (s *service) ListExams(ctx context.Context, q query_params.Query[FilterParams]) ([]*ExamResponse, int64, error) {
 	exams, total, err := s.repo.FindAllExams(ctx, q)
 	if err != nil {
-		return nil, 0, fmt.Errorf("exam.Service.ListExams: %w", err)
+		return nil, 0, err
 	}
 	responses := make([]*ExamResponse, len(exams))
-	for i, e := range exams {
-		responses[i] = ToExamResponse(e)
+	for i, exam := range exams {
+		responses[i] = ToExamResponse(exam)
 	}
 	return responses, total, nil
 }
 
-func (s *service) UpdateExam(ctx context.Context, id string, req UpdateExamRequest) (*ExamResponse, error) {
-	e, err := s.repo.GetExamByID(ctx, id)
+func (s *service) UpdateExam(ctx context.Context, id uuid.UUID, req UpdateExamRequest) (*ExamResponse, error) {
+	exam, err := s.repo.GetExamByID(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("exam.Service.UpdateExam.GetByID: %w", err)
+		return nil, err
 	}
 
-	if req.Name != nil && *req.Name != e.Name {
-		isDup, err := s.repo.IsDuplicateExamName(ctx, e.AcademicYearID, *req.Name)
+	if exam.IsPublished {
+		if req.Name != nil && strings.TrimSpace(*req.Name) != exam.Name {
+			return nil, NewAppError(CodeBusinessRule, "cannot rename a published exam")
+		}
+		if req.ExamType != nil && *req.ExamType != exam.ExamType {
+			return nil, NewAppError(CodeBusinessRule, "cannot change exam_type for a published exam")
+		}
+		if req.StartDate != nil && !req.StartDate.Equal(exam.StartDate) {
+			return nil, NewAppError(CodeBusinessRule, "cannot change start_date for a published exam")
+		}
+		if req.EndDate != nil && !req.EndDate.Equal(exam.EndDate) {
+			return nil, NewAppError(CodeBusinessRule, "cannot change end_date for a published exam")
+		}
+	}
+
+	if req.Name != nil && strings.TrimSpace(*req.Name) != exam.Name {
+		isDup, err := s.repo.IsDuplicateExamName(ctx, exam.AcademicYearID, strings.TrimSpace(*req.Name))
 		if err != nil {
-			return nil, fmt.Errorf("exam.Service.UpdateExam.IsDuplicateName: %w", err)
+			return nil, err
 		}
 		if isDup {
-			return nil, fmt.Errorf("exam.Service.UpdateExam: exam name %q already in use for this academic year", *req.Name)
+			return nil, NewAppError(CodeDuplicate, "exam name already exists for the academic year")
 		}
-		e.Name = *req.Name
+	}
+
+	if req.Name != nil {
+		exam.Name = strings.TrimSpace(*req.Name)
 	}
 	if req.Description != nil {
-		e.Description = req.Description
+		exam.Description = normalizeStringPtr(req.Description)
 	}
 	if req.ExamType != nil {
-		e.ExamType = *req.ExamType
+		exam.ExamType = *req.ExamType
 	}
 	if req.StartDate != nil {
-		e.StartDate = *req.StartDate
+		exam.StartDate = *req.StartDate
 	}
 	if req.EndDate != nil {
-		e.EndDate = *req.EndDate
+		exam.EndDate = *req.EndDate
 	}
 
-	if !e.EndDate.After(e.StartDate) {
-		return nil, errors.New("exam.Service.UpdateExam: end_date must be after start_date")
+	if err := ValidateExamWindow(exam.StartDate, exam.EndDate); err != nil {
+		return nil, NewAppError(CodeValidation, err.Error())
 	}
 
-	if err := s.repo.UpdateExam(ctx, e); err != nil {
-		return nil, fmt.Errorf("exam.Service.UpdateExam: %w", err)
+	if err := s.repo.UpdateExam(ctx, exam); err != nil {
+		return nil, err
 	}
-	return ToExamResponse(e), nil
+	return ToExamResponse(exam), nil
 }
 
-func (s *service) PublishExam(ctx context.Context, id string, req PublishExamRequest) (*ExamResponse, error) {
-	e, err := s.repo.GetExamByID(ctx, id)
-	if err != nil {
-		return nil, fmt.Errorf("exam.Service.PublishExam.GetByID: %w", err)
+func (s *service) PublishExam(ctx context.Context, id uuid.UUID, req PublishExamRequest) (*ExamResponse, error) {
+	if req.IsPublished == nil {
+		return nil, NewAppError(CodeValidation, "is_published is required")
 	}
 
-	// Cannot publish an exam with no schedules
-	if req.IsPublished {
-		hasSchedules, err := s.repo.HasSchedules(ctx, id)
+	var exam *Exam
+	if err := s.repo.WithTx(ctx, func(tx Repository) error {
+		var err error
+		exam, err = tx.GetExamByIDForUpdate(ctx, id)
 		if err != nil {
-			return nil, fmt.Errorf("exam.Service.PublishExam.HasSchedules: %w", err)
+			return mapRepoError(err, "exam")
 		}
-		if !hasSchedules {
-			return nil, errors.New("exam.Service.PublishExam: cannot publish exam with no schedules — add at least one schedule first")
+		if *req.IsPublished {
+			hasSchedules, err := tx.HasSchedules(ctx, id)
+			if err != nil {
+				return err
+			}
+			if !hasSchedules {
+				return NewAppError(CodeValidation, "cannot publish exam with no schedules")
+			}
 		}
+		exam.IsPublished = *req.IsPublished
+		return tx.UpdateExam(ctx, exam)
+	}); err != nil {
+		return nil, err
 	}
 
-	e.IsPublished = req.IsPublished
-	if err := s.repo.UpdateExam(ctx, e); err != nil {
-		return nil, fmt.Errorf("exam.Service.PublishExam: %w", err)
-	}
-	return ToExamResponse(e), nil
+	return ToExamResponse(exam), nil
 }
 
-func (s *service) DeleteExam(ctx context.Context, id string) error {
-	e, err := s.repo.GetExamByID(ctx, id)
-	if err != nil {
-		return fmt.Errorf("exam.Service.DeleteExam.GetByID: %w", err)
-	}
-	if e.IsPublished {
-		return errors.New("exam.Service.DeleteExam: cannot delete a published exam — unpublish it first")
-	}
-	if err := s.repo.DeleteExam(ctx, id); err != nil {
-		return fmt.Errorf("exam.Service.DeleteExam: %w", err)
-	}
-	return nil
+func (s *service) DeleteExam(ctx context.Context, id uuid.UUID) error {
+	return s.repo.WithTx(ctx, func(tx Repository) error {
+		exam, err := tx.GetExamByIDForUpdate(ctx, id)
+		if err != nil {
+			return mapRepoError(err, "exam")
+		}
+		if exam.IsPublished {
+			return NewAppError(CodeBusinessRule, "cannot delete a published exam — unpublish it first")
+		}
+		return tx.DeleteExam(ctx, id)
+	})
 }
 
-// ─── ExamSchedule ─────────────────────────────────────────────────────────────
-
-func (s *service) CreateSchedule(ctx context.Context, examID string, req CreateScheduleRequest) (*ExamScheduleResponse, error) {
-	// Confirm parent exam exists
-	e, err := s.repo.GetExamByID(ctx, examID)
+func (s *service) CreateSchedule(ctx context.Context, examID uuid.UUID, req CreateScheduleRequest) (*ExamScheduleResponse, error) {
+	exam, err := s.repo.GetExamByID(ctx, examID)
 	if err != nil {
-		return nil, fmt.Errorf("exam.Service.CreateSchedule.GetExam: %w", err)
+		return nil, err
 	}
 
-	// Guard: exam date must fall within exam window
-	if req.ExamDate.Before(e.StartDate) || req.ExamDate.After(e.EndDate) {
-		return nil, fmt.Errorf("exam.Service.CreateSchedule: exam_date must be between exam start_date and end_date")
+	if err := ValidateScheduleWindow(req.ExamDate, exam.StartDate, exam.EndDate); err != nil {
+		return nil, NewAppError(CodeValidation, err.Error())
+	}
+	if err := ValidateScheduleTimeBounds(req.StartTime, req.EndTime); err != nil {
+		return nil, NewAppError(CodeValidation, err.Error())
+	}
+	if err := ValidateScheduleMarks(req.MaxMarks, req.PassingMarks); err != nil {
+		return nil, NewAppError(CodeValidation, err.Error())
 	}
 
-	// Guard: passing marks cannot exceed max marks
-	if req.PassingMarks.GreaterThan(req.MaxMarks) {
-		return nil, errors.New("exam.Service.CreateSchedule: passing_marks cannot exceed max_marks")
-	}
-
-	// Guard: no duplicate subject for the same class section within this exam
-	isDup, err := s.repo.IsDuplicateSchedule(ctx, examID, req.ClassSectionID, req.SubjectID)
-	if err != nil {
-		return nil, fmt.Errorf("exam.Service.CreateSchedule.IsDuplicateSchedule: %w", err)
-	}
-	if isDup {
-		return nil, errors.New("exam.Service.CreateSchedule: a schedule for this class section and subject already exists in this exam")
-	}
-
-	sch := &ExamSchedule{
+	schedule := &ExamSchedule{
 		ExamID:         examID,
 		ClassSectionID: req.ClassSectionID,
 		SubjectID:      req.SubjectID,
@@ -224,27 +264,29 @@ func (s *service) CreateSchedule(ctx context.Context, examID string, req CreateS
 		PassingMarks:   req.PassingMarks,
 		RoomID:         req.RoomID,
 	}
-	if err := s.repo.CreateSchedule(ctx, sch); err != nil {
-		return nil, fmt.Errorf("exam.Service.CreateSchedule: %w", err)
+	if isDup, err := s.repo.IsDuplicateSchedule(ctx, examID, req.ClassSectionID, req.SubjectID); err != nil {
+		return nil, err
+	} else if isDup {
+		return nil, NewAppError(CodeDuplicate, "a schedule for this class section and subject already exists in this exam")
 	}
-	return ToScheduleResponse(sch), nil
+	if err := s.repo.CreateSchedule(ctx, schedule); err != nil {
+		return nil, err
+	}
+	return ToScheduleResponse(schedule), nil
 }
 
-func (s *service) GetScheduleByID(ctx context.Context, id string) (*ExamScheduleResponse, error) {
-	sch, err := s.repo.GetScheduleByID(ctx, id)
+func (s *service) GetScheduleByID(ctx context.Context, id uuid.UUID) (*ExamScheduleResponse, error) {
+	schedule, err := s.repo.GetScheduleByID(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("exam.Service.GetScheduleByID: %w", err)
+		return nil, mapRepoError(err, "exam schedule")
 	}
-	return ToScheduleResponse(sch), nil
+	return ToScheduleResponse(schedule), nil
 }
 
-func (s *service) ListSchedulesByExam(ctx context.Context, examID string) ([]*ExamScheduleResponse, error) {
-	if _, err := s.repo.GetExamByID(ctx, examID); err != nil {
-		return nil, fmt.Errorf("exam.Service.ListSchedulesByExam.GetExam: %w", err)
-	}
+func (s *service) ListSchedulesByExam(ctx context.Context, examID uuid.UUID) ([]*ExamScheduleResponse, error) {
 	schedules, err := s.repo.FindSchedulesByExam(ctx, examID)
 	if err != nil {
-		return nil, fmt.Errorf("exam.Service.ListSchedulesByExam: %w", err)
+		return nil, err
 	}
 	responses := make([]*ExamScheduleResponse, len(schedules))
 	for i, sch := range schedules {
@@ -253,10 +295,10 @@ func (s *service) ListSchedulesByExam(ctx context.Context, examID string) ([]*Ex
 	return responses, nil
 }
 
-func (s *service) ListSchedulesByClassSection(ctx context.Context, classSectionID string) ([]*ExamScheduleResponse, error) {
+func (s *service) ListSchedulesByClassSection(ctx context.Context, classSectionID uuid.UUID) ([]*ExamScheduleResponse, error) {
 	schedules, err := s.repo.FindSchedulesByClassSection(ctx, classSectionID)
 	if err != nil {
-		return nil, fmt.Errorf("exam.Service.ListSchedulesByClassSection: %w", err)
+		return nil, err
 	}
 	responses := make([]*ExamScheduleResponse, len(schedules))
 	for i, sch := range schedules {
@@ -265,141 +307,182 @@ func (s *service) ListSchedulesByClassSection(ctx context.Context, classSectionI
 	return responses, nil
 }
 
-func (s *service) UpdateSchedule(ctx context.Context, id string, req UpdateScheduleRequest) (*ExamScheduleResponse, error) {
-	sch, err := s.repo.GetScheduleByID(ctx, id)
-	if err != nil {
-		return nil, fmt.Errorf("exam.Service.UpdateSchedule.GetByID: %w", err)
-	}
+func (s *service) UpdateSchedule(ctx context.Context, id uuid.UUID, req UpdateScheduleRequest) (*ExamScheduleResponse, error) {
+	var schedule *ExamSchedule
+	if err := s.repo.WithTx(ctx, func(tx Repository) error {
+		var err error
+		schedule, err = tx.GetScheduleByIDForUpdate(ctx, id)
+		if err != nil {
+			return mapRepoError(err, "exam schedule")
+		}
+		hasResults, err := tx.HasResults(ctx, id)
+		if err != nil {
+			return err
+		}
+		if hasResults {
+			return NewAppError(CodeBusinessRule, "cannot update schedule that already has results — delete results first")
+		}
+		if req.ExamDate != nil {
+			schedule.ExamDate = *req.ExamDate
+		}
+		if req.StartTime != nil {
+			schedule.StartTime = req.StartTime
+		}
+		if req.EndTime != nil {
+			schedule.EndTime = req.EndTime
+		}
+		if req.MaxMarks != nil {
+			schedule.MaxMarks = *req.MaxMarks
+		}
+		if req.PassingMarks != nil {
+			schedule.PassingMarks = *req.PassingMarks
+		}
+		if req.RoomID != nil {
+			schedule.RoomID = req.RoomID
+		}
 
-	// Cannot update a schedule that already has results entered
-	hasResults, err := s.repo.HasResults(ctx, id)
-	if err != nil {
-		return nil, fmt.Errorf("exam.Service.UpdateSchedule.HasResults: %w", err)
+		if err := ValidateScheduleTimeBounds(schedule.StartTime, schedule.EndTime); err != nil {
+			return NewAppError(CodeValidation, err.Error())
+		}
+		if err := ValidateScheduleMarks(schedule.MaxMarks, schedule.PassingMarks); err != nil {
+			return NewAppError(CodeValidation, err.Error())
+		}
+		return tx.UpdateSchedule(ctx, schedule)
+	}); err != nil {
+		return nil, err
 	}
-	if hasResults {
-		return nil, errors.New("exam.Service.UpdateSchedule: cannot update schedule that already has results — delete results first")
-	}
-
-	if req.ExamDate != nil {
-		sch.ExamDate = *req.ExamDate
-	}
-	if req.StartTime != nil {
-		sch.StartTime = req.StartTime
-	}
-	if req.EndTime != nil {
-		sch.EndTime = req.EndTime
-	}
-	if req.MaxMarks != nil {
-		sch.MaxMarks = *req.MaxMarks
-	}
-	if req.PassingMarks != nil {
-		sch.PassingMarks = *req.PassingMarks
-	}
-	if req.RoomID != nil {
-		sch.RoomID = req.RoomID
-	}
-
-	if sch.PassingMarks.GreaterThan(sch.MaxMarks) {
-		return nil, errors.New("exam.Service.UpdateSchedule: passing_marks cannot exceed max_marks")
-	}
-
-	if err := s.repo.UpdateSchedule(ctx, sch); err != nil {
-		return nil, fmt.Errorf("exam.Service.UpdateSchedule: %w", err)
-	}
-	return ToScheduleResponse(sch), nil
+	return ToScheduleResponse(schedule), nil
 }
 
-func (s *service) DeleteSchedule(ctx context.Context, id string) error {
-	hasResults, err := s.repo.HasResults(ctx, id)
-	if err != nil {
-		return fmt.Errorf("exam.Service.DeleteSchedule.HasResults: %w", err)
-	}
-	if hasResults {
-		return errors.New("exam.Service.DeleteSchedule: cannot delete schedule with existing results")
-	}
-	if err := s.repo.DeleteSchedule(ctx, id); err != nil {
-		return fmt.Errorf("exam.Service.DeleteSchedule: %w", err)
-	}
-	return nil
+func (s *service) DeleteSchedule(ctx context.Context, id uuid.UUID) error {
+	return s.repo.WithTx(ctx, func(tx Repository) error {
+		schedule, err := tx.GetScheduleByIDForUpdate(ctx, id)
+		if err != nil {
+			return mapRepoError(err, "exam schedule")
+		}
+		exam, err := tx.GetExamByID(ctx, schedule.ExamID)
+		if err != nil {
+			return err
+		}
+		if exam.IsPublished {
+			return NewAppError(CodeBusinessRule, "cannot delete a schedule from a published exam")
+		}
+		hasResults, err := tx.HasResults(ctx, id)
+		if err != nil {
+			return err
+		}
+		if hasResults {
+			return NewAppError(CodeBusinessRule, "cannot delete schedule with existing results")
+		}
+		return tx.DeleteSchedule(ctx, id)
+	})
 }
 
-// ─── ExamResult ───────────────────────────────────────────────────────────────
-
-func (s *service) CreateResult(ctx context.Context, scheduleID string, req CreateResultRequest) (*ExamResultResponse, error) {
+func (s *service) CreateResult(ctx context.Context, scheduleID uuid.UUID, req CreateResultRequest) (*ExamResultResponse, error) {
 	maxMarks, passingMarks, err := s.repo.GetScheduleMarks(ctx, scheduleID)
 	if err != nil {
-		return nil, fmt.Errorf("exam.Service.CreateResult.GetScheduleMarks: %w", err)
+		return nil, err
 	}
 
-	if req.MarksObtained.GreaterThan(maxMarks) {
-		return nil, fmt.Errorf("exam.Service.CreateResult: marks_obtained (%s) exceeds max_marks (%s)", req.MarksObtained, maxMarks)
+	if err := ValidateResultMarks(req.MarksObtained, maxMarks); err != nil {
+		return nil, NewAppError(CodeValidation, err.Error())
 	}
-
 	isDup, err := s.repo.IsDuplicateResult(ctx, scheduleID, req.StudentEnrollmentID)
 	if err != nil {
-		return nil, fmt.Errorf("exam.Service.CreateResult.IsDuplicate: %w", err)
+		return nil, err
 	}
 	if isDup {
-		return nil, errors.New("exam.Service.CreateResult: result already exists for this student in this schedule")
-	}
-
-	status := database.ExamResultStatusPass
-	if req.MarksObtained.LessThan(passingMarks) {
-		status = database.ExamResultStatusFail
+		return nil, NewAppError(CodeDuplicate, "result already exists for this student in this schedule")
 	}
 
 	res := &ExamResult{
 		ExamScheduleID:      scheduleID,
 		StudentEnrollmentID: req.StudentEnrollmentID,
 		MarksObtained:       req.MarksObtained,
-		Grade:               req.Grade,
-		Status:              status,
-		Remarks:             req.Remarks,
+		Grade:               normalizeStringPtr(req.Grade),
+		Status:              DeriveExamResultStatus(req.MarksObtained, passingMarks),
+		Remarks:             normalizeStringPtr(req.Remarks),
 	}
 	if err := s.repo.CreateResult(ctx, res); err != nil {
-		return nil, fmt.Errorf("exam.Service.CreateResult: %w", err)
+		return nil, err
 	}
 	return ToResultResponse(res), nil
 }
 
-func (s *service) BulkCreateResults(ctx context.Context, scheduleID string, req BulkCreateResultRequest) ([]*ExamResultResponse, error) {
+func (s *service) BulkCreateResults(ctx context.Context, scheduleID uuid.UUID, req BulkCreateResultRequest) ([]*ExamResultResponse, error) {
+	if len(req.Results) == 0 {
+		return nil, NewAppError(CodeValidation, "results must not be empty")
+	}
+	if len(req.Results) > BulkResultMaxItems {
+		return nil, NewAppError(CodeValidation, fmt.Sprintf("results cannot contain more than %d entries", BulkResultMaxItems))
+	}
+
+	seen := make(map[uuid.UUID]int)
+	var duplicateIndexes []int
+	studentIDs := make([]uuid.UUID, 0, len(req.Results))
+	for idx, item := range req.Results {
+		if _, ok := seen[item.StudentEnrollmentID]; ok {
+			duplicateIndexes = append(duplicateIndexes, idx)
+		}
+		seen[item.StudentEnrollmentID] = idx
+		studentIDs = append(studentIDs, item.StudentEnrollmentID)
+	}
+	if len(duplicateIndexes) > 0 {
+		return nil, NewAppError(CodeValidation, "duplicate student_enrollment_id entries in batch", fmt.Sprintf("duplicate indices: %v", duplicateIndexes))
+	}
+
 	maxMarks, passingMarks, err := s.repo.GetScheduleMarks(ctx, scheduleID)
 	if err != nil {
-		return nil, fmt.Errorf("exam.Service.BulkCreateResults.GetScheduleMarks: %w", err)
+		return nil, err
+	}
+
+	existing, err := s.repo.FindDuplicateResultEnrollmentIDs(ctx, scheduleID, studentIDs)
+	if err != nil {
+		return nil, err
+	}
+	if len(existing) > 0 {
+		return nil, NewAppError(CodeDuplicate, "results already exist for one or more students", fmt.Sprintf("duplicate student_enrollment_ids: %v", existing))
 	}
 
 	results := make([]*ExamResult, 0, len(req.Results))
-	for i, r := range req.Results {
-		if (*r.MarksObtained).GreaterThan(maxMarks) {
-			return nil, fmt.Errorf("exam.Service.BulkCreateResults: marks_obtained at index %d exceeds max_marks", i)
-		}
-
-		isDup, err := s.repo.IsDuplicateResult(ctx, scheduleID, r.StudentEnrollmentID)
-		if err != nil {
-			return nil, fmt.Errorf("exam.Service.BulkCreateResults.IsDuplicate[%d]: %w", i, err)
-		}
-		if isDup {
-			return nil, fmt.Errorf("exam.Service.BulkCreateResults: duplicate result at index %d for enrollment %s", i, r.StudentEnrollmentID)
-		}
-
-		status := database.ExamResultStatusPass
-		if (*r.MarksObtained).LessThan(passingMarks) {
-			status = database.ExamResultStatusFail
+	for _, item := range req.Results {
+		if err := ValidateResultMarks(item.MarksObtained, maxMarks); err != nil {
+			return nil, NewAppError(CodeValidation, err.Error())
 		}
 		results = append(results, &ExamResult{
 			ExamScheduleID:      scheduleID,
-			StudentEnrollmentID: r.StudentEnrollmentID,
-			MarksObtained:       r.MarksObtained,
-			Grade:               r.Grade,
-			Status:              status,
-			Remarks:             r.Remarks,
+			StudentEnrollmentID: item.StudentEnrollmentID,
+			MarksObtained:       item.MarksObtained,
+			Grade:               normalizeStringPtr(item.Grade),
+			Status:              DeriveExamResultStatus(item.MarksObtained, passingMarks),
+			Remarks:             normalizeStringPtr(item.Remarks),
 		})
 	}
 
 	if err := s.repo.BulkCreateResults(ctx, results); err != nil {
-		return nil, fmt.Errorf("exam.Service.BulkCreateResults: %w", err)
+		return nil, err
 	}
 
+	responses := make([]*ExamResultResponse, len(results))
+	for i, result := range results {
+		responses[i] = ToResultResponse(result)
+	}
+	return responses, nil
+}
+
+func (s *service) GetResultByID(ctx context.Context, id uuid.UUID) (*ExamResultResponse, error) {
+	result, err := s.repo.GetResultByID(ctx, id)
+	if err != nil {
+		return nil, mapRepoError(err, "exam result")
+	}
+	return ToResultResponse(result), nil
+}
+
+func (s *service) ListResultsBySchedule(ctx context.Context, scheduleID uuid.UUID) ([]*ExamResultResponse, error) {
+	results, err := s.repo.FindResultsBySchedule(ctx, scheduleID)
+	if err != nil {
+		return nil, err
+	}
 	responses := make([]*ExamResultResponse, len(results))
 	for i, res := range results {
 		responses[i] = ToResultResponse(res)
@@ -407,79 +490,51 @@ func (s *service) BulkCreateResults(ctx context.Context, scheduleID string, req 
 	return responses, nil
 }
 
-func (s *service) GetResultByID(ctx context.Context, id string) (*ExamResultResponse, error) {
-	res, err := s.repo.GetResultByID(ctx, id)
-	if err != nil {
-		return nil, fmt.Errorf("exam.Service.GetResultByID: %w", err)
-	}
-	return ToResultResponse(res), nil
-}
-
-func (s *service) ListResultsBySchedule(ctx context.Context, scheduleID string) ([]*ExamResultResponse, error) {
-	results, err := s.repo.FindResultsBySchedule(ctx, scheduleID)
-	if err != nil {
-		return nil, fmt.Errorf("exam.Service.ListResultsBySchedule: %w", err)
-	}
-	responses := make([]*ExamResultResponse, len(results))
-	for i, r := range results {
-		responses[i] = ToResultResponse(r)
-	}
-	return responses, nil
-}
-
-func (s *service) ListResultsByStudent(ctx context.Context, studentEnrollmentID string) ([]*ExamResultResponse, error) {
+func (s *service) ListResultsByStudent(ctx context.Context, studentEnrollmentID uuid.UUID) ([]*ExamResultResponse, error) {
 	results, err := s.repo.FindResultsByStudent(ctx, studentEnrollmentID)
 	if err != nil {
-		return nil, fmt.Errorf("exam.Service.ListResultsByStudent: %w", err)
+		return nil, err
 	}
 	responses := make([]*ExamResultResponse, len(results))
-	for i, r := range results {
-		responses[i] = ToResultResponse(r)
+	for i, res := range results {
+		responses[i] = ToResultResponse(res)
 	}
 	return responses, nil
 }
 
-func (s *service) UpdateResult(ctx context.Context, id string, req UpdateResultRequest) (*ExamResultResponse, error) {
-	res, err := s.repo.GetResultByID(ctx, id)
+func (s *service) UpdateResult(ctx context.Context, id uuid.UUID, req UpdateResultRequest) (*ExamResultResponse, error) {
+	result, err := s.repo.GetResultByID(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("exam.Service.UpdateResult.GetByID: %w", err)
+		return nil, mapRepoError(err, "exam result")
 	}
 
 	if req.MarksObtained != nil {
-		maxMarks, passingMarks, err := s.repo.GetScheduleMarks(ctx, res.ExamScheduleID)
+		maxMarks, passingMarks, err := s.repo.GetScheduleMarks(ctx, result.ExamScheduleID)
 		if err != nil {
-			return nil, fmt.Errorf("exam.Service.UpdateResult.GetScheduleMarks: %w", err)
+			return nil, err
 		}
-		if (*req.MarksObtained).GreaterThan(maxMarks) {
-			return nil, fmt.Errorf("exam.Service.UpdateResult: marks_obtained exceeds max_marks (%s)", maxMarks)
+		if err := ValidateResultMarks(req.MarksObtained, maxMarks); err != nil {
+			return nil, NewAppError(CodeValidation, err.Error())
 		}
-		res.MarksObtained = req.MarksObtained
-		// Recompute status
-		if (*res.MarksObtained).LessThan(passingMarks) {
-			res.Status = database.ExamResultStatusFail
-		} else {
-			res.Status = database.ExamResultStatusPass
-		}
+		result.MarksObtained = req.MarksObtained
+		result.Status = DeriveExamResultStatus(req.MarksObtained, passingMarks)
 	}
 	if req.Grade != nil {
-		res.Grade = req.Grade
+		result.Grade = normalizeStringPtr(req.Grade)
 	}
 	if req.Remarks != nil {
-		res.Remarks = req.Remarks
+		result.Remarks = normalizeStringPtr(req.Remarks)
 	}
 
-	if err := s.repo.UpdateResult(ctx, res); err != nil {
-		return nil, fmt.Errorf("exam.Service.UpdateResult: %w", err)
+	if err := s.repo.UpdateResult(ctx, result); err != nil {
+		return nil, err
 	}
-	return ToResultResponse(res), nil
+	return ToResultResponse(result), nil
 }
 
-func (s *service) DeleteResult(ctx context.Context, id string) error {
+func (s *service) DeleteResult(ctx context.Context, id uuid.UUID) error {
 	if _, err := s.repo.GetResultByID(ctx, id); err != nil {
-		return fmt.Errorf("exam.Service.DeleteResult.GetByID: %w", err)
+		return mapRepoError(err, "exam result")
 	}
-	if err := s.repo.DeleteResult(ctx, id); err != nil {
-		return fmt.Errorf("exam.Service.DeleteResult: %w", err)
-	}
-	return nil
+	return s.repo.DeleteResult(ctx, id)
 }

@@ -5,17 +5,18 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/thalalhassan/edu_management/internal/shared/query_params"
 )
 
 type Service interface {
 	Create(ctx context.Context, req CreateRequest) (*TimeTableResponse, error)
-	GetByID(ctx context.Context, id string) (*TimeTableResponse, error)
+	GetByID(ctx context.Context, id uuid.UUID) (*TimeTableResponse, error)
 	List(ctx context.Context, q query_params.Query[FilterParams]) ([]*TimeTableResponse, int64, error)
-	GetClassSchedule(ctx context.Context, classSectionID string) ([]DaySchedule, error)
-	GetEmployeeSchedule(ctx context.Context, employeeID string) ([]DaySchedule, error)
-	Update(ctx context.Context, id string, req UpdateRequest) (*TimeTableResponse, error)
-	Delete(ctx context.Context, id string) error
+	GetClassSchedule(ctx context.Context, classSectionID uuid.UUID) ([]DaySchedule, error)
+	GetEmployeeSchedule(ctx context.Context, employeeID uuid.UUID) ([]DaySchedule, error)
+	Update(ctx context.Context, id uuid.UUID, req UpdateRequest) (*TimeTableResponse, error)
+	Delete(ctx context.Context, id uuid.UUID) error
 }
 
 type service struct {
@@ -32,7 +33,7 @@ func (s *service) Create(ctx context.Context, req CreateRequest) (*TimeTableResp
 	}
 
 	// Guard: class section slot conflict
-	conflict, err := s.repo.HasConflict(ctx, req.ClassSectionID, req.DayOfWeek, req.StartTime, req.EndTime, "")
+	conflict, err := s.repo.HasConflict(ctx, req.ClassSectionID, req.DayOfWeek, req.StartTime, req.EndTime, uuid.Nil)
 	if err != nil {
 		return nil, fmt.Errorf("timetable.Service.Create.HasConflict: %w", err)
 	}
@@ -42,7 +43,7 @@ func (s *service) Create(ctx context.Context, req CreateRequest) (*TimeTableResp
 	}
 
 	// Guard: teacher time conflict across all their classes
-	teacherConflict, err := s.repo.HasTeacherConflict(ctx, req.EmployeeID, req.DayOfWeek, req.StartTime, req.EndTime, "")
+	teacherConflict, err := s.repo.HasTeacherConflict(ctx, req.EmployeeID, req.DayOfWeek, req.StartTime, req.EndTime, uuid.Nil)
 	if err != nil {
 		return nil, fmt.Errorf("timetable.Service.Create.HasTeacherConflict: %w", err)
 	}
@@ -70,7 +71,7 @@ func (s *service) Create(ctx context.Context, req CreateRequest) (*TimeTableResp
 	return ToTimeTableResponse(created), nil
 }
 
-func (s *service) GetByID(ctx context.Context, id string) (*TimeTableResponse, error) {
+func (s *service) GetByID(ctx context.Context, id uuid.UUID) (*TimeTableResponse, error) {
 	t, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("timetable.Service.GetByID: %w", err)
@@ -92,7 +93,7 @@ func (s *service) List(ctx context.Context, q query_params.Query[FilterParams]) 
 
 // GetClassSchedule returns the weekly timetable for a class section
 // grouped by day — the primary view for students and class teachers.
-func (s *service) GetClassSchedule(ctx context.Context, classSectionID string) ([]DaySchedule, error) {
+func (s *service) GetClassSchedule(ctx context.Context, classSectionID uuid.UUID) ([]DaySchedule, error) {
 	entries, err := s.repo.FindByClassSection(ctx, classSectionID)
 	if err != nil {
 		return nil, fmt.Errorf("timetable.Service.GetClassSchedule: %w", err)
@@ -106,7 +107,7 @@ func (s *service) GetClassSchedule(ctx context.Context, classSectionID string) (
 
 // GetEmployeeSchedule returns the weekly schedule for an employee
 // across all their class sections — grouped by day.
-func (s *service) GetEmployeeSchedule(ctx context.Context, employeeID string) ([]DaySchedule, error) {
+func (s *service) GetEmployeeSchedule(ctx context.Context, employeeID uuid.UUID) ([]DaySchedule, error) {
 	entries, err := s.repo.FindByEmployee(ctx, employeeID)
 	if err != nil {
 		return nil, fmt.Errorf("timetable.Service.GetEmployeeSchedule: %w", err)
@@ -118,7 +119,7 @@ func (s *service) GetEmployeeSchedule(ctx context.Context, employeeID string) ([
 	return GroupByDay(periods), nil
 }
 
-func (s *service) Update(ctx context.Context, id string, req UpdateRequest) (*TimeTableResponse, error) {
+func (s *service) Update(ctx context.Context, id uuid.UUID, req UpdateRequest) (*TimeTableResponse, error) {
 	t, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("timetable.Service.Update.GetByID: %w", err)
@@ -176,7 +177,7 @@ func (s *service) Update(ctx context.Context, id string, req UpdateRequest) (*Ti
 	return ToTimeTableResponse(updated), nil
 }
 
-func (s *service) Delete(ctx context.Context, id string) error {
+func (s *service) Delete(ctx context.Context, id uuid.UUID) error {
 	if _, err := s.repo.GetByID(ctx, id); err != nil {
 		return fmt.Errorf("timetable.Service.Delete.GetByID: %w", err)
 	}

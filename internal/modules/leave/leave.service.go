@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/thalalhassan/edu_management/internal/database"
 	"github.com/thalalhassan/edu_management/internal/shared/query_params"
 )
@@ -14,22 +15,22 @@ import (
 
 type Service interface {
 	Apply(ctx context.Context, req ApplyRequest) (*LeaveResponse, error)
-	GetByID(ctx context.Context, id string) (*LeaveResponse, error)
+	GetByID(ctx context.Context, id uuid.UUID) (*LeaveResponse, error)
 	List(ctx context.Context, q query_params.Query[FilterParams]) ([]*LeaveResponse, int64, error)
 
 	// Update allows editing a leave request that is still PENDING.
 	// Only the teacher who owns the leave (or an admin) should call this.
-	Update(ctx context.Context, id string, req UpdateRequest) (*LeaveResponse, error)
+	Update(ctx context.Context, id uuid.UUID, req UpdateRequest) (*LeaveResponse, error)
 
 	// Review is the approval workflow endpoint — sets status to APPROVED or REJECTED.
 	// reviewerID is the user_id extracted from the JWT by the handler.
-	Review(ctx context.Context, id string, reviewerID string, req ReviewRequest) (*LeaveResponse, error)
+	Review(ctx context.Context, id uuid.UUID, reviewerID uuid.UUID, req ReviewRequest) (*LeaveResponse, error)
 
 	// Cancel allows a teacher to withdraw their own PENDING leave request.
-	Cancel(ctx context.Context, id string) (*LeaveResponse, error)
+	Cancel(ctx context.Context, id uuid.UUID) (*LeaveResponse, error)
 
 	// Delete hard-deletes a PENDING leave request (admin safety valve).
-	Delete(ctx context.Context, id string) error
+	Delete(ctx context.Context, id uuid.UUID) error
 }
 
 // ─── service struct ───────────────────────────────────────────────────────────
@@ -49,7 +50,7 @@ func (s *service) Apply(ctx context.Context, req ApplyRequest) (*LeaveResponse, 
 		return nil, fmt.Errorf("leave.Service.Apply: %w", err)
 	}
 
-	hasOverlap, err := s.repo.HasOverlap(ctx, req.EmployeeID, req.FromDate, req.ToDate, "")
+	hasOverlap, err := s.repo.HasOverlap(ctx, req.EmployeeID, req.FromDate, req.ToDate, uuid.Nil)
 	if err != nil {
 		return nil, fmt.Errorf("leave.Service.Apply.HasOverlap: %w", err)
 	}
@@ -72,7 +73,7 @@ func (s *service) Apply(ctx context.Context, req ApplyRequest) (*LeaveResponse, 
 
 // ─── GetByID ─────────────────────────────────────────────────────────────────
 
-func (s *service) GetByID(ctx context.Context, id string) (*LeaveResponse, error) {
+func (s *service) GetByID(ctx context.Context, id uuid.UUID) (*LeaveResponse, error) {
 	l, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("leave.Service.GetByID: %w", err)
@@ -96,7 +97,7 @@ func (s *service) List(ctx context.Context, q query_params.Query[FilterParams]) 
 
 // ─── Update ──────────────────────────────────────────────────────────────────
 
-func (s *service) Update(ctx context.Context, id string, req UpdateRequest) (*LeaveResponse, error) {
+func (s *service) Update(ctx context.Context, id uuid.UUID, req UpdateRequest) (*LeaveResponse, error) {
 	l, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("leave.Service.Update.GetByID: %w", err)
@@ -136,7 +137,7 @@ func (s *service) Update(ctx context.Context, id string, req UpdateRequest) (*Le
 
 // ─── Review ──────────────────────────────────────────────────────────────────
 
-func (s *service) Review(ctx context.Context, id string, reviewerID string, req ReviewRequest) (*LeaveResponse, error) {
+func (s *service) Review(ctx context.Context, id uuid.UUID, reviewerID uuid.UUID, req ReviewRequest) (*LeaveResponse, error) {
 	l, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("leave.Service.Review.GetByID: %w", err)
@@ -169,7 +170,7 @@ func (s *service) Review(ctx context.Context, id string, reviewerID string, req 
 // Cancel transitions a PENDING leave request to REJECTED (self-withdrawal).
 // Using REJECTED rather than a new status keeps the model enum clean while
 // still preventing the cancelled request from blocking future leave applications.
-func (s *service) Cancel(ctx context.Context, id string) (*LeaveResponse, error) {
+func (s *service) Cancel(ctx context.Context, id uuid.UUID) (*LeaveResponse, error) {
 	l, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("leave.Service.Cancel.GetByID: %w", err)
@@ -190,7 +191,7 @@ func (s *service) Cancel(ctx context.Context, id string) (*LeaveResponse, error)
 
 // ─── Delete ──────────────────────────────────────────────────────────────────
 
-func (s *service) Delete(ctx context.Context, id string) error {
+func (s *service) Delete(ctx context.Context, id uuid.UUID) error {
 	l, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return fmt.Errorf("leave.Service.Delete.GetByID: %w", err)

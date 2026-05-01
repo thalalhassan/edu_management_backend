@@ -4,15 +4,17 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
+	"github.com/google/uuid"
 )
 
 type Service interface {
 	Create(ctx context.Context, req CreateRequest) (*DepartmentResponse, error)
-	GetByID(ctx context.Context, id string) (*DepartmentResponse, error)
+	GetByID(ctx context.Context, id uuid.UUID) (*DepartmentResponse, error)
 	List(ctx context.Context) ([]*DepartmentResponse, error)
-	Update(ctx context.Context, id string, req UpdateRequest) (*DepartmentResponse, error)
-	AssignHead(ctx context.Context, id string, req AssignHeadRequest) (*DepartmentResponse, error)
-	Delete(ctx context.Context, id string) error
+	Update(ctx context.Context, id uuid.UUID, req UpdateRequest) (*DepartmentResponse, error)
+	AssignHead(ctx context.Context, id uuid.UUID, req AssignHeadRequest) (*DepartmentResponse, error)
+	Delete(ctx context.Context, id uuid.UUID) error
 }
 
 type service struct {
@@ -49,7 +51,7 @@ func (s *service) Create(ctx context.Context, req CreateRequest) (*DepartmentRes
 	return ToDepartmentResponse(created), nil
 }
 
-func (s *service) GetByID(ctx context.Context, id string) (*DepartmentResponse, error) {
+func (s *service) GetByID(ctx context.Context, id uuid.UUID) (*DepartmentResponse, error) {
 	d, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("department.Service.GetByID: %w", err)
@@ -69,7 +71,7 @@ func (s *service) List(ctx context.Context) ([]*DepartmentResponse, error) {
 	return responses, nil
 }
 
-func (s *service) Update(ctx context.Context, id string, req UpdateRequest) (*DepartmentResponse, error) {
+func (s *service) Update(ctx context.Context, id uuid.UUID, req UpdateRequest) (*DepartmentResponse, error) {
 	d, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("department.Service.Update.GetByID: %w", err)
@@ -104,7 +106,7 @@ func (s *service) Update(ctx context.Context, id string, req UpdateRequest) (*De
 
 // AssignHead sets or removes the head employee of a department.
 // Passing nil in the request removes the current head.
-func (s *service) AssignHead(ctx context.Context, id string, req AssignHeadRequest) (*DepartmentResponse, error) {
+func (s *service) AssignHead(ctx context.Context, id uuid.UUID, req AssignHeadRequest) (*DepartmentResponse, error) {
 	d, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("department.Service.AssignHead.GetByID: %w", err)
@@ -121,7 +123,7 @@ func (s *service) AssignHead(ctx context.Context, id string, req AssignHeadReque
 	return ToDepartmentResponse(updated), nil
 }
 
-func (s *service) Delete(ctx context.Context, id string) error {
+func (s *service) Delete(ctx context.Context, id uuid.UUID) error {
 	d, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return fmt.Errorf("department.Service.Delete.GetByID: %w", err)

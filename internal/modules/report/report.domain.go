@@ -3,6 +3,7 @@ package report
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
 )
 
@@ -13,15 +14,15 @@ import (
 // ReportCardRequest scopes the report card to one student + one exam.
 // Passing exam_id = "" returns results across all exams in the AY.
 type ReportCardRequest struct {
-	StudentEnrollmentID string `form:"student_enrollment_id" binding:"required,uuid"`
-	ExamID              string `form:"exam_id"               binding:"omitempty,uuid"`
+	StudentEnrollmentID uuid.UUID `form:"student_enrollment_id" binding:"required,uuid"`
+	ExamID              uuid.UUID `form:"exam_id"               binding:"omitempty,uuid"`
 }
 
 type ReportCard struct {
-	StudentEnrollmentID string              `json:"student_enrollment_id"`
+	StudentEnrollmentID uuid.UUID           `json:"student_enrollment_id"`
 	AdmissionNo         string              `json:"admission_no"`
 	StudentName         string              `json:"student_name"`
-	ClassSection        string              `json:"class_section"`    // "Grade 6 - A"
+	ClassSection        string              `json:"class_section"` // "Grade 6 - A"
 	AcademicYear        string              `json:"academic_year"`
 	Exams               []ExamReportSection `json:"exams"`
 	OverallPercentage   decimal.Decimal     `json:"overall_percentage"`
@@ -29,11 +30,11 @@ type ReportCard struct {
 }
 
 type ExamReportSection struct {
-	ExamID   string        `json:"exam_id"`
-	ExamName string        `json:"exam_name"`
-	ExamType string        `json:"exam_type"`
+	ExamID   uuid.UUID       `json:"exam_id"`
+	ExamName string          `json:"exam_name"`
+	ExamType string          `json:"exam_type"`
 	Subjects []SubjectResult `json:"subjects"`
-	Total    ExamTotals    `json:"total"`
+	Total    ExamTotals      `json:"total"`
 }
 
 type SubjectResult struct {
@@ -59,13 +60,13 @@ type ExamTotals struct {
 // ──────────────────────────────────────────────────────────────
 
 type StudentAttendanceRequest struct {
-	StudentEnrollmentID string     `form:"student_enrollment_id" binding:"required,uuid"`
+	StudentEnrollmentID uuid.UUID  `form:"student_enrollment_id" binding:"required,uuid"`
 	FromDate            *time.Time `form:"from_date"`
 	ToDate              *time.Time `form:"to_date"`
 }
 
 type StudentAttendanceSummary struct {
-	StudentEnrollmentID string          `json:"student_enrollment_id"`
+	StudentEnrollmentID uuid.UUID       `json:"student_enrollment_id"`
 	StudentName         string          `json:"student_name"`
 	AdmissionNo         string          `json:"admission_no"`
 	ClassSection        string          `json:"class_section"`
@@ -85,24 +86,24 @@ type StudentAttendanceSummary struct {
 // ──────────────────────────────────────────────────────────────
 
 type ClassAttendanceRequest struct {
-	ClassSectionID string     `form:"class_section_id" binding:"required,uuid"`
-	Date           *time.Time `form:"date"`            // single day — if nil returns monthly summary
-	Month          *int       `form:"month"`           // 1–12
+	ClassSectionID uuid.UUID  `form:"class_section_id" binding:"required,uuid"`
+	Date           *time.Time `form:"date"`  // single day — if nil returns monthly summary
+	Month          *int       `form:"month"` // 1–12
 	Year           *int       `form:"year"`
 }
 
 type ClassAttendanceSummary struct {
-	ClassSectionID string                    `json:"class_section_id"`
-	ClassSection   string                    `json:"class_section"`
-	Date           *time.Time                `json:"date,omitempty"`
-	Month          *int                      `json:"month,omitempty"`
-	Year           *int                      `json:"year,omitempty"`
-	TotalStudents  int                       `json:"total_students"`
-	Students       []StudentAttendanceRow    `json:"students"`
+	ClassSectionID uuid.UUID              `json:"class_section_id"`
+	ClassSection   string                 `json:"class_section"`
+	Date           *time.Time             `json:"date,omitempty"`
+	Month          *int                   `json:"month,omitempty"`
+	Year           *int                   `json:"year,omitempty"`
+	TotalStudents  int                    `json:"total_students"`
+	Students       []StudentAttendanceRow `json:"students"`
 }
 
 type StudentAttendanceRow struct {
-	EnrollmentID      string          `json:"enrollment_id"`
+	EnrollmentID      uuid.UUID       `json:"enrollment_id"`
 	RollNumber        int             `json:"roll_number"`
 	StudentName       string          `json:"student_name"`
 	AdmissionNo       string          `json:"admission_no"`
@@ -117,12 +118,12 @@ type StudentAttendanceRow struct {
 // ──────────────────────────────────────────────────────────────
 
 type ClassPerformanceRequest struct {
-	ClassSectionID string `form:"class_section_id" binding:"required,uuid"`
-	ExamID         string `form:"exam_id"          binding:"required,uuid"`
+	ClassSectionID uuid.UUID `form:"class_section_id" binding:"required,uuid"`
+	ExamID         uuid.UUID `form:"exam_id"          binding:"required,uuid"`
 }
 
 type ClassPerformanceReport struct {
-	ClassSectionID string               `json:"class_section_id"`
+	ClassSectionID uuid.UUID            `json:"class_section_id"`
 	ClassSection   string               `json:"class_section"`
 	ExamName       string               `json:"exam_name"`
 	TotalStudents  int                  `json:"total_students"`
@@ -144,13 +145,13 @@ type SubjectPerformance struct {
 }
 
 type StudentRank struct {
-	Rank            int             `json:"rank"`
-	StudentName     string          `json:"student_name"`
-	AdmissionNo     string          `json:"admission_no"`
-	TotalMarks      decimal.Decimal `json:"total_marks"`
-	MaxMarks        decimal.Decimal `json:"max_marks"`
-	Percentage      decimal.Decimal `json:"percentage"`
-	Grade           string          `json:"grade"`
+	Rank        int             `json:"rank"`
+	StudentName string          `json:"student_name"`
+	AdmissionNo string          `json:"admission_no"`
+	TotalMarks  decimal.Decimal `json:"total_marks"`
+	MaxMarks    decimal.Decimal `json:"max_marks"`
+	Percentage  decimal.Decimal `json:"percentage"`
+	Grade       string          `json:"grade"`
 }
 
 // ──────────────────────────────────────────────────────────────
@@ -158,18 +159,18 @@ type StudentRank struct {
 // ──────────────────────────────────────────────────────────────
 
 type FeeCollectionRequest struct {
-	AcademicYearID string  `form:"academic_year_id" binding:"required,uuid"`
-	StandardID     *string `form:"standard_id"`      // nil = all standards
-	ClassSectionID *string `form:"class_section_id"` // nil = all sections
+	AcademicYearID uuid.UUID  `form:"academic_year_id" binding:"required,uuid"`
+	StandardID     *uuid.UUID `form:"standard_id"`      // nil = all standards
+	ClassSectionID *uuid.UUID `form:"class_section_id"` // nil = all sections
 }
 
 type FeeCollectionReport struct {
-	AcademicYear   string               `json:"academic_year"`
-	TotalDue       decimal.Decimal      `json:"total_due"`
-	TotalCollected decimal.Decimal      `json:"total_collected"`
-	TotalBalance   decimal.Decimal      `json:"total_balance"`
-	TotalWaived    decimal.Decimal      `json:"total_waived"`
-	Rows           []FeeCollectionRow   `json:"rows"`
+	AcademicYear   string             `json:"academic_year"`
+	TotalDue       decimal.Decimal    `json:"total_due"`
+	TotalCollected decimal.Decimal    `json:"total_collected"`
+	TotalBalance   decimal.Decimal    `json:"total_balance"`
+	TotalWaived    decimal.Decimal    `json:"total_waived"`
+	Rows           []FeeCollectionRow `json:"rows"`
 }
 
 type FeeCollectionRow struct {
@@ -190,7 +191,7 @@ type FeeCollectionRow struct {
 // ──────────────────────────────────────────────────────────────
 
 type TeacherAttendanceRequest struct {
-	TeacherID *string    `form:"teacher_id"` // nil = all teachers
+	TeacherID *uuid.UUID `form:"teacher_id"` // nil = all teachers
 	FromDate  *time.Time `form:"from_date"`
 	ToDate    *time.Time `form:"to_date"`
 	Month     *int       `form:"month"`
@@ -198,8 +199,8 @@ type TeacherAttendanceRequest struct {
 }
 
 type TeacherAttendanceSummary struct {
-	TeacherID         string          `json:"teacher_id"`
-	EmployeeID        string          `json:"employee_id"`
+	TeacherID         uuid.UUID       `json:"teacher_id"`
+	EmployeeID        uuid.UUID       `json:"employee_id"`
 	TeacherName       string          `json:"teacher_name"`
 	TotalDays         int             `json:"total_days"`
 	Present           int             `json:"present"`

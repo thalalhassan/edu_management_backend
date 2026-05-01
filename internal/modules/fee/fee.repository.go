@@ -3,6 +3,7 @@ package fee
 import (
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
 	"github.com/thalalhassan/edu_management/internal/database"
 	"github.com/thalalhassan/edu_management/internal/shared/query_params"
@@ -16,12 +17,12 @@ import (
 type StructureRepository interface {
 	Create(ctx context.Context, f *FeeStructure) error
 	BulkCreate(ctx context.Context, structs []*FeeStructure) error
-	GetByID(ctx context.Context, id string) (*FeeStructure, error)
+	GetByID(ctx context.Context, id uuid.UUID) (*FeeStructure, error)
 	FindAll(ctx context.Context, q query_params.Query[StructureFilterParams]) ([]*FeeStructure, int64, error)
-	FindByStandardAndYear(ctx context.Context, standardID, academicYearID string) ([]*FeeStructure, error)
-	Update(ctx context.Context, id string, f *FeeStructure) error
-	Delete(ctx context.Context, id string) error
-	IsDuplicate(ctx context.Context, academicYearID, standardID, feeComponentID string) (bool, error)
+	FindByStandardAndYear(ctx context.Context, standardID, academicYearID uuid.UUID) ([]*FeeStructure, error)
+	Update(ctx context.Context, id uuid.UUID, f *FeeStructure) error
+	Delete(ctx context.Context, id uuid.UUID) error
+	IsDuplicate(ctx context.Context, academicYearID, standardID, feeComponentID uuid.UUID) (bool, error)
 }
 
 type structureRepo struct {
@@ -40,7 +41,7 @@ func (r *structureRepo) BulkCreate(ctx context.Context, structs []*FeeStructure)
 	return r.db.WithContext(ctx).Create(&structs).Error
 }
 
-func (r *structureRepo) GetByID(ctx context.Context, id string) (*FeeStructure, error) {
+func (r *structureRepo) GetByID(ctx context.Context, id uuid.UUID) (*FeeStructure, error) {
 	var f FeeStructure
 	err := r.db.WithContext(ctx).
 		Preload("AcademicYear").
@@ -83,7 +84,7 @@ func (r *structureRepo) FindAll(ctx context.Context, q query_params.Query[Struct
 	return structs, total, err
 }
 
-func (r *structureRepo) FindByStandardAndYear(ctx context.Context, standardID, academicYearID string) ([]*FeeStructure, error) {
+func (r *structureRepo) FindByStandardAndYear(ctx context.Context, standardID, academicYearID uuid.UUID) ([]*FeeStructure, error) {
 	var structs []*FeeStructure
 	err := r.db.WithContext(ctx).
 		Where("standard_id = ? AND academic_year_id = ?", standardID, academicYearID).
@@ -92,15 +93,15 @@ func (r *structureRepo) FindByStandardAndYear(ctx context.Context, standardID, a
 	return structs, err
 }
 
-func (r *structureRepo) Update(ctx context.Context, id string, f *FeeStructure) error {
+func (r *structureRepo) Update(ctx context.Context, id uuid.UUID, f *FeeStructure) error {
 	return r.db.WithContext(ctx).Where("id = ?", id).Save(f).Error
 }
 
-func (r *structureRepo) Delete(ctx context.Context, id string) error {
+func (r *structureRepo) Delete(ctx context.Context, id uuid.UUID) error {
 	return r.db.WithContext(ctx).Where("id = ?", id).Delete(&FeeStructure{}).Error
 }
 
-func (r *structureRepo) IsDuplicate(ctx context.Context, academicYearID, standardID, feeComponentID string) (bool, error) {
+func (r *structureRepo) IsDuplicate(ctx context.Context, academicYearID, standardID, feeComponentID uuid.UUID) (bool, error) {
 	var count int64
 	err := r.db.WithContext(ctx).
 		Model(&database.FeeStructure{}).
@@ -117,12 +118,12 @@ func (r *structureRepo) IsDuplicate(ctx context.Context, academicYearID, standar
 type RecordRepository interface {
 	Create(ctx context.Context, r *FeeRecord) error
 	BulkCreate(ctx context.Context, records []*FeeRecord) error
-	GetByID(ctx context.Context, id string) (*FeeRecord, error)
+	GetByID(ctx context.Context, id uuid.UUID) (*FeeRecord, error)
 	FindAll(ctx context.Context, q query_params.Query[RecordFilterParams]) ([]*FeeRecord, int64, error)
-	FindByEnrollment(ctx context.Context, studentEnrollmentID string) ([]*FeeRecord, error)
-	Update(ctx context.Context, id string, r *FeeRecord) error
-	Delete(ctx context.Context, id string) error
-	SumByEnrollment(ctx context.Context, studentEnrollmentID string) (due decimal.Decimal, paid decimal.Decimal, err error)
+	FindByEnrollment(ctx context.Context, studentEnrollmentID uuid.UUID) ([]*FeeRecord, error)
+	Update(ctx context.Context, id uuid.UUID, r *FeeRecord) error
+	Delete(ctx context.Context, id uuid.UUID) error
+	SumByEnrollment(ctx context.Context, studentEnrollmentID uuid.UUID) (due decimal.Decimal, paid decimal.Decimal, err error)
 }
 
 type recordRepo struct {
@@ -141,7 +142,7 @@ func (r *recordRepo) BulkCreate(ctx context.Context, records []*FeeRecord) error
 	return r.db.WithContext(ctx).Create(&records).Error
 }
 
-func (r *recordRepo) GetByID(ctx context.Context, id string) (*FeeRecord, error) {
+func (r *recordRepo) GetByID(ctx context.Context, id uuid.UUID) (*FeeRecord, error) {
 	var rec FeeRecord
 	err := r.db.WithContext(ctx).
 		Preload("StudentEnrollment.Student").
@@ -189,7 +190,7 @@ func (r *recordRepo) FindAll(ctx context.Context, q query_params.Query[RecordFil
 	return records, total, err
 }
 
-func (r *recordRepo) FindByEnrollment(ctx context.Context, studentEnrollmentID string) ([]*FeeRecord, error) {
+func (r *recordRepo) FindByEnrollment(ctx context.Context, studentEnrollmentID uuid.UUID) ([]*FeeRecord, error) {
 	var records []*FeeRecord
 	err := r.db.WithContext(ctx).
 		Where("student_enrollment_id = ?", studentEnrollmentID).
@@ -198,16 +199,16 @@ func (r *recordRepo) FindByEnrollment(ctx context.Context, studentEnrollmentID s
 	return records, err
 }
 
-func (r *recordRepo) Update(ctx context.Context, id string, rec *FeeRecord) error {
+func (r *recordRepo) Update(ctx context.Context, id uuid.UUID, rec *FeeRecord) error {
 	return r.db.WithContext(ctx).Where("id = ?", id).Save(rec).Error
 }
 
-func (r *recordRepo) Delete(ctx context.Context, id string) error {
+func (r *recordRepo) Delete(ctx context.Context, id uuid.UUID) error {
 	return r.db.WithContext(ctx).Where("id = ?", id).Delete(&FeeRecord{}).Error
 }
 
 // SumByEnrollment returns the total due and total paid for a student enrollment.
-func (r *recordRepo) SumByEnrollment(ctx context.Context, studentEnrollmentID string) (decimal.Decimal, decimal.Decimal, error) {
+func (r *recordRepo) SumByEnrollment(ctx context.Context, studentEnrollmentID uuid.UUID) (decimal.Decimal, decimal.Decimal, error) {
 	type result struct {
 		TotalDue  decimal.Decimal
 		TotalPaid decimal.Decimal

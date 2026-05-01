@@ -436,7 +436,7 @@ const (
 
 // Base is embedded by all entity tables (soft-delete capable).
 type Base struct {
-	ID        uuid.UUID      `gorm:"type:uuid;primaryKey;default:gen_random_uuid()" json:"id"`
+	ID        uuid.UUID      `gorm:"type:uuid;primaryKey;default:uuid_generate_v7()" json:"id"`
 	CreatedAt time.Time      `gorm:"autoCreateTime"                                 json:"created_at"`
 	UpdatedAt time.Time      `gorm:"autoUpdateTime"                                 json:"updated_at"`
 	CreatedBy *string        `gorm:"column:created_by;type:uuid"                    json:"created_by,omitempty"`
@@ -447,7 +447,7 @@ type Base struct {
 // BaseJunction is embedded by pure many-to-many tables (hard delete).
 // Hard delete avoids unique-index conflicts on re-insert after removal.
 type BaseJunction struct {
-	ID        uuid.UUID `gorm:"type:uuid;primaryKey;default:gen_random_uuid()" json:"id"`
+	ID        uuid.UUID `gorm:"type:uuid;primaryKey;default:uuid_generate_v7()" json:"id"`
 	CreatedAt time.Time `gorm:"autoCreateTime"                                 json:"created_at"`
 	CreatedBy *string   `gorm:"column:created_by;type:uuid"                    json:"created_by,omitempty"`
 }
@@ -510,7 +510,7 @@ func (RolePermission) TableName() string { return "role_permission" }
 
 // RoleChangeLog — immutable append-only RBAC audit trail.
 type RoleChangeLog struct {
-	ID           uuid.UUID  `gorm:"type:uuid;primaryKey;default:gen_random_uuid()" json:"id"`
+	ID           uuid.UUID  `gorm:"type:uuid;primaryKey;default:uuid_generate_v7()" json:"id"`
 	CreatedAt    time.Time  `gorm:"autoCreateTime;index"                           json:"created_at"`
 	RoleID       *uuid.UUID `gorm:"column:role_id;type:uuid;index"                 json:"role_id,omitempty"`
 	TargetUserID *uuid.UUID `gorm:"column:target_user_id;type:uuid;index"          json:"target_user_id,omitempty"`
@@ -564,7 +564,7 @@ func (User) TableName() string { return "users" }
 // UserRefreshToken — one row per device/session.
 // ExpiresAt is indexed (v7 addition) so cleanup queries do not full-scan.
 type UserRefreshToken struct {
-	ID               uuid.UUID `gorm:"type:uuid;primaryKey;default:gen_random_uuid()" json:"id"`
+	ID               uuid.UUID `gorm:"type:uuid;primaryKey;default:uuid_generate_v7()" json:"id"`
 	UserID           uuid.UUID `gorm:"column:user_id;type:uuid;not null;index"        json:"user_id"`
 	Token            string    `gorm:"column:token;uniqueIndex;not null"              json:"-"`
 	ExpiresAt        time.Time `gorm:"column:expires_at;not null;index"               json:"expires_at"` // v7: indexed
@@ -615,7 +615,7 @@ func (UserScope) TableName() string { return "user_scope" }
 // Composite index on (resource_type, resource_id) added in migration 0021
 // to support resource-scoped audit queries without full table scan.
 type AuditLog struct {
-	ID           uuid.UUID     `gorm:"type:uuid;primaryKey;default:gen_random_uuid()" json:"id"`
+	ID           uuid.UUID     `gorm:"type:uuid;primaryKey;default:uuid_generate_v7()" json:"id"`
 	CreatedAt    time.Time     `gorm:"autoCreateTime;index"                           json:"created_at"`
 	UserID       uuid.UUID     `gorm:"column:user_id;type:uuid;not null;index"        json:"user_id"`
 	Action       string        `gorm:"column:action;not null"                         json:"action"`

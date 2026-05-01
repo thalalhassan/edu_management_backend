@@ -14,11 +14,14 @@ func ZapLogger(baseLogger logger.Logger) gin.HandlerFunc {
 		start := time.Now()
 
 		// Generate unique request ID for tracing
-		requestID := uuid.New().String()
+		requestID, err := uuid.NewV7()
+		if err != nil {
+			requestID = uuid.New()
+		}
 
 		// Create request-scoped logger with request context
 		reqLogger := baseLogger.With(
-			zap.String("request_id", requestID),
+			zap.String("request_id", requestID.String()),
 			zap.String("method", c.Request.Method),
 			zap.String("path", c.Request.URL.Path),
 			zap.String("ip", c.ClientIP()),

@@ -10,7 +10,7 @@ import (
 	"github.com/thalalhassan/edu_management/internal/config"
 	"github.com/thalalhassan/edu_management/internal/database"
 	"github.com/thalalhassan/edu_management/internal/modules/user"
-	"github.com/thalalhassan/edu_management/pkg/crypto"
+	"github.com/thalalhassan/edu_management/pkg/appcrypto"
 	"github.com/thalalhassan/edu_management/pkg/jwt"
 )
 
@@ -44,7 +44,7 @@ func (s *service) Login(ctx context.Context, req LoginRequest) (*LoginResponse, 
 	if !u.IsActive {
 		return nil, errors.New("user.Service.Login: account is deactivated")
 	}
-	if !crypto.CheckHash(req.Password, u.PasswordHash) {
+	if !appcrypto.BcryptVerifyHash(req.Password, u.PasswordHash) {
 		return nil, errors.New("user.Service.Login: invalid credentials")
 	}
 
@@ -59,7 +59,7 @@ func (s *service) Login(ctx context.Context, req LoginRequest) (*LoginResponse, 
 
 	tokenRecord := &database.UserRefreshToken{
 		UserID:    u.ID,
-		Token:     rawRefresh,
+		Token:     appcrypto.Hash(rawRefresh),
 		ExpiresAt: expiresAt,
 	}
 	if err := s.repo.SaveRefreshToken(ctx, tokenRecord); err != nil {
@@ -79,7 +79,7 @@ func (s *service) Login(ctx context.Context, req LoginRequest) (*LoginResponse, 
 }
 
 func (s *service) RefreshToken(ctx context.Context, req RefreshRequest) (*RefreshResponse, error) {
-	record, err := s.repo.GetRefreshToken(ctx, req.RefreshToken)
+	record, err := s.repo.GetRefreshToken(ctx, appcrypto.Hash(req.RefreshToken))
 	if err != nil {
 		return nil, errors.New("user.Service.RefreshToken: token not found or revoked")
 	}
@@ -105,9 +105,10 @@ func (s *service) RefreshToken(ctx context.Context, req RefreshRequest) (*Refres
 	if err != nil {
 		return nil, fmt.Errorf("user.Service.RefreshToken.GenerateRefreshToken: %w", err)
 	}
+
 	newRecord := &database.UserRefreshToken{
 		UserID:    u.ID,
-		Token:     newRaw,
+		Token:     appcrypto.Hash(newRaw),
 		ExpiresAt: expiresAt,
 	}
 	if err := s.repo.SaveRefreshToken(ctx, newRecord); err != nil {
@@ -121,7 +122,7 @@ func (s *service) RefreshToken(ctx context.Context, req RefreshRequest) (*Refres
 }
 
 func (s *service) Logout(ctx context.Context, refreshToken string) error {
-	if err := s.repo.RevokeRefreshToken(ctx, refreshToken); err != nil {
+	if err := s.repo.RevokeRefreshToken(ctx, appcrypto.Hash(refreshToken)); err != nil {
 		return fmt.Errorf("user.Service.Logout: %w", err)
 	}
 	return nil

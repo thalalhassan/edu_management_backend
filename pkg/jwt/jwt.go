@@ -40,7 +40,7 @@ func GenerateAccessToken(userID, role, email, secret string, ttl time.Duration) 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	signed, err := token.SignedString([]byte(secret))
 	if err != nil {
-		return "", fmt.Errorf("crypto.GenerateAccessToken: %w", err)
+		return "", fmt.Errorf("appcrypto.GenerateAccessToken: %w", err)
 	}
 	return signed, nil
 }
@@ -50,17 +50,17 @@ func GenerateAccessToken(userID, role, email, secret string, ttl time.Duration) 
 func ParseAccessToken(tokenStr, secret string) (*Claims, error) {
 	token, err := jwt.ParseWithClaims(tokenStr, &Claims{}, func(t *jwt.Token) (any, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("crypto.ParseAccessToken: unexpected signing method %v", t.Header["alg"])
+			return nil, fmt.Errorf("appcrypto.ParseAccessToken: unexpected signing method %v", t.Header["alg"])
 		}
 		return []byte(secret), nil
 	})
 	if err != nil {
-		return nil, fmt.Errorf("crypto.ParseAccessToken: %w", err)
+		return nil, fmt.Errorf("appcrypto.ParseAccessToken: %w", err)
 	}
 
 	claims, ok := token.Claims.(*Claims)
 	if !ok || !token.Valid {
-		return nil, errors.New("crypto.ParseAccessToken: invalid token")
+		return nil, errors.New("appcrypto.ParseAccessToken: invalid token")
 	}
 	return claims, nil
 }
@@ -71,7 +71,7 @@ func ParseAccessToken(tokenStr, secret string) (*Claims, error) {
 func GenerateRefreshToken(ttl time.Duration) (raw string, expiresAt time.Time, err error) {
 	b := make([]byte, refreshTokenBytes)
 	if _, err = rand.Read(b); err != nil {
-		return "", time.Time{}, fmt.Errorf("crypto.GenerateRefreshToken: %w", err)
+		return "", time.Time{}, fmt.Errorf("appcrypto.GenerateRefreshToken: %w", err)
 	}
 	return hex.EncodeToString(b), time.Now().Add(ttl), nil
 }

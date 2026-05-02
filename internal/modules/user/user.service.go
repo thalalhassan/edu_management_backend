@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/thalalhassan/edu_management/internal/database"
 	"github.com/thalalhassan/edu_management/internal/shared/pagination"
-	"github.com/thalalhassan/edu_management/pkg/crypto"
+	"github.com/thalalhassan/edu_management/pkg/appcrypto"
 )
 
 // Service is the public contract for the user module.
@@ -51,7 +51,7 @@ func NewService(repo Repository) Service {
 // ──────────────────────────────────────────────────────────────
 
 func (s *service) RegisterStudent(ctx context.Context, req CreateStudentUserRequest) (*UserResponse, error) {
-	hash, err := crypto.Hash(req.Password)
+	hash, err := appcrypto.BcryptHash(req.Password)
 	if err != nil {
 		return nil, fmt.Errorf("user.Service.RegisterStudent.Hash: %w", err)
 	}
@@ -115,7 +115,7 @@ func (s *service) RegisterStudent(ctx context.Context, req CreateStudentUserRequ
 }
 
 func (s *service) RegisterEmployee(ctx context.Context, req CreateEmployeeUserRequest) (*UserResponse, error) {
-	hash, err := crypto.Hash(req.Password)
+	hash, err := appcrypto.BcryptHash(req.Password)
 	if err != nil {
 		return nil, fmt.Errorf("user.Service.RegisterEmployee.Hash: %w", err)
 	}
@@ -178,7 +178,7 @@ func (s *service) RegisterEmployee(ctx context.Context, req CreateEmployeeUserRe
 }
 
 func (s *service) RegisterParent(ctx context.Context, req CreateParentUserRequest) (*UserResponse, error) {
-	hash, err := crypto.Hash(req.Password)
+	hash, err := appcrypto.BcryptHash(req.Password)
 	if err != nil {
 		return nil, fmt.Errorf("user.Service.RegisterParent.Hash: %w", err)
 	}
@@ -244,7 +244,7 @@ func (s *service) RegisterParent(ctx context.Context, req CreateParentUserReques
 }
 
 func (s *service) RegisterAdmin(ctx context.Context, req CreateAdminUserRequest) (*UserResponse, error) {
-	hash, err := crypto.Hash(req.Password)
+	hash, err := appcrypto.BcryptHash(req.Password)
 	if err != nil {
 		return nil, fmt.Errorf("user.Service.RegisterAdmin.Hash: %w", err)
 	}
@@ -332,11 +332,11 @@ func (s *service) ChangePassword(ctx context.Context, userID uuid.UUID, req Chan
 	if err != nil {
 		return fmt.Errorf("user.Service.ChangePassword.GetByID: %w", err)
 	}
-	if !crypto.CheckHash(req.CurrentPassword, u.PasswordHash) {
+	if !appcrypto.BcryptVerifyHash(req.CurrentPassword, u.PasswordHash) {
 		return errors.New("user.Service.ChangePassword: current password is incorrect")
 	}
 
-	hash, err := crypto.Hash(req.NewPassword)
+	hash, err := appcrypto.BcryptHash(req.NewPassword)
 	if err != nil {
 		return fmt.Errorf("user.Service.ChangePassword.Hash: %w", err)
 	}

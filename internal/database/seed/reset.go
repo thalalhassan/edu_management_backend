@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/thalalhassan/edu_management/internal/database"
-	"github.com/thalalhassan/edu_management/pkg/crypto"
+	"github.com/thalalhassan/edu_management/pkg/appcrypto"
 	"gorm.io/gorm"
 )
 
@@ -65,7 +65,7 @@ func (s *ResetAndBootstrapSeeder) Run(ctx context.Context, db *gorm.DB) error {
 			}
 		}
 
-		passwordHash, err := crypto.Hash("Salsabeel")
+		passwordHash, err := appcrypto.BcryptHash("Salsabeel")
 		if err != nil {
 			return fmt.Errorf("seeder.SeedUsers.Hash: %w", err)
 		}

@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/thalalhassan/edu_management/internal/database"
-	"github.com/thalalhassan/edu_management/pkg/crypto"
+	"github.com/thalalhassan/edu_management/pkg/appcrypto"
 	"gorm.io/gorm"
 )
 
@@ -17,7 +17,7 @@ import (
 func SeedUsers(db *gorm.DB) error {
 	log.Println("[seeder] seeding users...")
 
-	password, err := crypto.Hash("Salsabeel")
+	password, err := appcrypto.BcryptHash("Salsabeel")
 	if err != nil {
 		return fmt.Errorf("seeder.SeedUsers.Hash: %w", err)
 	}
